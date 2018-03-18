@@ -44,7 +44,7 @@ install:
   - C:\projects\csgo-cli\secure-file.1.0.31\tools\secure-file.exe -decrypt C:\projects\csgo-cli\dependencies\sw_sdk_142.zip.enc -secret %SW_SDK_SECRET% -out C:\projects\csgo-cli\dependencies\sw_sdk_142.zip
   - 7z x C:\projects\csgo-cli\dependencies\sw_sdk_142.zip -aoa -y -oC:\projects\csgo-cli\dependencies
   # Google Protobuf
-  - curl -fsS -o C:\projects\csgo-cli\downloads\protobuf-cpp-3.5.1.zip https://github.com/google/protobuf/releases/download/v3.5.1/protobuf-cpp-3.5.1.zip
+  - curl -fsS --create-dirs -o C:\projects\csgo-cli\downloads\protobuf-cpp-3.5.1.zip https://github.com/google/protobuf/releases/download/v3.5.1/protobuf-cpp-3.5.1.zip
   - 7z x C:\projects\csgo-cli\downloads\protobuf-cpp-3.5.1.zip -aoa -y -oC:\projects\csgo-cli\dependencies
   # output content of dependencies folder, to see if everything is present
   - dir C:\projects\csgo-cli\dependencies\
