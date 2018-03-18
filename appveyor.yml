@@ -34,7 +34,10 @@ init:
         Update-AppveyorBuild -Version "dev-$($env:APPVEYOR_REPO_COMMIT.substring(0,7))"
       }
 
-#install:
+install:
+  - nuget install secure-file -Version 1.0.31
+  - ps: Test-Path C:\projects\csgo-cli\secure-file.1.0.31\tools\secure-file.exe   
+
 #build_script:
 #after_build:
 #artifacts:
