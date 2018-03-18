@@ -1,0 +1,41 @@
+# Build worker image (VM template)
+image: Visual Studio 2015
+
+clone_depth: 5
+
+version: '{build}'
+
+platform:
+  - x86
+
+configuration:
+  - Release
+  #- Debug
+
+environment:
+  MSBUILD_FLAGS: /verbosity:minimal /maxcpucount
+
+build:
+  verbosity: minimal
+
+# scripts that are called at very beginning, before repo cloning
+init:
+  - date /T & time /T
+  - git config --global core.autocrlf input
+  - cmake --version
+  # Set "build version number" to "short-commit-hash" or when tagged to "tag name" (Travis style)
+  - ps: >-
+      if ($env:APPVEYOR_REPO_TAG -eq "true")
+      {
+        Update-AppveyorBuild -Version "$env:APPVEYOR_REPO_TAG_NAME"
+      }
+      else
+      {
+        Update-AppveyorBuild -Version "dev-$($env:APPVEYOR_REPO_COMMIT.substring(0,7))"
+      }
+
+#install:
+#build_script:
+#after_build:
+#artifacts:
+#deploy:
