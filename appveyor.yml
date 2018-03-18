@@ -41,7 +41,7 @@ install:
   - ps: Test-Path C:\projects\csgo-cli\secure-file.1.0.31\tools\secure-file.exe 
   - ps: Test-Path C:\projects\csgo-cli\dependencies\sw_sdk_142.zip.enc
   - C:\projects\csgo-cli\secure-file.1.0.31\tools\secure-file.exe -decrypt C:\projects\csgo-cli\dependencies\sw_sdk_142.zip.enc -secret %SW_SDK_SECRET% -out C:\projects\csgo-cli\dependencies\sw_sdk_142.zip
-  - 7z e C:\projects\csgo-cli\dependencies\sw_sdk_142.zip
+  - 7z e C:\projects\csgo-cli\dependencies\sw_sdk_142.zip -oC:\projects\csgo-cli\dependencies
 
 #build_script:
 #after_build:
