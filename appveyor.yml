@@ -36,20 +36,20 @@ init:
       {
         Update-AppveyorBuild -Version "dev-$($env:APPVEYOR_REPO_COMMIT.substring(0,7))"
       }
-  # Get Git Submodules
-  - git submodule update --init --recursive
 
 install:
-  # 1) Secure-File
+  # 1) Get Git Submodules: csgo-protobufs
+  - git submodule update --init --recursive
+  # 2) Secure-File
   - nuget install secure-file -Version 1.0.31
   - ps: Test-Path C:\projects\csgo-cli\secure-file.1.0.31\tools\secure-file.exe 
-  # 2) SteamWorks SDK (prebuild libs + src) 
+  # 3) SteamWorks SDK (prebuild libs + src) 
   - C:\projects\csgo-cli\secure-file.1.0.31\tools\secure-file.exe -decrypt C:\projects\csgo-cli\downloads\sw_sdk_142.zip.enc -secret %SW_SDK_SECRET% -out C:\projects\csgo-cli\downloads\sw_sdk_142.zip
   - 7z x C:\projects\csgo-cli\downloads\sw_sdk_142.zip -aoa -y -oC:\projects\csgo-cli\dependencies
   - cd C:\projects\csgo-cli\dependencies
   - ren sdk sw_sdk
   - cd C:\projects\csgo-cli
-  # 3) Google Protobuf (src)
+  # 4) Google Protobuf (src)
   - ps: Invoke-WebRequest "https://github.com/google/protobuf/releases/download/v3.5.1/protobuf-cpp-3.5.1.zip" -OutFile C:\projects\csgo-cli\downloads\protobuf-cpp-3.5.1.zip
   - 7z x C:\projects\csgo-cli\downloads\protobuf-cpp-3.5.1.zip -aoa -y -oC:\projects\csgo-cli\dependencies
   - cd C:\projects\csgo-cli\dependencies
@@ -59,6 +59,7 @@ install:
   - dir C:\projects\csgo-cli\downloads\
   - dir C:\projects\csgo-cli\dependencies\
   - dir C:\projects\csgo-cli\dependencies\csgo-protobufs
+  
 
 
 before_build:
