@@ -45,14 +45,14 @@ find_package(Steamworks REQUIRED)
 set(PROTOBUF_INCLUDE_DIR "${CMAKE_SOURCE_DIR}/dependencies/protobuf/src")
 
 if(WIN32)
-    set(PROTOBUF_LIBRARY       "${CMAKE_SOURCE_DIR}/dependencies/protobuf/build/lib/libprotobuf.lib")
-    set(PROTOBUF_LIBRARY_DEBUG "${CMAKE_SOURCE_DIR}/dependencies/protobuf/build/lib/libprotobuf.lib")
+    set(PROTOBUF_LIBRARY       "${CMAKE_SOURCE_DIR}/dependencies/protobuf/cmake/release/libprotobuf.lib")
+    set(PROTOBUF_LIBRARY_DEBUG "${CMAKE_SOURCE_DIR}/dependencies/protobuf/cmake/release/libprotobuf.lib")
 endif()
 
 if(WIN32)
-    set(PROTOBUF_PROTOC_EXECUTABLE "${CMAKE_SOURCE_DIR}/dependencies/protobuf/build/bin/protoc.exe")
+    set(PROTOBUF_PROTOC_EXECUTABLE "${CMAKE_SOURCE_DIR}/dependencies/protobuf/cmake/release/protoc.exe")
 else()
-    set(PROTOBUF_PROTOC_EXECUTABLE "${CMAKE_SOURCE_DIR}/dependencies/protobuf/build/bin/protoc")
+    set(PROTOBUF_PROTOC_EXECUTABLE "${CMAKE_SOURCE_DIR}/dependencies/protobuf/cmake/release/protoc")
 endif()
 
 find_package(Protobuf REQUIRED)
