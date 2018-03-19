@@ -124,7 +124,9 @@ add_executable(CSGO_CLI
         src/CSGOMatchList.cpp   
         src/ExceptionHandler.h
         src/ExceptionHandler.cpp
-
+        src/SteamId.h
+        src/ShareCode.h
+        
     # Generated Protobuf Includes
         ${PROTO_CSTRIKE15_GCMESSAGES_SRC}
         ${PROTO_CSTRIKE15_GCMESSAGES_HDR}

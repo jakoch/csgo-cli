@@ -18,9 +18,9 @@
 #include <iomanip>
 
 #include <steamtypes.h>
-#include <steamid.h>
-#include <sharecode.h>
-#include <codeupload.h>
+#include <SteamId.h>
+#include <ShareCode.h>
+//#include <CodeUpload.h>
 
 void Error(const char* title, const char* text)
 {
