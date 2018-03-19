@@ -47,22 +47,18 @@ install:
   - cd C:\projects\csgo-cli\dependencies
   - ren sdk sw_sdk
   - cd C:\projects\csgo-cli
-  # Google Protobuf
+  # Google Protobuf 
   - ps: Invoke-WebRequest "https://github.com/google/protobuf/releases/download/v3.5.1/protobuf-cpp-3.5.1.zip" -OutFile C:\projects\csgo-cli\downloads\protobuf-cpp-3.5.1.zip
   - 7z x C:\projects\csgo-cli\downloads\protobuf-cpp-3.5.1.zip -aoa -y -oC:\projects\csgo-cli\dependencies
   - cd C:\projects\csgo-cli\dependencies
   - ren protobuf-3.5.1 protobuf
   - cd C:\projects\csgo-cli
+  # Google Protobuf Compiler
+  - ps: Invoke-WebRequest "https://github.com/google/protobuf/releases/download/v3.5.1/protoc-3.5.1-win32.zip" -OutFile C:\projects\csgo-cli\downloads\protoc-3.5.1-win32.zip
+  - 7z x C:\projects\csgo-cli\downloads\protoc-3.5.1-win32.zip -aoa -y -oC:\projects\csgo-cli\dependencies\protobuf
   # output content of dependencies folder, to see if everything is present
   - dir C:\projects\csgo-cli\downloads\
   - dir C:\projects\csgo-cli\dependencies\
-
-before_build:
-  # build protobuf
-  - cd C:\projects\csgo-cli\dependencies\protobuf\csharp\src
-  #- cmake -G "Visual Studio 14 2015 Win64" -DPROTOBUF_BUILD_SHARED_LIBS:BOOL=OFF ../cmake
-  - msbuild Google.Protobuf.sln /p:Configuration=Release /p:Platform=x64 /logger:"C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll"
-
 
 build_script:
   - cmake -G "Visual Studio 14 2015 Win64" 
