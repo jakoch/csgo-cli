@@ -39,7 +39,7 @@ init:
 install:
   # 1) Get Git Submodules: csgo-protobufs
   - git submodule update --init --recursive
-  # 2) Secure-File
+  # 2) Secure-File (needed to decrypt steamworks sdk)
   - nuget install secure-file -Version 1.0.31
   - ps: Test-Path C:\projects\csgo-cli\secure-file.1.0.31\tools\secure-file.exe 
   # 3) SteamWorks SDK (prebuild libs + src) 
@@ -54,6 +54,8 @@ install:
   - cd C:\projects\csgo-cli\dependencies
   - ren protobuf-3.5.1 protobuf   
   - cd C:\projects\csgo-cli
+  # 5) MPIR
+  - vcpkg install mpir:x64-windows
   # output content of dependencies folder, to see if everything is present
   - dir C:\projects\csgo-cli\downloads\
   - dir C:\projects\csgo-cli\dependencies\
@@ -69,13 +71,13 @@ before_build:
   - cmake -G "Visual Studio 14 2015" -Dprotobuf_BUILD_TESTS=OFF -Dprotobuf_BUILD_EXAMPLES=OFF -Dprotobuf_MSVC_STATIC_RUNTIME=OFF
   # 1b) Build Protobuf
   - cmake --build . --config Release --target install
-  # Patch CSGO Protobufs
+  # 2) Patch CSGO Protobufs
   - C:\projects\csgo-cli\dependencies\csgo-protobufs-patch\patch.bat
   # return
   - cd C:\projects\csgo-cli
 
 build_script:
-  - cmake -G "Visual Studio 14 2015 Win64" 
+  - cmake -G "Visual Studio 14 2015 Win64" -DCMAKE_TOOLCHAIN_FILE=c:/tools/vcpkg/scripts/buildsystems/vcpkg.cmake
   - dir C:\projects\csgo-cli
   - msbuild C:\projects\csgo-cli\csgo_cli.sln /m /p:Configuration=Release /p:Platform=x64 /logger:"C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll" 
 
