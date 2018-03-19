@@ -70,8 +70,8 @@ PROTOBUF_GENERATE_CPP(PROTO_GCSYSTEMMSGS_SRC          PROTO_GCSYSTEMMSGS_HDR    
 #
 # Copy Additional Files
 #
-configure_file("${CMAKE_CURRENT_SOURCE_DIR}/README.md"  "build/readme.md"  COPYONLY)
-configure_file("${CMAKE_CURRENT_SOURCE_DIR}/LICENSE.md" "build/license.md" COPYONLY)
+configure_file("${CMAKE_CURRENT_SOURCE_DIR}/README.md"  "build/readme.txt"  COPYONLY)
+configure_file("${CMAKE_CURRENT_SOURCE_DIR}/LICENSE"    "build/license.txt" COPYONLY)
 
 #
 # Add Exe Resources
