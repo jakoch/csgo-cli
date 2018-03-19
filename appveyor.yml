@@ -60,6 +60,7 @@ install:
 
 build_script:
   - cmake -G "Visual Studio 14 2015 Win64" 
+  - dir C:\projects\csgo-cli
   - msbuild C:\projects\csgo-cli\csgo-cli.sln /logger:"C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll"
 
 #after_build:
