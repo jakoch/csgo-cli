@@ -70,7 +70,7 @@ before_build:
   # 1b) Build Protobuf
   - cmake --build . --config Release --target install
   # Patch CSGO Protobufs
-  - C:\projects\csgo-cli\dependencies\csgo-protobufs\patch.bat
+  - C:\projects\csgo-cli\dependencies\csgo-protobufs-patch\patch.bat
   # return
   - cd C:\projects\csgo-cli
 
