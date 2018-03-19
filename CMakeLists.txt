@@ -121,10 +121,10 @@ add_executable(CSGO_CLI
         src/ExceptionHandler.cpp
 
     # CS:GO Protobufs
-        proto/cstrike15_gcmessages.proto
-        proto/steammessages.proto
-        proto/gcsdk_gcmessages.proto
-        proto/gcsystemmsgs.proto
+        dependencies/csgo-protobufs/csgo/cstrike15_gcmessages.proto
+        dependencies/csgo-protobufs/csgo/steammessages.proto
+        dependencies/csgo-protobufs/csgo/gcsdk_gcmessages.proto
+        dependencies/csgo-protobufs/csgo/gcsystemmsgs.proto
 
     # Generated Protobuf Includes
         ${PROTO_CSTRIKE15_GCMESSAGES_SRC}
