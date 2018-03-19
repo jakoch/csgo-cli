@@ -36,6 +36,8 @@ init:
       {
         Update-AppveyorBuild -Version "dev-$($env:APPVEYOR_REPO_COMMIT.substring(0,7))"
       }
+  # Get Git Submodules
+  - git submodule update --init --recursive
 
 install:
   # 1) Secure-File
