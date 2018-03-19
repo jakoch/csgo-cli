@@ -1,7 +1,8 @@
 @echo off
 
 REM 1. copy the Protobuf Descriptor file
-ECHO F|xcopy "C:\Program Files (x86)\protobuf\include\google\protobuf\descriptor.proto" ..\csgo-protobufs\csgo\google\protobuf\descriptor.proto
+mkdir "%~dp0..\csgo-protobufs\csgo\google\protobuf"
+copy "C:\Program Files (x86)\protobuf\include\google\protobuf\descriptor.proto" "%~dp0..\csgo-protobufs\csgo\google\protobuf"
 
 REM 2. proto-syntax-patch.txt contains 1 header line
 copy proto-syntax-patch.txt ..\csgo-protobufs\csgo
