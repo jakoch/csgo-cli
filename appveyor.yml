@@ -23,7 +23,6 @@ build:
 # scripts that are called at very beginning, before repo cloning
 init:
   - date /T & time /T
-  - git config --global core.autocrlf input
   - cmake --version
   - msbuild /version
   # Set "build version number" to "short-commit-hash" or when tagged to "tag name" (Travis style)
@@ -70,6 +69,8 @@ before_build:
   - cmake -G "Visual Studio 14 2015" -Dprotobuf_BUILD_TESTS=OFF -Dprotobuf_BUILD_EXAMPLES=OFF -Dprotobuf_MSVC_STATIC_RUNTIME=OFF
   # 1b) Build Protobuf
   - cmake --build . --config Release --target install
+  # Patch CSGO Protobufs
+  - C:\projects\csgo-cli\dependencies\csgo-protobufs\patch.bat
   # return
   - cd C:\projects\csgo-cli
 
