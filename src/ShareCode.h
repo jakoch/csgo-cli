@@ -6,7 +6,7 @@ extern "C" { FILE __iob_func[3] = { *stdin,*stdout,*stderr }; }
 #include <regex>
 #include <ostream>
 #include <iostream>
-#include "packages\libgmp_vc120.5.1.3.2\build\native\include\mpir.h"
+#include "dependencies\mpir\include\mpir.h"
 
 // combines uint32_t low- and highbytes to uint64_t
 uint64_t combine(uint32_t lowbyte, uint32_t highbyte)
