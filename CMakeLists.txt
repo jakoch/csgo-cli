@@ -62,6 +62,11 @@ set(libprotobuf optimized "${PROTOBUF_LIBRARY}" debug "${PROTOBUF_LIBRARY_DEBUG}
 #
 # Process CS:GO Protobufs
 #
+# dependencies/csgo-protobufs/csgo/cstrike15_gcmessages.proto
+# dependencies/csgo-protobufs/csgo/steammessages.proto
+# dependencies/csgo-protobufs/csgo/gcsdk_gcmessages.proto
+# dependencies/csgo-protobufs/csgo/gcsystemmsgs.proto
+
 PROTOBUF_GENERATE_CPP(
     PROTO_CSTRIKE15_GCMESSAGES_SRC
     PROTO_CSTRIKE15_GCMESSAGES_HDR
@@ -119,12 +124,6 @@ add_executable(CSGO_CLI
         src/CSGOMatchList.cpp   
         src/ExceptionHandler.h
         src/ExceptionHandler.cpp
-
-    # CS:GO Protobufs
-        dependencies/csgo-protobufs/csgo/cstrike15_gcmessages.proto
-        dependencies/csgo-protobufs/csgo/steammessages.proto
-        dependencies/csgo-protobufs/csgo/gcsdk_gcmessages.proto
-        dependencies/csgo-protobufs/csgo/gcsystemmsgs.proto
 
     # Generated Protobuf Includes
         ${PROTO_CSTRIKE15_GCMESSAGES_SRC}
