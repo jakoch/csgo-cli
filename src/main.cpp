@@ -52,6 +52,15 @@ struct stop_now_t { };
 
 int main(int argc, char** argv)
 {
+    #ifdef _WIN32
+    HWND test = FindWindowW(0, L"Counter-Strike: Global Offensive");
+    if(test != NULL)
+    {
+        Error("Warning", "CS:GO is currently running.\nPlease close the game, before running this program.\n");
+        return 1;
+    }
+#endif
+    
     CSGOMMLinkObject linkObj;
 
     int res = 0;
@@ -161,15 +170,6 @@ int main(int argc, char** argv)
             return 1;
         }
     }
-
-#ifdef _WIN32
-    HWND test = FindWindowW(0, L"Counter-Strike: Global Offensive");
-    if(test != NULL)
-    {
-        Error("Warning", "CS:GO is currently running.\nPlease close the game, before running this program.\n");
-        return 1;
-    }
-#endif
 
     if(paramVerbose) std::clog << "LOG:" << "--- START-STEAM_INIT" << std::endl;
 
