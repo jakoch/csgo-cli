@@ -58,7 +58,9 @@ install:
   - vcpkg install mpir:x64-windows
   - cd C:\Tools\vcpkg\packages
   - ren mpir_x64-windows mpir
-  - robocopy C:\Tools\vcpkg\packages\mpir C:\projects\csgo-cli\dependencies\mpir
+  - dir C:\Tools\vcpkg\packages
+  - dir C:\Tools\vcpkg\packages\mpir
+  - xcopy C:\Tools\vcpkg\packages\mpir C:\projects\csgo-cli\dependencies\mpir /i /y
   # output content of dependencies folder, to see if everything is present
   - dir C:\projects\csgo-cli\downloads\
   - dir C:\projects\csgo-cli\dependencies\
