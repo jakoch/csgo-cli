@@ -5,7 +5,7 @@ mkdir "%~dp0..\csgo-protobufs\csgo\google\protobuf"
 copy "C:\Program Files (x86)\protobuf\include\google\protobuf\descriptor.proto" "%~dp0..\csgo-protobufs\csgo\google\protobuf"
 
 REM 2. proto-syntax-patch.txt contains 1 header line
-copy proto-syntax-patch.txt ..\csgo-protobufs\csgo
+copy "%~dp0proto-syntax-patch.txt" "%~dp0..\csgo-protobufs\csgo"
 
 REM add an extension to every file
 cd "%~dp0..\csgo-protobufs\csgo"
