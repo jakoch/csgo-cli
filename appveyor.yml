@@ -57,6 +57,12 @@ install:
   - dir C:\projects\csgo-cli\downloads\
   - dir C:\projects\csgo-cli\dependencies\
 
+before_build:
+  # build protobuf
+  - cd C:\projects\csgo-cli\dependencies\protobuf\csharp\src
+  #- cmake -G "Visual Studio 14 2015 Win64" -DPROTOBUF_BUILD_SHARED_LIBS:BOOL=OFF ../cmake
+  - msbuild Google.Protobuf.sln /p:Configuration=Release /p:Platform=x64 /logger:"C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll"
+
 
 build_script:
   - cmake -G "Visual Studio 14 2015 Win64" 
