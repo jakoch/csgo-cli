@@ -54,7 +54,9 @@ install:
   - dir C:\projects\csgo-cli\dependencies\
 
 
-#build_script:
+build_script:
+  - cmake -G "Visual Studio 14 2015 Win64" 
+  
 #after_build:
 #artifacts:
 #deploy:

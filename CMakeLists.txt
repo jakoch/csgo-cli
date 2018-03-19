@@ -7,7 +7,7 @@ include(FindPackageHandleStandardArgs)
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin")
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/build")
 
 set(CMAKE_AUTOMOC ON)
 
@@ -25,17 +25,16 @@ endif()
 # Steamworks SDK
 #
 set(STEAMWORKS_INCLUDE_DIR "${CMAKE_SOURCE_DIR}/dependencies/sw_sdk/public/steam")
-
-configure_file("${CMAKE_SOURCE_DIR}/bin/steam_appid.txt" "bin/steam_appid.txt" COPYONLY)
-
 set(STEAMWORKS_REDISTBIN_DIR "${CMAKE_SOURCE_DIR}/dependencies/sw_sdk/redistributable_bin")
+
+configure_file("${CMAKE_SOURCE_DIR}/res/steam_appid.txt" "build/steam_appid.txt" COPYONLY)
 
 if(WIN32)
     set(STEAMWORKS_LIBRARY "${STEAMWORKS_REDISTBIN_DIR}/win64/steam_api64.lib")
-    configure_file("${STEAMWORKS_REDISTBIN_DIR}/win64/steam_api64.dll" "bin/steam_api.dll" COPYONLY)
+    configure_file("${STEAMWORKS_REDISTBIN_DIR}/win64/steam_api64.dll" "build/steam_api.dll" COPYONLY)
 else()
     set(STEAMWORKS_LIBRARY "${STEAMWORKS_REDISTBIN_DIR}/linux64/libsteam_api.so")
-    configure_file("${STEAMWORKS_LIBRARY}" "bin/libsteam_api.so" COPYONLY)
+    configure_file("${STEAMWORKS_LIBRARY}" "build/libsteam_api.so" COPYONLY)
 endif()
 
 find_package(Steamworks REQUIRED)
@@ -46,7 +45,7 @@ find_package(Steamworks REQUIRED)
 set(PROTOBUF_INCLUDE_DIR "${CMAKE_SOURCE_DIR}/dependencies/protobuf/src")
 
 if(WIN32)
-    set(PROTOBUF_LIBRARY "${CMAKE_SOURCE_DIR}/dependencies/protobuf/cmake/Release/libprotobuf.lib")
+    set(PROTOBUF_LIBRARY       "${CMAKE_SOURCE_DIR}/dependencies/protobuf/cmake/Release/libprotobuf.lib")
     set(PROTOBUF_LIBRARY_DEBUG "${CMAKE_SOURCE_DIR}/dependencies/protobuf/cmake/Debug/libprotobuf.lib")
 endif()
 
@@ -71,8 +70,8 @@ PROTOBUF_GENERATE_CPP(PROTO_GCSYSTEMMSGS_SRC          PROTO_GCSYSTEMMSGS_HDR    
 #
 # Copy Additional Files
 #
-configure_file("${CMAKE_CURRENT_SOURCE_DIR}/README.md"  "bin/readme-${PROJECT_NAME}.txt"  COPYONLY)
-configure_file("${CMAKE_CURRENT_SOURCE_DIR}/LICENSE.md" "bin/license-${PROJECT_NAME}.txt" COPYONLY)
+configure_file("${CMAKE_CURRENT_SOURCE_DIR}/README.md"  "build/readme.md"  COPYONLY)
+configure_file("${CMAKE_CURRENT_SOURCE_DIR}/LICENSE.md" "build/license.md" COPYONLY)
 
 #
 # Add Exe Resources
