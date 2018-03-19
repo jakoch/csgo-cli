@@ -25,6 +25,7 @@ init:
   - date /T & time /T
   - git config --global core.autocrlf input
   - cmake --version
+  - msbuild /version
   # Set "build version number" to "short-commit-hash" or when tagged to "tag name" (Travis style)
   - ps: >-
       if ($env:APPVEYOR_REPO_TAG -eq "true")
@@ -59,6 +60,7 @@ install:
 
 build_script:
   - cmake -G "Visual Studio 14 2015 Win64" 
+  - msbuild C:\projects\projects\csgo-cli\csgo-cli.sln /logger:"C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll"
 
 #after_build:
 #artifacts:
