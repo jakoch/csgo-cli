@@ -38,7 +38,7 @@ init:
       }
 
 install:
-  # SteamWorks SDK
+  # 1) SteamWorks SDK (prebuild libs + src)
   - nuget install secure-file -Version 1.0.31
   - ps: Test-Path C:\projects\csgo-cli\secure-file.1.0.31\tools\secure-file.exe 
   - ps: Test-Path C:\projects\csgo-cli\dependencies\sw_sdk_142.zip.enc
@@ -47,18 +47,31 @@ install:
   - cd C:\projects\csgo-cli\dependencies
   - ren sdk sw_sdk
   - cd C:\projects\csgo-cli
-  # Google Protobuf 
+  # 2) Google Protobuf (src)
   - ps: Invoke-WebRequest "https://github.com/google/protobuf/releases/download/v3.5.1/protobuf-cpp-3.5.1.zip" -OutFile C:\projects\csgo-cli\downloads\protobuf-cpp-3.5.1.zip
   - 7z x C:\projects\csgo-cli\downloads\protobuf-cpp-3.5.1.zip -aoa -y -oC:\projects\csgo-cli\dependencies
   - cd C:\projects\csgo-cli\dependencies
-  - ren protobuf-3.5.1 protobuf
+  - ren protobuf-3.5.1 protobuf   
   - cd C:\projects\csgo-cli
-  # Google Protobuf Compiler
-  - ps: Invoke-WebRequest "https://github.com/google/protobuf/releases/download/v3.5.1/protoc-3.5.1-win32.zip" -OutFile C:\projects\csgo-cli\downloads\protoc-3.5.1-win32.zip
-  - 7z x C:\projects\csgo-cli\downloads\protoc-3.5.1-win32.zip -aoa -y -oC:\projects\csgo-cli\dependencies\protobuf
   # output content of dependencies folder, to see if everything is present
   - dir C:\projects\csgo-cli\downloads\
   - dir C:\projects\csgo-cli\dependencies\
+
+
+before_build:
+  # Build Dependencies
+  # 1) Compile Protobuf
+  - cd C:\projects\csgo-cli\dependencies\protobuf\cmake
+  # 1a) Configure Protobuf
+  - >
+    cmake -G "Visual Studio 14 2015"
+     -Dprotobuf_BUILD_TESTS=OFF
+     -Dprotobuf_BUILD_EXAMPLES=OFF
+     -Dprotobuf_MSVC_STATIC_RUNTIME=OFF
+  # 1b) Build Protobuf
+  - cmake --build . --config Release --target install
+  # return
+  - cd C:\projects\csgo-cli
 
 build_script:
   - cmake -G "Visual Studio 14 2015 Win64" 
