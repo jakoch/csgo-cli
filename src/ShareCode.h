@@ -113,7 +113,7 @@ std::string toDemoShareCode(uint64_t matchid, uint64_t reservationid, uint32_t t
     MP_INT bigInt; // dividend
     mpz_init(&bigInt);
     mpz_init_set_str(&bigInt, hex_str.c_str(), 16);
-    mpz_out_str(stdout, 10, &bigInt);
+    //mpz_out_str(stdout, 10, &bigInt);
 
     // charset for base57
     std::string dictionary = "ABCDEFGHJKLMNOPQRSTUVWXYZabcdefhijkmnopqrstuvwxyz23456789";
