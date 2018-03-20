@@ -149,7 +149,7 @@ include_directories(
     "${MPIR_INCLUDE_DIR}"
 )
 
-target_link_libraries(CSGO_CLI 
+target_link_libraries(csgo_cli
     "${STEAMWORKS_LIBRARY}" 
     "${PROTOBUF_LIBRARY}"
     "${MPIR_LIBRARIES}"
