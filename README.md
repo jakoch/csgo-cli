@@ -10,13 +10,19 @@
   - [ ] VS15 x64
 - [ ] vendor dependencies
   - [ ] steam sdk
+    - [ ] encrypt
+    - [ ] decrypt on appveyor via env secret
   - [ ] protobuf
   - [ ] cs:go protobufs
-  - [ ] curl
+    - [ ] patch cs:go protobuf syntax
   - [ ] mpir
+  - [ ] curl?
+- [ ] package and deploy the dependencies
+  - [ ] exclude sw_sdk (not redistributable), ship encrypted version
 - [ ] connect as CSGO GameClient to Steam
 - [ ] fetch player info
+  - [ ] calculate steamids
 - [ ] fetch latest matches
   - [ ] calculate demo share-codes
 - [ ] store matches locally (json, cvs, sqlite)?
-- [ ] upload demo share-codes to csgostats.gg !
+- [ ] upload demo share-codes to csgostats.gg
