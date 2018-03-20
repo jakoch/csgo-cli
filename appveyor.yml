@@ -83,7 +83,7 @@ build_script:
   - msbuild C:\projects\csgo-cli\csgo_cli.sln /m /p:Configuration=Release /p:Platform=x64 /logger:"C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll" 
 
 after_build:
-  # 1) package csgo-cli
+  # 1) prepare packaging for csgo-cli
   # 1a) check release folder
   - dir C:\projects\csgo-cli\build\
   - dir C:\projects\csgo-cli\build\Release\
@@ -96,15 +96,17 @@ after_build:
   - dir C:\projects\csgo-cli\build\
   # 1d) package release folder
   - 7z a csgo-cli.zip C:\projects\csgo-cli\build\*.*
-  # 2) package dependencies folder  
-  # 2a) copy securefile + enrypted sw_sdk
+  # 2) test csgo-cli
+  - C:\projects\csgo-cli\build\csgo_cli -V
+  - C:\projects\csgo-cli\build\csgo_cli -help
+  # 3) package dependencies folder  
+  # 3a) copy securefile + enrypted sw_sdk
   - copy C:\projects\csgo-cli\secure-file.1.0.31\tools\secure-file.exe C:\projects\csgo-cli\dependencies
   - copy C:\projects\csgo-cli\downloads\sw_sdk_142.zip.enc C:\projects\csgo-cli\dependencies
-  # 2b) delete unecrypted sw_sdk folder
-  - cd C:\projects\csgo-cli\dependencies\sw_sdk
-  - rmdir /S /Q .
-  - timeout 5
-  # 2c) package dependencies folder
+  # 3b) delete unecrypted sw_sdk folder
+  - cd C:\projects\csgo-cli\dependencies
+  - rmdir /S /Q sw_sdk
+  # 3c) package dependencies folder
   - dir C:\projects\csgo-cli\dependencies
   - 7z a csgo-cli-deps.zip C:\projects\csgo-cli\dependencies\*.*
 
