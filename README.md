@@ -1,7 +1,14 @@
-# csgo-cli
+# csgo-cli [![Appveyor Build status](https://ci.appveyor.com/api/projects/status/github/jakoch/csgo-cli?branch=master&svg=true)](https://ci.appveyor.com/project/jakoch/csgo-cli)
 
-[![Appveyor Build status](https://ci.appveyor.com/api/projects/status/github/jakoch/csgo-cli?branch=master&svg=true)](https://ci.appveyor.com/project/jakoch/csgo-cli)
-=======
+This console tool enables you to output informations of your CS:GO user profile and latest matches.
+
+## How does this work internally?
+
+The tool connects to your running Steam as CS:GO game client (SteamApp 730).
+It communicates with the Steam API to request the serialized player and match infos.
+The structure of the serialized data is described by the csgo-protobufs.
+These infos are then deserialized using Protobuf and placed into 
+iteratable objects for further processing and output.
 
 # Todo
 
