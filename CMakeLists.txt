@@ -57,8 +57,6 @@ endif()
 
 find_package(Protobuf REQUIRED)
 
-set(libprotobuf optimized "${PROTOBUF_LIBRARY}" debug "${PROTOBUF_LIBRARY_DEBUG}")
-
 #
 # Process CS:GO Protobufs
 #
@@ -126,7 +124,7 @@ add_executable(CSGO_CLI
         src/ExceptionHandler.cpp
         src/SteamId.h
         src/ShareCode.h
-        
+
     # Generated Protobuf Includes
         ${PROTO_CSTRIKE15_GCMESSAGES_SRC}
         ${PROTO_CSTRIKE15_GCMESSAGES_HDR}
