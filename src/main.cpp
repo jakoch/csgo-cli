@@ -38,9 +38,9 @@ void PrintHelp()
         << "  command [options] [arguments]" << std::endl
         << " " << std::endl
         << "Available commands:" << std::endl
-        << "  -user       " << "Show your SteamID, AccountID, MM-Rank and likes" << std::endl
-        << "  -matches    " << "Show your past matches summary" << std::endl
-        << "  -perf       " << "Show your past matches performance in compact form" << std::endl
+        << "  -user       " << "Show your profile (SteamID, AccountID, MM-Rank, Likes, VAC-Status)" << std::endl
+        << "  -matches    " << "Show your past matches in table form" << std::endl
+        //<< "  -perf       " << "Show your past matches performance in compact form" << std::endl
         << " " << std::endl
         << "Options: " << std::endl
         << "  -h, help    " << " Display this help message" << std::endl
