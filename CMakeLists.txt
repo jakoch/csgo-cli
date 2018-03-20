@@ -60,6 +60,11 @@ endif()
 find_package(Protobuf REQUIRED)
 
 #
+# mpir extended precision integer library
+#
+find_package(mpir REQUIRED)
+
+#
 # Process CS:GO Protobufs
 #
 # dependencies/csgo-protobufs/csgo/cstrike15_gcmessages.proto
@@ -141,11 +146,13 @@ add_executable(CSGO_CLI
 include_directories(
     "${STEAMWORKS_INCLUDE_DIR}" 
     "${PROTOBUF_INCLUDE_DIR}"
+    "${MPIR_INCLUDE_DIR}"
 )
 
 target_link_libraries(CSGO_CLI 
     "${STEAMWORKS_LIBRARY}" 
     "${PROTOBUF_LIBRARY}"
+    "${MPIR_LIBRARIES}"
 )
 
 #
