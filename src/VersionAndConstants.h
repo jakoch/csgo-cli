@@ -2,7 +2,7 @@
 #define VersionAndConstants_h__
 
 // Application Name
-#define CSGO_CLI_BINARYNAME "CSGO_CLI"
+#define CSGO_CLI_BINARYNAME "csgo_cli"
 
 // Application Version
 #define CSGO_CLI_VERSION_MAJOR    "1"

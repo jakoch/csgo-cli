@@ -108,7 +108,7 @@ else()
     set(ADDITIONAL_RESOURCES "")
 endif()
 
-add_executable(CSGO_CLI
+add_executable(csgo_cli
     # icon
         ${ADDITIONAL_RESOURCES}
 
