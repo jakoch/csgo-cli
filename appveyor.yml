@@ -57,7 +57,7 @@ install:
   - ren mpir_x64-windows mpir
   - dir C:\Tools\vcpkg\packages
   - move C:\Tools\vcpkg\packages\mpir C:\projects\csgo-cli\dependencies
-  # output content of dependencies folder, to see if everything is present
+  # CHECK: output content of folder, to see if everything is present
   - dir C:\projects\csgo-cli\downloads\
   - dir C:\projects\csgo-cli\dependencies\
   - dir C:\projects\csgo-cli\dependencies\csgo-protobufs
@@ -83,21 +83,31 @@ build_script:
   - msbuild C:\projects\csgo-cli\csgo_cli.sln /m /p:Configuration=Release /p:Platform=x64 /logger:"C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll" 
 
 after_build:
-  # check release folder
+  # 1) package csgo-cli
+  # 1a) check release folder
   - dir C:\projects\csgo-cli\build\
   - dir C:\projects\csgo-cli\build\Release\
-  # copy stuff from release to build
+  # 1b) copy stuff from release to build
   - copy C:\projects\csgo-cli\build\Release\*.* C:\projects\csgo-cli\build
   - cd C:\projects\csgo-cli\build
   - rmdir /s /q Release
   - cd C:\projects\csgo-cli
-  # final check
+  # 1c) CHECK: output content of folder, to see if everything is present
   - dir C:\projects\csgo-cli\build\
-  # package release folder
+  # 1d) package release folder
   - 7z a csgo-cli.zip C:\projects\csgo-cli\build\*.*
+  # 2) package dependencies folder
+  # 2a) copy encrypted sw_sdk
+  - copy C:\projects\csgo-cli\downloads\sw_sdk_142.zip.enc C:\projects\csgo-cli\dependencies
+  # 2b) delete unecrypted sw_sdk folder
+  - rd /s /q C:\projects\csgo-cli\dependencies\sw_sdk
+  # 2c) package dependencies folder
+  - 7z a csgo-cli-deps.zip C:\projects\csgo-cli\dependencies\*.*
 
 artifacts:
   - path: csgo-cli.zip
     name: csgo-cli
+  - path: csgo-cli-deps.zip
+    name: csgo-cli-deps
 
 #deploy:
