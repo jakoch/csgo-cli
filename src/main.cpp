@@ -67,7 +67,7 @@ int main(int argc, char** argv)
 
     int res = 0;
 
-    bool paramVerbose      = true;
+    bool paramVerbose      = false;
     bool paramPrintUser    = false;
     bool paramPrintMatches = false;
     bool paramPrintPerf    = false;
@@ -173,7 +173,7 @@ int main(int argc, char** argv)
         }
     }
 
-    if(paramVerbose) std::clog << "LOG:" << "--- START-STEAM_INIT" << std::endl;
+    if(paramVerbose) std::clog << "LOG:" << "[ Start ] STEAM_INIT" << std::endl;
 
     if (SteamAPI_RestartAppIfNecessary(k_uAppIdInvalid))
         return 1;
@@ -208,9 +208,9 @@ int main(int argc, char** argv)
         return 1;
     }
 
-	if(paramVerbose) std::clog << "LOG:" << "--- END-STEAM_INIT" << std::endl;
+	if(paramVerbose) std::clog << "LOG:" << "[ End   ] STEAM_INIT" << std::endl;
 
-    if(paramVerbose) std::clog << "LOG:" << "--- START-StartCallbackThread" << std::endl;
+    if(paramVerbose) std::clog << "LOG:" << "[ Start ] StartCallbackThread" << std::endl;
     bool running = true;
     auto CallbackThread = std::thread([&running]()
     {
@@ -228,16 +228,16 @@ int main(int argc, char** argv)
             }
         };
     });
-    if(paramVerbose) std::clog << "LOG:" << "--- END-StartCallbackThread" << std::endl;
+    if(paramVerbose) std::clog << "LOG:" << "[ End   ] StartCallbackThread" << std::endl;
 	
-    if(paramVerbose) std::clog << "LOG:" << "--- START-Trying-GameClient-Connect" << std::endl;
+    if(paramVerbose) std::clog << "LOG:" << "[ Start ] Trying-GameClient-Connect" << std::endl;
     bool resGc = false;
     try
     {
         // make sure we are connected to the GameClient
-        if(paramVerbose) std::clog << "LOG:" << "--- requesting: GameClient Connection" << std::endl;
+        if(paramVerbose) std::clog << "LOG:" << "Requesting: GameClient Connection" << std::endl;
         CSGOClient::GetInstance()->WaitForGcConnect();
-        if(paramVerbose) std::clog << "LOG:" << "--- Successful: GameClient connected" << std::endl;
+        if(paramVerbose) std::clog << "LOG:" << "Successful: GameClient connected" << std::endl;
         resGc = true;
 
         linkObj.account_id = SteamUser()->GetSteamID().GetAccountID();
@@ -249,7 +249,7 @@ int main(int argc, char** argv)
         Error("Fatal error", e.what());
         resGc = false;
     }
-    if(paramVerbose) std::clog << "LOG:" << "--- END-Trying-GameClient-Connect" << std::endl;
+    if(paramVerbose) std::clog << "LOG:" << "[ End   ] Trying-GameClient-Connect" << std::endl;
 
     if(!resGc)
     {
@@ -260,7 +260,7 @@ int main(int argc, char** argv)
 	bool resHello = false;
 	if (paramPrintUser)
 	{
-		if (paramVerbose) std::clog << "LOG:" << "--- START-Thread-Hello" << std::endl;
+		if (paramVerbose) std::clog << "LOG:" << "[ Start ] Thread-Hello" << std::endl;
 		
 		auto hellothread = std::thread([&linkObj, paramVerbose, &resHello, ranks, levels]()
 		{
@@ -269,9 +269,9 @@ int main(int argc, char** argv)
 				std::this_thread::sleep_for(std::chrono::milliseconds(CSGO_CLI_STEAM_HELLO_DELAY));
 				
 				CSGOMMHello mmhello;
-				if (paramVerbose) std::clog << "LOG:" << "--- requesting MMHello" << std::endl;
+				if (paramVerbose) std::clog << "LOG:" << "requesting MMHello" << std::endl;
 				mmhello.RefreshWait();
-				if (paramVerbose) std::clog << "LOG:" << "--- got MMHello" << std::endl;
+				if (paramVerbose) std::clog << "LOG:" << "got MMHello" << std::endl;
 
 				resHello = true;
 				//if (paramVerbose) std::clog << "DEBUG:" << mmhello.exposedProt.DebugString();
@@ -319,7 +319,7 @@ int main(int argc, char** argv)
 				Error("Fatal error", e.what());
 				resHello = false;
 			}
-			if (paramVerbose) std::clog << "LOG:" << "--- END-Thread-Hello" << std::endl;
+			if (paramVerbose) std::clog << "LOG:" << "[ End   ] Thread-Hello" << std::endl;
 			return 0;
 		});
 
@@ -330,7 +330,7 @@ int main(int argc, char** argv)
 
 	if (paramPrintMatches)
 	{
-		if (paramVerbose) std::clog << "LOG:" << "--- START-Thread-MatchList" << std::endl;
+		if (paramVerbose) std::clog << "LOG:" << "[ Start ] Thread-MatchList" << std::endl;
 		
 		auto matchthread = std::thread([&linkObj, paramVerbose, &resList]()
 		{
@@ -339,17 +339,17 @@ int main(int argc, char** argv)
 				std::this_thread::sleep_for(std::chrono::milliseconds(CSGO_CLI_STEAM_MATCHLIST_DELAY));
 				// refresh match list
 				CSGOMatchList matchList;
-				if (paramVerbose) std::clog << "LOG:" << "--- requesting MatchList" << std::endl;
+				if (paramVerbose) std::clog << "LOG:" << "requesting MatchList" << std::endl;
 				matchList.RefreshWait();
-				if (paramVerbose) std::clog << "LOG:" << "--- got MatchList" << std::endl;
+				if (paramVerbose) std::clog << "LOG:" << "got MatchList" << std::endl;
 
 				resList = true;
 
-				if (paramVerbose) std::clog << "LOG:" << "--- START-MATCHLIST" << std::endl;
+				if (paramVerbose) std::clog << "LOG:" << "[ Start ] MATCHLIST" << std::endl;
 
 				for (auto &match : matchList.Matches())
 				{
-					if (paramVerbose) std::clog << "LOG:" << "--- START-MATCH" << std::endl;
+					if (paramVerbose) std::clog << "LOG:" << "[ Start ] MATCH" << std::endl;
 
 					CSGOMatchData parsedMatch;
 
@@ -379,7 +379,7 @@ int main(int argc, char** argv)
 						// ROUNDSTATS per player
 						/*for (auto &account_id : roundStats.reservation().account_ids())
 						{
-							if (paramVerbose) std::clog << "LOG:" << "--- START-MATCH-PLAYER" << std::endl;
+							if (paramVerbose) std::clog << "LOG:" << "[ Start ] MATCH-PLAYER" << std::endl;
 
 							CSGOMatchPlayerScore player;
 							player.index = matchList.getPlayerIndex(account_id, roundStats);
@@ -393,7 +393,7 @@ int main(int argc, char** argv)
 
 							parsedMatch.scoreboard.push_back(player);
 
-							if (paramVerbose) std::clog << "LOG:" << "--- END-MATCH-PLAYER" << std::endl;
+							if (paramVerbose) std::clog << "LOG:" << "[ End   ] MATCH-PLAYER" << std::endl;
 						}*/
 					}
 					
@@ -435,9 +435,9 @@ int main(int argc, char** argv)
 														
 					linkObj.matches.push_back(parsedMatch);
 
-					if (paramVerbose) std::clog << "LOG:" << "--- END-MATCH" << std::endl;
+					if (paramVerbose) std::clog << "LOG:" << "[ End   ] MATCH" << std::endl;
 				}
-				if (paramVerbose) std::clog << "LOG:" << "--- END-MATCHLIST" << std::endl;
+				if (paramVerbose) std::clog << "LOG:" << "[ End   ] MATCHLIST" << std::endl;
 
 			}
 			catch (stop_now_t) {
@@ -453,15 +453,15 @@ int main(int argc, char** argv)
 				Error("Fatal error", e.what());
 				resList = false;
 			}
-			if (paramVerbose) std::clog << "LOG:" << "--- END-Thread-MatchList" << std::endl;
+			if (paramVerbose) std::clog << "LOG:" << "[ End   ] Thread-MatchList" << std::endl;
 			return 0;
 		});
 
 		matchthread.join();
 	}
 
-    //if(paramVerbose) std::clog << "LOG:" << "--- Waiting for ThreadResults..." << std::endl;
-    //if(paramVerbose) std::clog << "LOG:" << "--- Waiting for ThreadResults - COMPLETED" << std::endl;
+    //if(paramVerbose) std::clog << "LOG:" << "Waiting for ThreadResults..." << std::endl;
+    //if(paramVerbose) std::clog << "LOG:" << "Waiting for ThreadResults - COMPLETED" << std::endl;
 
 	// OUTPUT
 
