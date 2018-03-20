@@ -69,7 +69,7 @@ before_build:
   # 1) Compile Protobuf
   - cd C:\projects\csgo-cli\dependencies\protobuf\cmake
   # 1a) Configure Protobuf
-  - cmake -G "Visual Studio 14 2015" -Dprotobuf_BUILD_TESTS=OFF -Dprotobuf_BUILD_EXAMPLES=OFF -Dprotobuf_MSVC_STATIC_RUNTIME=OFF
+  - cmake -G "Visual Studio 14 2015 Win64" -Dprotobuf_BUILD_TESTS=OFF -Dprotobuf_BUILD_EXAMPLES=OFF -Dprotobuf_MSVC_STATIC_RUNTIME=OFF
   # 1b) Build Protobuf
   - cmake --build . --config Release --target install
   # 2) Patch CSGO Protobufs
