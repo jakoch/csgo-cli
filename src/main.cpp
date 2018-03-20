@@ -144,6 +144,7 @@ int main(int argc, char** argv)
     if(argc<=1)
     {
         PrintHelp();
+        return 0;
     }
 
     for( int il=1; il < argc; il = il + 1 )
