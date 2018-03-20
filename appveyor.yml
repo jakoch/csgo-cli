@@ -5,12 +5,9 @@ clone_depth: 5
 
 version: '{build}'
 
-platform:
-  - x86
+platform: x64
 
-configuration:
-  - Release
-  #- Debug
+configuration: Release
 
 environment:
   MSBUILD_FLAGS: /verbosity:minimal /maxcpucount
