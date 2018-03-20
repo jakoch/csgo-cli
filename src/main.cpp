@@ -571,7 +571,7 @@ int main(int argc, char** argv)
 
 	if (paramUpload & resList)
 	{
-		curl(linkObj.matches[1].sharecode);
+		//upload(linkObj.matches[1].sharecode);
 	}
 	else if (paramUpload)
 	{
