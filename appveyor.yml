@@ -82,6 +82,15 @@ build_script:
   - dir C:\projects\csgo-cli
   - msbuild C:\projects\csgo-cli\csgo_cli.sln /m /p:Configuration=Release /p:Platform=x64 /logger:"C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll" 
 
-#after_build:
-#artifacts:
+after_build:
+  # check release folder
+  - dir C:\projects\csgo-cli\build\
+  - dir C:\projects\csgo-cli\build\Release\
+  # package release folder
+  - 7z a csgo-cli.zip C:\projects\csgo-cli\build\Release\*.*
+
+artifacts:
+  - path: csgo-cli.zip
+    name: csgo-cli
+
 #deploy:
