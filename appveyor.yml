@@ -106,6 +106,7 @@ after_build:
   # 3b) delete unecrypted sw_sdk folder
   - cd C:\projects\csgo-cli\dependencies
   - rmdir /S /Q sw_sdk
+  - rmdir /S /Q csgo-protobufs-patch
   - cd C:\projects\csgo-cli
   # 3c) package dependencies folder
   - dir C:\projects\csgo-cli\dependencies
