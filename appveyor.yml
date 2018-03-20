@@ -86,8 +86,13 @@ after_build:
   # check release folder
   - dir C:\projects\csgo-cli\build\
   - dir C:\projects\csgo-cli\build\Release\
+  # copy stuff from release to build
+  - copy C:\projects\csgo-cli\build\Release\*.* C:\projects\csgo-cli\build
+  - rmdir /s /q Release
+  # final check
+  - dir C:\projects\csgo-cli\build\
   # package release folder
-  - 7z a csgo-cli.zip C:\projects\csgo-cli\build\Release\*.*
+  - 7z a csgo-cli.zip C:\projects\csgo-cli\build\*.*
 
 artifacts:
   - path: csgo-cli.zip
