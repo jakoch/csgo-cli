@@ -88,7 +88,9 @@ after_build:
   - dir C:\projects\csgo-cli\build\Release\
   # copy stuff from release to build
   - copy C:\projects\csgo-cli\build\Release\*.* C:\projects\csgo-cli\build
+  - cd C:\projects\csgo-cli\build
   - rmdir /s /q Release
+  - cd C:\projects\csgo-cli
   # final check
   - dir C:\projects\csgo-cli\build\
   # package release folder
