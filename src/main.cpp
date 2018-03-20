@@ -30,19 +30,21 @@ void Error(const char* title, const char* text)
 void PrintHelp()
 {
     std::cout << "" << CSGO_CLI_BINARYNAME << " - v" << CSGO_CLI_VERSION << "" << std::endl
+        << " Copyright (c) 2018 Jens A. Koch." << std::endl
+         << " " << std::endl
         << " CS:GO Console shows your user account, stats and latest matches." << std::endl        
         << " " << std::endl
 		<< "Usage:" << std::endl
 		<< "  command [options] [arguments]" << std::endl
 		<< " " << std::endl
 		<< "Available commands:" << std::endl
-		<< "  -user       " << "Your SteamID, AccountID, MM-Rank and likes" << std::endl
-		<< "  -matches    " << "past matches Summary" << std::endl
-		<< "  -perf       " << "Your past matches performance in slim readable form" << std::endl	
+		<< "  -user       " << "Show your SteamID, AccountID, MM-Rank and likes" << std::endl
+		<< "  -matches    " << "Show your past matches summary" << std::endl
+		<< "  -perf       " << "Show your past matches performance in compact form" << std::endl	
 		<< " " << std::endl
 		<< "Options: " << std::endl
 		<< "  -h, help    " << " Display this help message" << std::endl
-		<< "  -v, verbose " << " verbose" << std::endl
+		<< "  -v, verbose " << " Increase verbosity of messages" << std::endl
 		<< "  -V, Version " << " Display application version" << std::endl
 		<< " " << std::endl
     << std::endl;
@@ -151,7 +153,7 @@ int main(int argc, char** argv)
             PrintHelp();
             return 0;
         } else if(option == "-V" || option == "--V" || option == "-version"){
-            std::cout << "" << CSGO_CLI_BINARYNAME << " - version (" << CSGO_CLI_VERSION << ")" << std::endl;
+            std::cout << "" << CSGO_CLI_BINARYNAME << " version " << CSGO_CLI_VERSION << std::endl;
             return 0;
         } else if(option == "-v" || option == "--v" || option == "-verbose"){
             paramVerbose = true;
@@ -164,7 +166,7 @@ int main(int argc, char** argv)
 		} else if (option == "-upload") {
 			paramUpload = true;
         } else if(option != ""){
-            std::cerr << "ERROR - InvalidArgument: " << option << std::endl;
+            std::cerr << "ERROR (invalid argument): " << option << std::endl;
             std::cerr << "Check '" << CSGO_CLI_BINARYNAME << " -help'" << std::endl << std::endl;
             //PrintHelp();
             return 1;
