@@ -106,6 +106,7 @@ after_build:
   # 3b) delete unecrypted sw_sdk folder
   - cd C:\projects\csgo-cli\dependencies
   - rmdir /S /Q sw_sdk
+  - cd C:\projects\csgo-cli
   # 3c) package dependencies folder
   - dir C:\projects\csgo-cli\dependencies
   - 7z a csgo-cli-deps.zip C:\projects\csgo-cli\dependencies\
