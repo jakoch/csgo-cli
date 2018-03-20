@@ -143,7 +143,7 @@ include_directories(
 
 target_link_libraries(CSGO_CLI 
     "${STEAMWORKS_LIBRARY}" 
-    "${libprotobuf}"
+    "${PROTOBUF_LIBRARY}"
 )
 
 #
