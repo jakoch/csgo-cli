@@ -2,7 +2,7 @@
 
 REM 1. copy the Protobuf Descriptor file
 mkdir "%~dp0..\csgo-protobufs\csgo\google\protobuf"
-copy "C:\Program Files (x86)\protobuf\include\google\protobuf\descriptor.proto" "%~dp0..\csgo-protobufs\csgo\google\protobuf"
+copy "C:\Program Files\protobuf\include\google\protobuf\descriptor.proto" "%~dp0..\csgo-protobufs\csgo\google\protobuf"
 
 REM 2. proto-syntax-patch.txt contains 1 header line
 copy "%~dp0proto-syntax-patch.txt" "%~dp0..\csgo-protobufs\csgo"
