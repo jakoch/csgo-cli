@@ -260,7 +260,7 @@ int main(int argc, char** argv)
     bool resHello = false;
     if (paramPrintUser)
     {
-        if (paramVerbose) std::clog << "LOG:" << "[ Start ] Thread-Hello" << std::endl;
+        if (paramVerbose) std::clog << "LOG:" << "[ Start ] [ Thread ] Hello" << std::endl;
 
         auto hellothread = std::thread([&linkObj, paramVerbose, &resHello, ranks, levels]()
         {
@@ -319,7 +319,7 @@ int main(int argc, char** argv)
                 Error("Fatal error", e.what());
                 resHello = false;
             }
-            if (paramVerbose) std::clog << "LOG:" << "[ End   ] Thread-Hello" << std::endl;
+            if (paramVerbose) std::clog << "LOG:" << "[ End   ] [ Thread ] Hello" << std::endl;
             return 0;
         });
 
@@ -330,7 +330,7 @@ int main(int argc, char** argv)
 
     if (paramPrintMatches)
     {
-        if (paramVerbose) std::clog << "LOG:" << "[ Start ] Thread-MatchList" << std::endl;
+        if (paramVerbose) std::clog << "LOG:" << "[ Start ] [ Thread ] MatchList" << std::endl;
 
         auto matchthread = std::thread([&linkObj, paramVerbose, &resList]()
         {
@@ -345,11 +345,11 @@ int main(int argc, char** argv)
 
                 resList = true;
 
-                if (paramVerbose) std::clog << "LOG:" << "[ Start ] MATCHLIST" << std::endl;
+                if (paramVerbose) std::clog << "LOG:" << "[ Start ] processing MatchList" << std::endl;
 
                 for (auto &match : matchList.Matches())
                 {
-                    if (paramVerbose) std::clog << "LOG:" << "[ Start ] MATCH" << std::endl;
+                    if (paramVerbose) std::clog << "LOG:" << "[ Start ] processing Match" << std::endl;
 
                     CSGOMatchData parsedMatch;
 
@@ -435,9 +435,9 @@ int main(int argc, char** argv)
 
                     linkObj.matches.push_back(parsedMatch);
 
-                    if (paramVerbose) std::clog << "LOG:" << "[ End   ] MATCH" << std::endl;
+                    if (paramVerbose) std::clog << "LOG:" << "[ End   ] processing Match" << std::endl;
                 }
-                if (paramVerbose) std::clog << "LOG:" << "[ End   ] MATCHLIST" << std::endl;
+                if (paramVerbose) std::clog << "LOG:" << "[ End   ] processing MatchList" << std::endl;
 
             }
             catch (stop_now_t) {
@@ -445,7 +445,7 @@ int main(int argc, char** argv)
             }
             catch (CSGO_CLI_TimeoutException)
             {
-                Error("Warning", "Timeout on receiving CMsgGCCStrike15_v2_MatchList\n");
+                Error("Warning", "Timeout on receiving CMsgGCCStrike15_v2_MatchList.\n");
                 resList = false;
             }
             catch (ExceptionHandler& e)
@@ -453,7 +453,7 @@ int main(int argc, char** argv)
                 Error("Fatal error", e.what());
                 resList = false;
             }
-            if (paramVerbose) std::clog << "LOG:" << "[ End   ] Thread-MatchList" << std::endl;
+            if (paramVerbose) std::clog << "LOG:" << "[ End   ] [ Thread ] MatchList" << std::endl;
             return 0;
         });
 
@@ -474,72 +474,75 @@ int main(int argc, char** argv)
         std::cout << std::left << std::setw(20) << "SteamID:" << toSteamIDClassic(linkObj.steam_id) << std::endl;
         std::cout << std::left << std::setw(20) << "Rank:" << linkObj.rank_str << " (" << linkObj.rank_id << "/" << ranks.size() << ")" << std::endl;
         std::cout << std::left << std::setw(20) << "MatchMaking Wins:" << linkObj.rank_wins << std::endl;
-        std::cout << std::left << std::setw(20) << "Player Level:" << linkObj.player_level_str << " (" << linkObj.player_level << "/40)" << " (XP:" << linkObj.player_cur_xp << ")"<< std::endl;
+        std::cout << std::left << std::setw(20) << "Player Level:" 
+            << linkObj.player_level_str 
+            << " (" << linkObj.player_level << "/40)" 
+            << " (XP:" << linkObj.player_cur_xp << ")" << std::endl;
         std::cout << std::left << std::setw(20) << "Likes: "
-            << linkObj.cmd_friendly << " x " << "friendly "
-            << linkObj.cmd_teaching << " x " << "teaching "
-            << linkObj.cmd_leader << " x " << "leader" << std::endl;
+            << linkObj.cmd_friendly     << " x friendly "
+            << linkObj.cmd_teaching     << " x teaching "
+            << linkObj.cmd_leader       << " x leader" << std::endl;
         std::cout << std::left << std::setw(20) << "Medals: "
-            << linkObj.medals_arms << " x arms "
-            << linkObj.medals_combat << " x combat "
-            << linkObj.medals_global << " x global "
-            << linkObj.medals_team << " x team "
-            << linkObj.medals_weapon << " x weapon" << std::endl;
+            << linkObj.medals_arms      << " x arms "
+            << linkObj.medals_combat    << " x combat "
+            << linkObj.medals_global    << " x global "
+            << linkObj.medals_team      << " x team "
+            << linkObj.medals_weapon    << " x weapon" << std::endl;
         std::cout << std::left << std::setw(20) << "VAC Banned:" << linkObj.vac_banned << std::endl;
         //std::cout << std::left << std::setw(20) << "Penalty:" << linkObj.penalty_reason << " (" << (linkObj.penalty_seconds / 60) << "m)" << std::endl;
     }
     else if (paramPrintUser)
     {
-        Error("\nError", "Steam did not respond in time. Could not print -user\n");
+        Error("\nError", "Steam did not respond in time. Could not print -user.\n");
         res = 1;
     }
 
     if(paramPrintMatches && resList)
     {
         std::cout << std::endl;
-        std::cout << "=| "
+        std::cout << " | "
             << std::setw(19) << std::left << "Match Played" << " | "
-            << std::setw(8) << std::left << "Map" << " | "
-            << std::setw(7) << std::left << "Result" << " | "
-            << std::setw(7) << std::left << "Score";
+            << std::setw(8)  << std::left << "Duration"     << " | "
+            << std::setw(8)  << std::left << "Map"          << " | "
+            << std::setw(7)  << std::left << "Result"       << " | "
+            << std::setw(7)  << std::left << "Score";
         std::cout << std::endl;
 
         for (auto &match : linkObj.matches)
         {
-            std::cout << "| "
-                << std::setw(19) << std::left << match.matchtime_str << " | "
-                << std::setw(8) << std::left << match.map << " | "
-                << std::setw(4) << std::left << match.result_str << " | "
-                << std::setw(2) << std::right << match.score_ally << " : "
-                << std::setw(2) << std::right << match.score_enemy << " | ";
+            std::cout << " | "
+                << std::setw(19) << std::left  << match.matchtime_str       << " | "
+                << std::setw(8)  << std::left  << match.match_duration_str  << " | "
+                << std::setw(8)  << std::left  << match.map                 << " | "
+                << std::setw(4)  << std::left  << match.result_str          << " | "
+                << std::setw(2)  << std::right << match.score_ally          << " : "
+                << std::setw(2)  << std::right << match.score_enemy         << " | ";
             std::cout << std::endl;
-            std::cout << "Demolink:" << match.demolink << std::endl;
-            std::cout << "Match IP:" << match.server_ip << std::endl;
-            std::cout << "Match Port:" << match.tv_port << std::endl;
-            std::cout << "Match Reservation ID:" << match.reservation_id << std::endl;
-            std::cout << "Match Duration:" << match.match_duration_str << std::endl;
-            std::cout << "Demo ShareCode:" << match.sharecode << std::endl;
-            std::cout << std::endl;
+            //std::cout << "Demolink:"              << match.demolink       << std::endl;
+            //std::cout << "Match IP:"              << match.server_ip      << std::endl;
+            //std::cout << "Match Port:"            << match.tv_port        << std::endl;
+            //std::cout << "Match Reservation ID:"  << match.reservation_id << std::endl;
+            //std::cout << "Demo ShareCode:"        << match.sharecode      << std::endl;
         }
     }
     else if(paramPrintMatches)
     {
-        Error("\nError", "Steam did not respond in time. Could not print -matches\n");
+        Error("\nError", "Steam did not respond in time. Could not print -matches.\n");
         res = 1;
     }
 
     if(paramPrintPerf && resList)
     {
         std::cout << std::endl;
-        std::cout << "=| "
+        std::cout << " | "
             << std::setw(19) << std::left << "Match Played" << " | "
-            << std::setw(4) << std::left << "Res." << " | "
-            << std::setw(7) << std::left << "Score" << " || "
-            << std::setw(2) << std::left << "K" << " | "
-            << std::setw(2) << std::left << "A" << " | "
-            << std::setw(2) << std::left << "D" << " | "
-            << std::setw(3) << std::left << "MVP" << "| "
-            << std::setw(5) << std::left << "Score";
+            << std::setw(4)  << std::left << "Res."         << " | "
+            << std::setw(7)  << std::left << "Score"        << " || "
+            << std::setw(2)  << std::left << "K"            << " | "
+            << std::setw(2)  << std::left << "A"            << " | "
+            << std::setw(2)  << std::left << "D"            << " | "
+            << std::setw(3)  << std::left << "MVP"          << " | "
+            << std::setw(5)  << std::left << "Score";
         std::cout << std::endl;
 
         for (auto &match : linkObj.matches)
@@ -550,16 +553,16 @@ int main(int argc, char** argv)
                 {
                     std::cout << "|| "
                         << std::setw(19) << std::left << match.matchtime_str << " | "
-                        << std::setw(4) << std::left << match.result_str << " | "
-                        << std::setw(2) << std::right << match.score_ally
+                        << std::setw(4)  << std::left << match.result_str    << " | "
+                        << std::setw(2)  << std::right << match.score_ally
                         << " : "
-                        << std::setw(2) << std::right << match.score_enemy
+                        << std::setw(2)  << std::right << match.score_enemy
                         << " ||"
-                        << std::setw(3) << std::right << player.kills << " |"
-                        << std::setw(3) << std::right << player.assists << " |"
-                        << std::setw(3) << std::right << player.deaths << " |"
-                        << std::setw(3) << std::right << player.mvps << " | "
-                        << std::setw(5) << std::right << player.score;
+                        << std::setw(3)  << std::right << player.kills       << " |"
+                        << std::setw(3)  << std::right << player.assists     << " |"
+                        << std::setw(3)  << std::right << player.deaths      << " |"
+                        << std::setw(3)  << std::right << player.mvps        << " | "
+                        << std::setw(5)  << std::right << player.score;
                     std::cout << std::endl;
                 }
             }
@@ -567,7 +570,7 @@ int main(int argc, char** argv)
     }
     else if(paramPrintPerf)
     {
-        Error("\nError", "Steam did not respond in time. Could not print -perf\n");
+        Error("\nError", "Steam did not respond in time. Could not print -perf.\n");
         res = 1;
     }
 
