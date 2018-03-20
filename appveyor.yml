@@ -108,7 +108,7 @@ after_build:
   - rmdir /S /Q sw_sdk
   # 3c) package dependencies folder
   - dir C:\projects\csgo-cli\dependencies
-  - 7z a csgo-cli-deps.zip C:\projects\csgo-cli\dependencies\*.*
+  - 7z a csgo-cli-deps.zip C:\projects\csgo-cli\dependencies\
 
 artifacts:
   - path: csgo-cli.zip

@@ -17,6 +17,7 @@
     - [ ] patch cs:go protobuf syntax
   - [ ] mpir
   - [ ] curl?
+- [ ] package and deploy the application
 - [ ] package and deploy the dependencies
   - [ ] exclude sw_sdk (not redistributable), ship encrypted version
 - [ ] connect as CSGO GameClient to Steam
