@@ -17,6 +17,8 @@ if(CMAKE_COMPILER_IS_GNUCXX)
     set(CMAKE_SHARED_LINKER_FLAGS "-Wl,--no-undefined")
 endif()
 
+set(VCPKG_LIBRARY_LINKAGE static)
+
 #
 # Setup Dependencies
 #
