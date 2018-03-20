@@ -505,7 +505,7 @@ int main(int argc, char** argv)
             << std::setw(8)  << std::left << "Duration"     << " | "
             << std::setw(8)  << std::left << "Map"          << " | "
             << std::setw(7)  << std::left << "Result"       << " | "
-            << std::setw(7)  << std::left << "Score";
+            << std::setw(7)  << std::left << "Score"        << " | ";
         std::cout << std::endl;
 
         for (auto &match : linkObj.matches)
@@ -514,7 +514,7 @@ int main(int argc, char** argv)
                 << std::setw(19) << std::left  << match.matchtime_str       << " | "
                 << std::setw(8)  << std::left  << match.match_duration_str  << " | "
                 << std::setw(8)  << std::left  << match.map                 << " | "
-                << std::setw(4)  << std::left  << match.result_str          << " | "
+                << std::setw(7)  << std::left  << match.result_str          << " | "
                 << std::setw(2)  << std::right << match.score_ally          << " : "
                 << std::setw(2)  << std::right << match.score_enemy         << " | ";
             std::cout << std::endl;
