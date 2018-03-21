@@ -57,6 +57,12 @@ install:
   - ren mpir_x64-windows mpir
   - dir C:\Tools\vcpkg\packages
   - move C:\Tools\vcpkg\packages\mpir C:\projects\csgo-cli\dependencies
+  # 6) Curl
+  - vcpkg install curl:x64-windows
+  - cd C:\Tools\vcpkg\packages
+  - ren curl_x64-windows curl
+  - dir C:\Tools\vcpkg\packages
+  - move C:\Tools\vcpkg\packages\curl C:\projects\csgo-cli\dependencies
   # CHECK: output content of folder, to see if everything is present
   - dir C:\projects\csgo-cli\downloads\
   - dir C:\projects\csgo-cli\dependencies\
