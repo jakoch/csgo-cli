@@ -65,6 +65,8 @@ install:
   - ren zlib_x64-windows zlib
   - dir C:\Tools\vcpkg\packages
   - move C:\Tools\vcpkg\packages\curl C:\projects\csgo-cli\dependencies
+  - move C:\Tools\vcpkg\packages\openssl C:\projects\csgo-cli\dependencies
+  - move C:\Tools\vcpkg\packages\zlib C:\projects\csgo-cli\dependencies
   # CHECK: output content of folder, to see if everything is present
   - dir C:\projects\csgo-cli\downloads\
   - dir C:\projects\csgo-cli\dependencies\
