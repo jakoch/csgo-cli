@@ -10,6 +10,19 @@ The structure of the serialized data is described by the csgo-protobufs.
 These infos are then deserialized using Protobuf and placed into 
 iteratable objects for further processing and output.
 
+## Dependencies
+
+- [Steamworks SDK](https://partner.steamgames.com/)
+  - The official Steamworks SDK is used to make the Steam API connection.
+- [Google Protobuf](https://developers.google.com/protocol-buffers/)
+  - A language-neutral, platform-neutral, extensible mechanism for serializing structured data.
+- [CS:GO Protobufs](https://github.com/SteamDatabase/Protobufs/tree/master/csgo)
+  - The csgo-protobufs are provided by the [steamdb.info](https://steamdb.info/) project.
+- [MPIR](http://mpir.org/)
+  - MPIR is a highly optimised library for bignum arithmetic forked from the GMP bignum library.
+  - MPIR is used to calculate the demo share-code. Because, it's a BigInt, before the Base-57 decoding is applied.
+  - Handling the BigInt with bitshifting might be possible. But i'm too lazy to figure it out.
+
 # Todo
 
 - [x] CI setup: appveyor.yaml
