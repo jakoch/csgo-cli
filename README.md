@@ -24,6 +24,10 @@ iteratable objects for further processing and output.
   - MPIR is a highly optimised library for bignum arithmetic forked from the GMP bignum library.
   - MPIR is used to calculate the demo share-code. Because, it's a BigInt, before the Base-57 decoding is applied.
   - Handling the BigInt with bitshifting might be possible. But i'm too lazy to figure it out.
+- [CMake](https://cmake.org/)
+  - CMake is used as build tool.
+- [Appveyor](https://www.appveyor.com/)
+  - Appveyor is used as build and deployment service.
 
 ##### Download Dependencies
 
