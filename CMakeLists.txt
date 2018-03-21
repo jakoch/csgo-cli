@@ -93,6 +93,11 @@ PROTOBUF_GENERATE_CPP(
     ${CMAKE_CURRENT_SOURCE_DIR}/dependencies/csgo-protobufs/csgo/gcsystemmsgs.proto
 )
 
+# 
+# Curl
+#
+find_package(CURL REQUIRED)
+
 #
 # Copy Additional Files
 #
@@ -147,12 +152,14 @@ include_directories(
     "${STEAMWORKS_INCLUDE_DIR}" 
     "${PROTOBUF_INCLUDE_DIR}"
     "${MPIR_INCLUDE_DIR}"
+    "${CURL_INCLUDE_DIRS}"
 )
 
 target_link_libraries(csgo_cli
     "${STEAMWORKS_LIBRARY}" 
     "${PROTOBUF_LIBRARY}"
     "${MPIR_LIBRARIES}"
+    "${CURL_LIBRARIES}"
 )
 
 #

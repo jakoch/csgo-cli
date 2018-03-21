@@ -61,6 +61,8 @@ install:
   - vcpkg install curl:x64-windows
   - cd C:\Tools\vcpkg\packages
   - ren curl_x64-windows curl
+  - ren openssl_x64-windows openssl
+  - ren zlib_x64-windows zlib
   - dir C:\Tools\vcpkg\packages
   - move C:\Tools\vcpkg\packages\curl C:\projects\csgo-cli\dependencies
   # CHECK: output content of folder, to see if everything is present
