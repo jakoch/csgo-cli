@@ -17,6 +17,10 @@ if(CMAKE_COMPILER_IS_GNUCXX)
     set(CMAKE_SHARED_LINKER_FLAGS "-Wl,--no-undefined")
 endif()
 
+if(MSVC)
+    add_definitions(-D_CRT_SECURE_NO_WARNINGS)
+endif()
+
 set(VCPKG_LIBRARY_LINKAGE static)
 
 #
@@ -96,6 +100,8 @@ PROTOBUF_GENERATE_CPP(
 # 
 # Curl
 #
+set(CURL_INCLUDE_DIR "${CMAKE_SOURCE_DIR}/dependencies/curl/include")
+set(CURL_LIBRARY "${CMAKE_SOURCE_DIR}/dependencies/curl/lib/libcurl.lib")
 find_package(CURL REQUIRED)
 
 #
