@@ -12,7 +12,7 @@ iteratable objects for further processing and output.
 
 ## Dependencies
 
-- [Steamworks SDK](https://partner.steamgames.com/)
+- [Steamworks SDK](https://partner.steamgames.com/) [API Docs](https://partner.steamgames.com/doc/sdk/api)
   - The official Steamworks SDK is used for making the Steam API connection and requesting data.
 - [Google Protobuf](https://developers.google.com/protocol-buffers/)
   - A language-neutral, platform-neutral, extensible mechanism for serializing structured data.
