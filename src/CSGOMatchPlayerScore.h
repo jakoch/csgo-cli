@@ -3,6 +3,11 @@
 
 #include <steamtypes.h>
 
+/**
+ * This struct represents the PlayerScoreboard.
+ *
+ * Usage: std::vector<CSGOMatchPlayerScore> scoreboard;
+ */
 struct CSGOMatchPlayerScore
 {
     public:
