@@ -17,10 +17,13 @@
 #include <fstream>
 #include <iomanip>
 
+// Includes needed for _setmode() (+io.h)
+#include <fcntl.h>
+
 #include <steamtypes.h>
 #include "SteamId.h"
 #include "ShareCode.h"
-//#include "CodeUpload.h"
+//#include "ShareCodeUpload.h"
 
 void Error(const char* title, const char* text)
 {
@@ -50,10 +53,23 @@ void PrintHelp()
     << std::endl;
 }
 
+const wchar_t* toWChar(const char *c)
+{
+    const size_t cSize = strlen(c) + 1;
+    wchar_t* wc = new wchar_t[cSize];
+    mbstowcs(wc, c, cSize);
+
+    return wc;
+}
+
 struct stop_now_t { };
 
 int main(int argc, char** argv)
 {
+    SetConsoleOutputCP(CP_UTF8);
+
+    int result = 0;
+
     #ifdef _WIN32
     HWND test = FindWindowW(0, L"Counter-Strike: Global Offensive");
     if(test != NULL)
@@ -63,15 +79,13 @@ int main(int argc, char** argv)
     }
 #endif
 
-    CSGOMMLinkObject linkObj;
-
-    int res = 0;
-
     bool paramVerbose      = false;
     bool paramPrintUser    = false;
     bool paramPrintMatches = false;
     bool paramPrintPerf    = false;
     bool paramUpload       = false;
+
+    CSGOMMLinkObject linkObj;
 
     const std::vector<std::string> ranks = {
         "-unranked-",
@@ -176,9 +190,9 @@ int main(int argc, char** argv)
 
     if(paramVerbose) std::clog << "LOG:" << "[ Start ] STEAM_INIT" << std::endl;
 
-    if (SteamAPI_RestartAppIfNecessary(k_uAppIdInvalid))
+    if (SteamAPI_RestartAppIfNecessary(k_uAppIdInvalid)) {
         return 1;
-
+    }
 
 #ifdef _WIN32
     int savedStderr;
@@ -211,7 +225,7 @@ int main(int argc, char** argv)
 
     if(paramVerbose) std::clog << "LOG:" << "[ End   ] STEAM_INIT" << std::endl;
 
-    if(paramVerbose) std::clog << "LOG:" << "[ Start ] StartCallbackThread" << std::endl;
+    if(paramVerbose) std::clog << "LOG:" << "[ Start ] CallbackThread & Steam_RunCallbacks" << std::endl;
     bool running = true;
     auto CallbackThread = std::thread([&running]()
     {
@@ -229,41 +243,41 @@ int main(int argc, char** argv)
             }
         };
     });
-    if(paramVerbose) std::clog << "LOG:" << "[ End   ] StartCallbackThread" << std::endl;
+    if(paramVerbose) std::clog << "LOG:" << "[ End   ] CallbackThread & Steam_RunCallbacks" << std::endl;
 
     if(paramVerbose) std::clog << "LOG:" << "[ Start ] Trying-GameClient-Connect" << std::endl;
-    bool resGc = false;
+    bool resultGameClientConnection = false;
     try
     {
         // make sure we are connected to the GameClient
         if(paramVerbose) std::clog << "LOG:" << "Requesting: GameClient Connection" << std::endl;
         CSGOClient::GetInstance()->WaitForGcConnect();
-        if(paramVerbose) std::clog << "LOG:" << "Successful: GameClient connected" << std::endl;
-        resGc = true;
+        if(paramVerbose) std::clog << "LOG:" << "Successful: GameClient connected!" << std::endl;
+        resultGameClientConnection = true;
 
-        linkObj.account_id = SteamUser()->GetSteamID().GetAccountID();
-        linkObj.steam_id = SteamUser()->GetSteamID().ConvertToUint64();
-        linkObj.playername = SteamFriends()->GetPersonaName();
+        linkObj.account_id	= SteamUser()->GetSteamID().GetAccountID();
+        linkObj.steam_id	= SteamUser()->GetSteamID().ConvertToUint64();
+        linkObj.playername	= toWChar(SteamFriends()->GetPersonaName());
     }
     catch (ExceptionHandler& e)
     {
         Error("Fatal error", e.what());
-        resGc = false;
-    }
-    if(paramVerbose) std::clog << "LOG:" << "[ End   ] Trying-GameClient-Connect" << std::endl;
+        resultGameClientConnection = false;
+    } 
 
-    if(!resGc)
+    if(!resultGameClientConnection)
     {
         Error("Fatal error", "GameClient could not connect.\n");
         return 1;
     }
+    if (paramVerbose) std::clog << "LOG:" << "[ End   ] Trying-GameClient-Connect" << std::endl;
 
-    bool resHello = false;
+    bool resultClientHello = false;
     if (paramPrintUser)
     {
         if (paramVerbose) std::clog << "LOG:" << "[ Start ] [ Thread ] Hello" << std::endl;
 
-        auto hellothread = std::thread([&linkObj, paramVerbose, &resHello, ranks, levels]()
+        auto hellothread = std::thread([&linkObj, paramVerbose, &resultClientHello, ranks, levels]()
         {
             try
             {
@@ -274,7 +288,7 @@ int main(int argc, char** argv)
                 mmhello.RefreshWait();
                 if (paramVerbose) std::clog << "LOG:" << "got MMHello" << std::endl;
 
-                resHello = true;
+                resultClientHello = true;
                 //if (paramVerbose) std::clog << "DEBUG:" << mmhello.exposedProt.DebugString();
 
                 linkObj.vac_banned = mmhello.exposedProt.vac_banned();
@@ -313,12 +327,12 @@ int main(int argc, char** argv)
             catch (CSGO_CLI_TimeoutException)
             {
                 Error("Warning", "Timeout on receiving CMsgGCCStrike15_v2_MatchmakingGC2ClientHello\n");
-                resHello = false;
+                resultClientHello = false;
             }
             catch (ExceptionHandler& e)
             {
                 Error("Fatal error", e.what());
-                resHello = false;
+                resultClientHello = false;
             }
             if (paramVerbose) std::clog << "LOG:" << "[ End   ] [ Thread ] Hello" << std::endl;
             return 0;
@@ -327,13 +341,13 @@ int main(int argc, char** argv)
         hellothread.join();
     }
 
-    bool resList = false;
+    bool resultMatchList = false;
 
     if (paramPrintMatches)
     {
         if (paramVerbose) std::clog << "LOG:" << "[ Start ] [ Thread ] MatchList" << std::endl;
 
-        auto matchthread = std::thread([&linkObj, paramVerbose, &resList]()
+        auto matchthread = std::thread([&linkObj, paramVerbose, &resultMatchList]()
         {
             try
             {
@@ -344,7 +358,7 @@ int main(int argc, char** argv)
                 matchList.RefreshWait();
                 if (paramVerbose) std::clog << "LOG:" << "got MatchList" << std::endl;
 
-                resList = true;
+                resultMatchList = true;
 
                 if (paramVerbose) std::clog << "LOG:" << "[ Start ] processing MatchList" << std::endl;
 
@@ -447,12 +461,12 @@ int main(int argc, char** argv)
             catch (CSGO_CLI_TimeoutException)
             {
                 Error("Warning", "Timeout on receiving CMsgGCCStrike15_v2_MatchList.\n");
-                resList = false;
+                resultMatchList = false;
             }
             catch (ExceptionHandler& e)
             {
                 Error("Fatal error", e.what());
-                resList = false;
+                resultMatchList = false;
             }
             if (paramVerbose) std::clog << "LOG:" << "[ End   ] [ Thread ] MatchList" << std::endl;
             return 0;
@@ -466,10 +480,9 @@ int main(int argc, char** argv)
 
     // OUTPUT
 
-    if (paramPrintUser && resHello)
+    if (paramPrintUser && resultClientHello)
     {
-        std::cout << std::endl;
-        std::cout << std::left << std::setw(20) << "Name:" << linkObj.playername << std::endl;
+        wprintf(L"\nName:               %s\n", linkObj.playername);
         std::cout << std::left << std::setw(20) << "SteamID64:" << linkObj.steam_id << std::endl;
         //std::cout << std::left << std::setw(20) << "SteamID32:" << toSteamID32(linkObj.steam_id) << std::endl;
         std::cout << std::left << std::setw(20) << "SteamID:" << toSteamIDClassic(linkObj.steam_id) << std::endl;
@@ -495,10 +508,10 @@ int main(int argc, char** argv)
     else if (paramPrintUser)
     {
         Error("\nError", "Steam did not respond in time. Could not print -user.\n");
-        res = 1;
+        result = 1;
     }
 
-    if(paramPrintMatches && resList)
+    if(paramPrintMatches && resultMatchList)
     {
         std::cout << std::endl;
         std::cout << " | "
@@ -529,10 +542,10 @@ int main(int argc, char** argv)
     else if(paramPrintMatches)
     {
         Error("\nError", "Steam did not respond in time. Could not print -matches.\n");
-        res = 1;
+        result = 1;
     }
 
-    if(paramPrintPerf && resList)
+    if(paramPrintPerf && resultMatchList)
     {
         std::cout << std::endl;
         std::cout << " | "
@@ -572,17 +585,17 @@ int main(int argc, char** argv)
     else if(paramPrintPerf)
     {
         Error("\nError", "Steam did not respond in time. Could not print -perf.\n");
-        res = 1;
+        result = 1;
     }
 
-    if (paramUpload & resList)
+    if (paramUpload & resultMatchList)
     {
         //upload(linkObj.matches[1].sharecode);
     }
     else if (paramUpload)
     {
         Error("\nError", "Steam did not respond in time. Could not upload match sharecodes.\n");
-        res = 1;
+        result = 1;
     }
 
     // shutdown
@@ -591,5 +604,5 @@ int main(int argc, char** argv)
     CSGOClient::Destroy();
     SteamAPI_Shutdown();
 
-    return res;
+    return result;
 }

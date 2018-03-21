@@ -12,7 +12,7 @@ class CSGOMMLinkObject
 public:
     uint32 account_id;
     uint64 steam_id;
-    std::string playername;
+    const wchar_t* playername; /* playernames might contain UTF-8 symbols */
 
     uint32 rank_id=0;
     std::string rank_str;
