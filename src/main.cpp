@@ -147,9 +147,9 @@ int main(int argc, char** argv)
         return 0;
     }
 
-    for( int il=1; il < argc; il = il + 1 )
+    for(int i=1; i < argc; i = i + 1)
     {
-        std::string option = argv[il];
+        std::string option = argv[i];
         if(option == "-h" || option == "--h" || option == "-help" || option == "/?"){
             PrintHelp();
             return 0;
