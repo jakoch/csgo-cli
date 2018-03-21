@@ -16,8 +16,10 @@ iteratable objects for further processing and output.
   - The official Steamworks SDK is used to make the Steam API connection.
 - [Google Protobuf](https://developers.google.com/protocol-buffers/)
   - A language-neutral, platform-neutral, extensible mechanism for serializing structured data.
+  - Protobuf is used for deserializing the player and match infos. 
 - [CS:GO Protobufs](https://github.com/SteamDatabase/Protobufs/tree/master/csgo)
   - The csgo-protobufs are provided by the [steamdb.info](https://steamdb.info/) project.
+  - The Protobuf Compiler (protoc) is used during the build process to compile the csgo-protobufs to C++ objects for data access.
 - [MPIR](http://mpir.org/)
   - MPIR is a highly optimised library for bignum arithmetic forked from the GMP bignum library.
   - MPIR is used to calculate the demo share-code. Because, it's a BigInt, before the Base-57 decoding is applied.
