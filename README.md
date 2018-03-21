@@ -25,6 +25,11 @@ iteratable objects for further processing and output.
   - MPIR is used to calculate the demo share-code. Because, it's a BigInt, before the Base-57 decoding is applied.
   - Handling the BigInt with bitshifting might be possible. But i'm too lazy to figure it out.
 
+##### Download Dependencies
+
+You might download the pre-compiled dependencies package from Appveyor. 
+The package excludes the Steamworks SDK, which source is non-redistributable.
+
 # Todo
 
 - [x] CI setup: appveyor.yaml
