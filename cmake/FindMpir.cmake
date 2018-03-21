@@ -8,8 +8,8 @@ if(MPIR_INCLUDE_DIR AND MPIR_LIBRARIES)
     set(MPIR_FIND_QUIETLY TRUE)
 endif(MPIR_INCLUDE_DIR AND MPIR_LIBRARIES)
     
-find_path(MPIR_INCLUDE_DIR NAMES mpir.h PATHS ${CMAKE_SOURCE_DIR}/dependencies/include)
-find_library(MPIR_LIBRARIES NAMES mpir libmpir PATHS ${CMAKE_SOURCE_DIR}/dependencies/lib )
+find_path(MPIR_INCLUDE_DIR NAMES mpir.h PATHS ${CMAKE_SOURCE_DIR}/dependencies/mpir/include)
+find_library(MPIR_LIBRARIES NAMES mpir libmpir PATHS ${CMAKE_SOURCE_DIR}/dependencies/mpir/lib )
 
 MESSAGE(STATUS "MPIR libs: " ${MPIR_LIBRARIES} " " ${MPIRXX_LIBRARIES} )
 include(FindPackageHandleStandardArgs)
