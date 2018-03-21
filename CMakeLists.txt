@@ -107,7 +107,7 @@ find_package(CURL REQUIRED)
 #
 # Copy Additional Files
 #
-configure_file("${CMAKE_CURRENT_SOURCE_DIR}/README.md"  "build/readme.txt"  COPYONLY)
+configure_file("${CMAKE_CURRENT_SOURCE_DIR}/README.md"  "readme.txt"  COPYONLY)
 configure_file("${CMAKE_CURRENT_SOURCE_DIR}/LICENSE"    "build/license.txt" COPYONLY)
 
 #
@@ -142,6 +142,7 @@ add_executable(csgo_cli
         src/ExceptionHandler.cpp
         src/SteamId.h
         src/ShareCode.h
+        src/ShareCodeUpload.h
 
     # Generated Protobuf Includes
         ${PROTO_CSTRIKE15_GCMESSAGES_SRC}
@@ -187,3 +188,16 @@ source_group("Protobuf Generated Files" FILES
     ${PROTO_GCSYSTEMMSGS_SRC}
     ${PROTO_GCSYSTEMMSGS_HDR}
 )
+
+set(FILES_TO_DEPLOY
+    # curl
+    "${CMAKE_SOURCE_DIR}/dependencies/curl/bin/libcurl.dll"
+    # mpir
+    "${CMAKE_SOURCE_DIR}/dependencies/mpir/bin/mpir.dll"
+    # openssl
+    "${CMAKE_SOURCE_DIR}/dependencies/openssl/bin/libeay32.dll"
+    "${CMAKE_SOURCE_DIR}/dependencies/openssl/bin/ssleay32.dll"
+    # zlib
+    "${CMAKE_SOURCE_DIR}/dependencies/zlib/bin/zlib1.dll"
+)
+INSTALL(FILES ${FILES_TO_DEPLOY} DESTINATION "${CMAKE_SOURCE_DIR}/build")
