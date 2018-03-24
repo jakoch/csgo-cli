@@ -142,7 +142,7 @@ add_executable(csgo_cli
         src/ExceptionHandler.cpp
         src/SteamId.h
         src/ShareCode.h
-        src/ShareCodeUpload.h
+        #src/ShareCodeUpload.h
 
     # Generated Protobuf Includes
         ${PROTO_CSTRIKE15_GCMESSAGES_SRC}

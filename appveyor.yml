@@ -77,8 +77,6 @@ install:
   - dir C:\projects\csgo-cli\downloads\
   - dir C:\projects\csgo-cli\dependencies\
   - dir C:\projects\csgo-cli\dependencies\csgo-protobufs
-  
-
 
 before_build:
   # Build Dependencies
