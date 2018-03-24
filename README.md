@@ -32,7 +32,7 @@ iteratable objects for further processing and output.
 ##### Download Dependencies
 
 You might download the pre-compiled dependencies package from Appveyor. 
-The package excludes the Steamworks SDK, which source is non-redistributable.
+The package excludes the Steamworks SDK, whose source is non-redistributable.
 
 # Todo
 
