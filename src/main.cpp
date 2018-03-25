@@ -179,6 +179,7 @@ int main(int argc, char** argv)
         } else if (option == "-user") {
             paramPrintUser = true;
         } else if (option == "-upload") {
+			paramPrintMatches = true;
             paramUpload = true;
         } else if(option != ""){
             std::cerr << "ERROR (invalid argument): " << option << std::endl;
