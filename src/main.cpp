@@ -16,14 +16,12 @@
 #include <sstream>
 #include <fstream>
 #include <iomanip>
-
 // Includes needed for _setmode() (+io.h)
 #include <fcntl.h>
-
 #include <steamtypes.h>
+#include "ShareCodeUpload.h"
 #include "SteamId.h"
 #include "ShareCode.h"
-//#include "ShareCodeUpload.h"
 
 void Error(const char* title, const char* text)
 {
@@ -255,9 +253,9 @@ int main(int argc, char** argv)
         if(paramVerbose) std::clog << "LOG:" << "Successful: GameClient connected!" << std::endl;
         resultGameClientConnection = true;
 
-        linkObj.account_id	= SteamUser()->GetSteamID().GetAccountID();
-        linkObj.steam_id	= SteamUser()->GetSteamID().ConvertToUint64();
-        linkObj.playername	= toWChar(SteamFriends()->GetPersonaName());
+        linkObj.account_id  = SteamUser()->GetSteamID().GetAccountID();
+        linkObj.steam_id    = SteamUser()->GetSteamID().ConvertToUint64();
+        linkObj.playername  = toWChar(SteamFriends()->GetPersonaName());
     }
     catch (ExceptionHandler& e)
     {
@@ -290,36 +288,36 @@ int main(int argc, char** argv)
 
                 resultClientHello = true;
                 //if (paramVerbose) std::clog << "DEBUG:" << mmhello.exposedProt.DebugString();
+                                
+                linkObj.player_level      = mmhello.data.player_level();
+                linkObj.player_level_str  = levels[mmhello.data.player_level() - 1];
+                linkObj.player_cur_xp     = mmhello.data.player_cur_xp();
 
-                linkObj.vac_banned = mmhello.exposedProt.vac_banned();
-                linkObj.player_level = mmhello.exposedProt.player_level();
-                linkObj.player_level_str = levels[mmhello.exposedProt.player_level() - 1];
-                linkObj.player_cur_xp = mmhello.exposedProt.player_cur_xp();
+                linkObj.medals_arms       = mmhello.data.medals().medal_arms();
+                linkObj.medals_combat     = mmhello.data.medals().medal_combat();
+                linkObj.medals_global     = mmhello.data.medals().medal_global();
+                linkObj.medals_team       = mmhello.data.medals().medal_team();
+                linkObj.medals_weapon     = mmhello.data.medals().medal_weapon();
 
-                linkObj.medals_arms = mmhello.exposedProt.medals().medal_arms();
-                linkObj.medals_combat = mmhello.exposedProt.medals().medal_combat();
-                linkObj.medals_global = mmhello.exposedProt.medals().medal_global();
-                linkObj.medals_team = mmhello.exposedProt.medals().medal_team();
-                linkObj.medals_weapon = mmhello.exposedProt.medals().medal_weapon();
+                linkObj.vac_banned        = mmhello.data.vac_banned();
+                linkObj.penalty_seconds   = mmhello.data.penalty_seconds();
+                linkObj.penalty_reason    = mmhello.data.penalty_reason();
 
-                linkObj.penalty_seconds = mmhello.exposedProt.penalty_seconds();
-                linkObj.penalty_reason = mmhello.exposedProt.penalty_reason();
-
-                if (mmhello.exposedProt.ranking().has_rank_id())
+                if (mmhello.data.ranking().has_rank_id())
                 {
-                    linkObj.rank_id = mmhello.exposedProt.ranking().rank_id();
-                    linkObj.rank_str = ranks[mmhello.exposedProt.ranking().rank_id() - 1];
+                    linkObj.rank_id   = mmhello.data.ranking().rank_id();
+                    linkObj.rank_str  = ranks[mmhello.data.ranking().rank_id() - 1];
                 }
-                if (mmhello.exposedProt.ranking().has_wins())
-                    linkObj.rank_wins = mmhello.exposedProt.ranking().wins();
-                if (mmhello.exposedProt.ranking().has_rank_change())
-                    linkObj.rank_change = mmhello.exposedProt.ranking().rank_change();
-                if (mmhello.exposedProt.commendation().has_cmd_friendly())
-                    linkObj.cmd_friendly = mmhello.exposedProt.commendation().cmd_friendly();
-                if (mmhello.exposedProt.commendation().has_cmd_teaching())
-                    linkObj.cmd_teaching = mmhello.exposedProt.commendation().cmd_teaching();
-                if (mmhello.exposedProt.commendation().has_cmd_leader())
-                    linkObj.cmd_leader = mmhello.exposedProt.commendation().cmd_leader();
+                if (mmhello.data.ranking().has_wins())
+                    linkObj.rank_wins = mmhello.data.ranking().wins();
+                if (mmhello.data.ranking().has_rank_change())
+                    linkObj.rank_change = mmhello.data.ranking().rank_change();
+                if (mmhello.data.commendation().has_cmd_friendly())
+                    linkObj.cmd_friendly = mmhello.data.commendation().cmd_friendly();
+                if (mmhello.data.commendation().has_cmd_teaching())
+                    linkObj.cmd_teaching = mmhello.data.commendation().cmd_teaching();
+                if (mmhello.data.commendation().has_cmd_leader())
+                    linkObj.cmd_leader = mmhello.data.commendation().cmd_leader();
             }
             catch (stop_now_t) {
                 return 0;
@@ -410,6 +408,8 @@ int main(int argc, char** argv)
 
                             if (paramVerbose) std::clog << "LOG:" << "[ End   ] MATCH-PLAYER" << std::endl;
                         }*/
+
+                        //std::cout << match.roundstatsall(i).DebugString() << std::endl;
                     }
 
                     // RESERVATION ID (from last roundstats item)
@@ -424,24 +424,26 @@ int main(int argc, char** argv)
                     parsedMatch.match_duration_str = buffer_local2;
 
                     // map
-                    parsedMatch.map = match.watchablematchinfo().game_map();
+                    parsedMatch.map      = match.watchablematchinfo().game_map();
+                    parsedMatch.mapgroup = match.watchablematchinfo().game_mapgroup();
+                    parsedMatch.gametype = match.watchablematchinfo().game_type();
 
                     //if (paramVerbose) std::clog << "LOG:" << match.DebugString();
 
                     // link to replay / demo
                     // roundStats.map() is the http link to the bz2 archived demo file
                     parsedMatch.demolink = roundStats.map();
-
+                    
                     //if (paramVerbose) std::clog << "LOG:" << roundStats.DebugString();
 
                     // calculate ShareCode for demo
                     parsedMatch.sharecode = toDemoShareCode(parsedMatch.matchid, parsedMatch.reservation_id, parsedMatch.tv_port);
 
                     if (matchList.getOwnIndex(roundStats) >= 5) {
-                        parsedMatch.score_ally = roundStats.team_scores(1);
+                        parsedMatch.score_ally  = roundStats.team_scores(1);
                         parsedMatch.score_enemy = roundStats.team_scores(0);
                     } else  {
-                        parsedMatch.score_ally = roundStats.team_scores(0);
+                        parsedMatch.score_ally  = roundStats.team_scores(0);
                         parsedMatch.score_enemy = roundStats.team_scores(1);
                     }
 
@@ -513,6 +515,7 @@ int main(int argc, char** argv)
 
     if(paramPrintMatches && resultMatchList)
     {
+        wprintf(L"\n Hello %s!\n\n Here are your latest matches:\n", linkObj.playername);
         std::cout << std::endl;
         std::cout << " | "
             << std::setw(19) << std::left << "Match Played" << " | "
@@ -525,18 +528,19 @@ int main(int argc, char** argv)
         for (auto &match : linkObj.matches)
         {
             std::cout << " | "
-                << std::setw(19) << std::left  << match.matchtime_str       << " | "
-                << std::setw(8)  << std::left  << match.match_duration_str  << " | "
-                << std::setw(8)  << std::left  << match.map                 << " | "
-                << std::setw(7)  << std::left  << match.result_str          << " | "
-                << std::setw(2)  << std::right << match.score_ally          << " : "
-                << std::setw(2)  << std::right << match.score_enemy         << " | ";
+                << std::setw(19) << std::left  << match.matchtime_str        << " | "
+                << std::setw(8)  << std::left  << match.match_duration_str   << " | "
+                << std::setw(8)  << std::left  << (((match.map).empty()) ? "? " : match.map) << " | "
+                << std::setw(7)  << std::left  << match.result_str           << " | "
+                << std::setw(2)  << std::right << match.score_ally           << " : "
+                << std::setw(2)  << std::right << match.score_enemy          << " | ";
             std::cout << std::endl;
             //std::cout << "Demolink:"              << match.demolink       << std::endl;
             //std::cout << "Match IP:"              << match.server_ip      << std::endl;
             //std::cout << "Match Port:"            << match.tv_port        << std::endl;
             //std::cout << "Match Reservation ID:"  << match.reservation_id << std::endl;
             //std::cout << "Demo ShareCode:"        << match.sharecode      << std::endl;
+            //std::cout   << "MatchID:"               << match.matchid        << std::endl;
         }
     }
     else if(paramPrintMatches)
@@ -590,11 +594,28 @@ int main(int argc, char** argv)
 
     if (paramUpload & resultMatchList)
     {
-        //upload(linkObj.matches[1].sharecode);
+        std::cout << "\n Uploading Demo ShareCodes to https://csgostats.gg/:" << std::endl;
+
+        for (auto &match : linkObj.matches)
+        {
+            std::string jsonResponse;
+
+            if (uploadShareCode(match.sharecode, jsonResponse) == 0)
+            {
+                if (processJsonResponse(jsonResponse) != 0)
+                {
+                    Error("\nError", "Could not parse the response (to the demo sharecode POST request).\n");
+                }
+            }
+            else {
+                Error("\nError", "Could not POST demo sharecode.\n");
+                //result = 1;
+            }
+        }
     }
     else if (paramUpload)
     {
-        Error("\nError", "Steam did not respond in time. Could not upload match sharecodes.\n");
+        Error("\nError", "Steam did not respond in time. Could not fetch match sharecodes for uploading.\n");
         result = 1;
     }
 

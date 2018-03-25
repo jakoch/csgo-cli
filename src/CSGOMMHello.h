@@ -13,7 +13,7 @@ public:
     void Refresh();
     void RefreshWait();
 
-    CMsgGCCStrike15_v2_MatchmakingGC2ClientHello exposedProt;
+    CMsgGCCStrike15_v2_MatchmakingGC2ClientHello data;
 
 private:
     void OnMMHello(const CMsgGCCStrike15_v2_MatchmakingGC2ClientHello& msg);

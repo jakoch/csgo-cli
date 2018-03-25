@@ -24,9 +24,11 @@ struct CSGOMatchData
         uint64 reservation_id;
 
         std::string sharecode;
-        std::string demolink;
+        std::string demolink;   /* roundstats.map */
 
-        std::string map;
+		std::string map;        /* watchablematchinfo.game_map */
+		std::string mapgroup;   /* watchablematchinfo.game_mapgroup */
+		std::string gametype;   /* watchablematchinfo.game_type */
 
         uint32 spectators;
 

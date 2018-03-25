@@ -17,7 +17,7 @@ CSGOMMHello::~CSGOMMHello()
 void CSGOMMHello::OnMMHello(const CMsgGCCStrike15_v2_MatchmakingGC2ClientHello& msg)
 {
     std::unique_lock<std::mutex> lock(m_mmhelloMutex);
-    exposedProt = msg;
+    data = msg;
     m_updateComplete = true;
     lock.unlock();
     m_updateCv.notify_all();
