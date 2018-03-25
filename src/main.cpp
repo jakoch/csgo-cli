@@ -30,17 +30,19 @@ void Error(const char* title, const char* text)
 
 void PrintHelp()
 {
-    std::cout << "" << CSGO_CLI_BINARYNAME << " - v" << CSGO_CLI_VERSION << "" << std::endl
-        << "Copyright (c) 2018 Jens A. Koch." << std::endl
-         << " " << std::endl
-        << " CS:GO Console shows your user account, stats and latest matches." << std::endl
-        << " " << std::endl
-        << "Usage:" << std::endl
-        << "  command [options] [arguments]" << std::endl
-        << " " << std::endl
-        << "Available commands:" << std::endl
-        << "  -user       " << "Show your profile (SteamID, AccountID, MM-Rank, Likes, VAC-Status)" << std::endl
-        << "  -matches    " << "Show your past matches in table form" << std::endl
+	std::cout << "" << CSGO_CLI_BINARYNAME << " - v" << CSGO_CLI_VERSION << "" << std::endl
+		<< "Copyright (c) 2018 Jens A. Koch." << std::endl
+		<< " " << std::endl
+		<< " CS:GO Console shows your user account, stats and latest matches." << std::endl
+		<< " You can also use the tool to upload demo sharecodes to csgostats.gg." << std::endl
+		<< " " << std::endl
+		<< "Usage:" << std::endl
+		<< "  command [options] [arguments]" << std::endl
+		<< " " << std::endl
+		<< "Available commands:" << std::endl
+		<< "  -user       " << "Show your profile (SteamID, AccountID, MM-Rank, Likes, VAC-Status)" << std::endl
+		<< "  -matches    " << "Show your past matches in table form" << std::endl
+		<< "  -upload     " << "Show and upload your past matches to csgostats.gg" << std::endl
         //<< "  -perf       " << "Show your past matches performance in compact form" << std::endl
         << " " << std::endl
         << "Options: " << std::endl
@@ -171,7 +173,7 @@ int main(int argc, char** argv)
         } else if(option == "-v" || option == "--v" || option == "-verbose"){
             paramVerbose = true;
         } else if(option == "-matches"){
-            paramPrintMatches = true;
+			paramPrintMatches = true;
         } else if(option == "-perf"){
             paramPrintPerf = true;
         } else if (option == "-user") {
