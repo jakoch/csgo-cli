@@ -124,6 +124,7 @@ find_package(RAPIDJSON REQUIRED)
 #
 configure_file("${CMAKE_CURRENT_SOURCE_DIR}/README.md"  "readme.txt"  COPYONLY)
 configure_file("${CMAKE_CURRENT_SOURCE_DIR}/LICENSE"    "build/license.txt" COPYONLY)
+configure_file("${CMAKE_SOURCE_DIR}/dependencies/curl/bin/cacert.pem" "build/cacert.pem" COPYONLY)
 
 #
 # Add Exe Resources

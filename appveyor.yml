@@ -67,7 +67,9 @@ install:
   - move C:\Tools\vcpkg\packages\curl C:\projects\csgo-cli\dependencies
   - move C:\Tools\vcpkg\packages\openssl C:\projects\csgo-cli\dependencies
   - move C:\Tools\vcpkg\packages\zlib C:\projects\csgo-cli\dependencies
-  # 7) RapidJSON
+  # 7) Cert for curl (cacert.pem)
+  - ps: Invoke-WebRequest "https://curl.haxx.se/ca/cacert.pem" -OutFile C:\projects\csgo-cli\downloads\curl\bin\cacert.pem  
+  # 8) RapidJSON
   - vcpkg install rapidjson:x64-windows
   - cd C:\Tools\vcpkg\packages
   - ren rapidjson_x64-windows rapidjson
