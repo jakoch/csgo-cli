@@ -122,9 +122,10 @@ find_package(RAPIDJSON REQUIRED)
 #
 # Copy Additional Files
 #
-configure_file("${CMAKE_CURRENT_SOURCE_DIR}/README.md"  "readme.txt"  COPYONLY)
-configure_file("${CMAKE_CURRENT_SOURCE_DIR}/LICENSE"    "build/license.txt" COPYONLY)
-configure_file("${CMAKE_SOURCE_DIR}/dependencies/curl/bin/cacert.pem" "build/cacert.pem" COPYONLY)
+configure_file("${CMAKE_CURRENT_SOURCE_DIR}/README.md"                "build/readme.txt"    COPYONLY)
+configure_file("${CMAKE_CURRENT_SOURCE_DIR}/LICENSE"                  "build/license.txt"   COPYONLY)
+configure_file("${CMAKE_CURRENT_SOURCE_DIR}/update.bat"               "build/update.bat"    COPYONLY)
+configure_file("${CMAKE_SOURCE_DIR}/dependencies/curl/bin/cacert.pem" "build/cacert.pem"    COPYONLY)
 
 #
 # Add Exe Resources
