@@ -5,12 +5,14 @@ You can also use the tool to upload demo sharecodes to csgostats.gg.
 
 ## Usage
 
+Display commands:
 
-
-## Example Output
-
-
-
+    csgo_cli 
+    
+Fetch matches and upload to csgostats:
+    
+    csgo_cli -matches -upload
+    
 ## Automatic Upload of Demo ShareCodes to http://csgostats.gg/
 
 The ShareCode is an URL, which you might pass around to your friends.
