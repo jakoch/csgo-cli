@@ -9,7 +9,7 @@ Display commands:
 
     csgo_cli 
     
-Fetch matches and upload to csgostats:
+Fetch matches and upload to csgostats (or just use `update.bat`):
     
     csgo_cli -matches -upload
     
