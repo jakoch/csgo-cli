@@ -168,7 +168,7 @@ int main(int argc, char** argv)
             PrintHelp();
             return 0;
         } else if(option == "-V" || option == "--V" || option == "-version"){
-            std::cout << "" << CSGO_CLI_BINARYNAME << " version " << CSGO_CLI_VERSION << "/n";
+            std::cout << "" << CSGO_CLI_BINARYNAME << " version " << CSGO_CLI_VERSION << std::endl;
             return 0;
         } else if(option == "-v" || option == "--v" || option == "-verbose"){
             paramVerbose = true;
@@ -183,7 +183,7 @@ int main(int argc, char** argv)
             paramUpload = true;
         } else if(option != ""){
             std::cerr << "ERROR (invalid argument): " << option << '/n';
-			std::cerr << "Check '" << CSGO_CLI_BINARYNAME << " -help/n/n";
+			std::cerr << "Check '" << CSGO_CLI_BINARYNAME << " -help/n" << std::endl;
 			//PrintHelp();
             return 1;
         }
