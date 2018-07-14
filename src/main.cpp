@@ -30,7 +30,7 @@ void Error(const char* title, const char* text)
 
 void PrintHelp()
 {
-	std::cout << "" << CSGO_CLI_BINARYNAME << " - v" << CSGO_CLI_VERSION << "/n"
+	std::cout << "" << CSGO_CLI_BINARYNAME << " - v" << CSGO_CLI_VERSION << "\n"
 		<< "Copyright (c) 2018 Jens A. Koch.\n"
 		<< "\n"
 		<< " CS:GO Console shows your user account, stats and latest matches.\n"
