@@ -46,10 +46,14 @@ install:
   - ren sdk sw_sdk
   - cd C:\projects\csgo-cli
   # 4) Google Protobuf (src)
-  - ps: Invoke-WebRequest "https://github.com/google/protobuf/releases/download/v3.5.1/protobuf-cpp-3.5.1.zip" -OutFile C:\projects\csgo-cli\downloads\protobuf-cpp-3.5.1.zip
-  - 7z x C:\projects\csgo-cli\downloads\protobuf-cpp-3.5.1.zip -aoa -y -oC:\projects\csgo-cli\dependencies
+  #- ps: Invoke-WebRequest "https://github.com/google/protobuf/releases/download/v3.5.1/protobuf-cpp-3.5.1.zip" -OutFile C:\projects\csgo-cli\downloads\protobuf-cpp-3.5.1.zip
+  #- 7z x C:\projects\csgo-cli\downloads\protobuf-cpp-3.5.1.zip -aoa -y -oC:\projects\csgo-cli\dependencies
+  #- cd C:\projects\csgo-cli\dependencies
+  #- ren protobuf-3.5.1 protobuf  
+  - ps: Invoke-WebRequest "https://github.com/google/protobuf/releases/download/v3.7.0/protobuf-cpp-3.7.0.zip" -OutFile C:\projects\csgo-cli\downloads\protobuf-cpp-3.7.0.zip
+  - 7z x C:\projects\csgo-cli\downloads\protobuf-cpp-3.7.0.zip -aoa -y -oC:\projects\csgo-cli\dependencies
   - cd C:\projects\csgo-cli\dependencies
-  - ren protobuf-3.5.1 protobuf   
+  - ren protobuf-3.7.0 protobuf   
   - cd C:\projects\csgo-cli
   # 5) MPIR
   - vcpkg install mpir:x64-windows
@@ -62,11 +66,11 @@ install:
   - cd C:\Tools\vcpkg\packages
   - ren curl_x64-windows curl
   - ren openssl_x64-windows openssl
-  - ren zlib_x64-windows zlib
+  #- ren zlib_x64-windows zlib
   - dir C:\Tools\vcpkg\packages
   - move C:\Tools\vcpkg\packages\curl C:\projects\csgo-cli\dependencies
   - move C:\Tools\vcpkg\packages\openssl C:\projects\csgo-cli\dependencies
-  - move C:\Tools\vcpkg\packages\zlib C:\projects\csgo-cli\dependencies
+  #- move C:\Tools\vcpkg\packages\zlib C:\projects\csgo-cli\dependencies
   # 7) Cert for curl (cacert.pem)
   - ps: Invoke-WebRequest "https://curl.haxx.se/ca/cacert.pem" -OutFile C:\projects\csgo-cli\dependencies\curl\bin\cacert.pem  
   # 8) RapidJSON
