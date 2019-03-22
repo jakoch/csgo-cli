@@ -38,6 +38,48 @@ int uploadShareCode(std::string shareCode, std::string& responseContent)
 	  CURLcode res;
 	  char errorBuffer[CURL_ERROR_SIZE];
 
+	  // provide a buffer for storing errors
+	  curl_easy_setopt(curl, CURLOPT_ERRORBUFFER, errorBuffer);
+
+      // 0. "pre-upload" request
+
+      // GET request to get the cookies
+      curl_easy_setopt(curl, CURLOPT_URL, "https://csgostats.gg");
+      curl_easy_setopt(curl, CURLOPT_VERBOSE, 1L);
+
+	  // set the error buffer as empty before performing a request
+	  errorBuffer[0] = 0;
+
+      // perform the request
+	  res = curl_easy_perform(curl);
+	  
+	  // show error infos
+	  if (res != CURLE_OK) {
+		// if the request did not complete correctly, show the error information
+		size_t len = strlen(errorBuffer);
+		fprintf(stderr, "\nlibcurl: (%d) ", res);
+		if (len) {
+			fprintf(stderr, "%s%s", errorBuffer, ((errorBuffer[len - 1] != '\n') ? "\n" : ""));
+		}
+		else {
+			// if no detailed error information was written to errorBuffer,
+			// show the more generic information from curl_easy_strerror instead
+			fprintf(stderr, "%s\n", curl_easy_strerror(res));
+		}
+		
+		// cleanup
+	  	curl_easy_cleanup(curl);
+
+		return 1;
+	  }
+
+      // RESET
+      // keeps these info in the curl handle:
+      // live connections, Session ID cache, DNS cache, cookies and shares.
+      curl_easy_reset(curl);
+
+	  // --------------------
+
 	  // 1. URL that is about to receive our POST data
 	  curl_easy_setopt(curl, CURLOPT_URL, "https://csgostats.gg/match/upload/ajax"); 
 	  	  
@@ -71,10 +113,7 @@ int uploadShareCode(std::string shareCode, std::string& responseContent)
 	  curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, CurlWrite_CallbackFunc_StdString);
 	  curl_easy_setopt(curl, CURLOPT_WRITEDATA, &responseContent);
 	  
-	  //curl_easy_setopt(curl, CURLOPT_VERBOSE, 1L);
- 
-	  // provide a buffer for storing errors
-	  curl_easy_setopt(curl, CURLOPT_ERRORBUFFER, errorBuffer);
+	  curl_easy_setopt(curl, CURLOPT_VERBOSE, 1L);
  
 	  // set the error buffer as empty before performing a request
 	  errorBuffer[0] = 0;
@@ -193,7 +232,7 @@ int processJsonResponse(std::string& jsonResponse)
 	"{"
 		"\"status\": \"error\","
 		"\"data\" : {"
-		"\"msg\": \"Failed to add to the queue, please verify sharecode\","
+			"\"msg\": \"Failed to add to the queue, please verify sharecode\","
 			"\"index\" : null,"
 			"\"sharecode\" : null"
 		"},"
