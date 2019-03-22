@@ -80,11 +80,17 @@ find_package(mpir REQUIRED)
 #
 # Process CS:GO Protobufs
 #
+# dependencies/csgo-protobufs/csgo/engine_gcmessages.proto
 # dependencies/csgo-protobufs/csgo/cstrike15_gcmessages.proto
 # dependencies/csgo-protobufs/csgo/steammessages.proto
 # dependencies/csgo-protobufs/csgo/gcsdk_gcmessages.proto
 # dependencies/csgo-protobufs/csgo/gcsystemmsgs.proto
 
+PROTOBUF_GENERATE_CPP(
+    PROTO_ENGINE_GCMESSAGES_SRC
+    PROTO_ENGINE_GCMESSAGES_HDR
+    ${CMAKE_CURRENT_SOURCE_DIR}/dependencies/csgo-protobufs/csgo/engine_gcmessages.proto
+)
 PROTOBUF_GENERATE_CPP(
     PROTO_CSTRIKE15_GCMESSAGES_SRC
     PROTO_CSTRIKE15_GCMESSAGES_HDR
@@ -162,6 +168,8 @@ add_executable(csgo_cli
         src/ShareCodeUpload.h
 
     # Generated Protobuf Includes
+		${PROTO_ENGINE_GCMESSAGES_SRC}
+		${PROTO_ENGINE_GCMESSAGES_HDR}
         ${PROTO_CSTRIKE15_GCMESSAGES_SRC}
         ${PROTO_CSTRIKE15_GCMESSAGES_HDR}
         ${PROTO_STEAMMESSAGES_SRC}
@@ -191,12 +199,15 @@ target_link_libraries(csgo_cli
 # Create "source-group" folders for these files in Visual Studio
 #
 source_group("Protobuf Protocol Files" FILES
+	proto/engine_gcmessages.proto
     proto/cstrike15_gcmessages.proto
     proto/steammessages.proto
     proto/gcsdk_gcmessages.proto
     proto/gcsystemmsgs.proto
 )
 source_group("Protobuf Generated Files" FILES
+	${PROTO_ENGINE_GCMESSAGES_SRC}
+	${PROTO_ENGINE_GCMESSAGES_HDR}
     ${PROTO_CSTRIKE15_GCMESSAGES_SRC}
     ${PROTO_CSTRIKE15_GCMESSAGES_HDR}
     ${PROTO_STEAMMESSAGES_SRC}

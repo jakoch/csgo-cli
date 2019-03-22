@@ -291,16 +291,18 @@ int main(int argc, char** argv)
 
                 resultClientHello = true;
                 //if (paramVerbose) std::clog << "DEBUG:" << mmhello.exposedProt.DebugString();
-                                
+                
                 linkObj.player_level      = mmhello.data.player_level();
                 linkObj.player_level_str  = levels[mmhello.data.player_level() - 1];
                 linkObj.player_cur_xp     = mmhello.data.player_cur_xp();
-
-                linkObj.medals_arms       = mmhello.data.medals().medal_arms();
+				
+                /*
+				linkObj.medals_arms       = mmhello.data.medals().medal_arms();
                 linkObj.medals_combat     = mmhello.data.medals().medal_combat();
                 linkObj.medals_global     = mmhello.data.medals().medal_global();
                 linkObj.medals_team       = mmhello.data.medals().medal_team();
                 linkObj.medals_weapon     = mmhello.data.medals().medal_weapon();
+				*/
 
                 linkObj.vac_banned        = mmhello.data.vac_banned();
                 linkObj.penalty_seconds   = mmhello.data.penalty_seconds();
@@ -501,12 +503,14 @@ int main(int argc, char** argv)
             << linkObj.cmd_friendly     << " x friendly "
             << linkObj.cmd_teaching     << " x teaching "
             << linkObj.cmd_leader       << " x leader\n";
-        std::cout << std::left << std::setw(20) << "Medals: "
+        /*
+		std::cout << std::left << std::setw(20) << "Medals: "
             << linkObj.medals_arms      << " x arms "
             << linkObj.medals_combat    << " x combat "
             << linkObj.medals_global    << " x global "
             << linkObj.medals_team      << " x team "
             << linkObj.medals_weapon    << " x weapon\n";
+			*/
         std::cout << std::left << std::setw(20) << "VAC Banned:" << linkObj.vac_banned << "/n";
         //std::cout << std::left << std::setw(20) << "Penalty:" << linkObj.penalty_reason << " (" << (linkObj.penalty_seconds / 60) << "m)\n";
     }
