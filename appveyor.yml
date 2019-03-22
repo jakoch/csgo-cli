@@ -1,5 +1,5 @@
 # Build worker image (VM template)
-image: Visual Studio 2015
+image: Visual Studio 2017
 
 clone_depth: 5
 
@@ -12,7 +12,7 @@ configuration: Release
 environment:
   MSBUILD_FLAGS: /verbosity:minimal /maxcpucount
   SW_SDK_SECRET:
-    secure: QmzV2W8MxTnxMHKchabCCA==
+    secure: qgCgBWgiHGn0ZsNdQEAQmw==
 
 build:
   verbosity: minimal
@@ -39,9 +39,9 @@ install:
   # 2) Secure-File (needed to decrypt steamworks sdk)
   - nuget install secure-file -Version 1.0.31
   - ps: Test-Path C:\projects\csgo-cli\secure-file.1.0.31\tools\secure-file.exe 
-  # 3) SteamWorks SDK (prebuild libs + src) 
-  - C:\projects\csgo-cli\secure-file.1.0.31\tools\secure-file.exe -decrypt C:\projects\csgo-cli\downloads\sw_sdk_142.zip.enc -secret %SW_SDK_SECRET% -out C:\projects\csgo-cli\downloads\sw_sdk_142.zip
-  - 7z x C:\projects\csgo-cli\downloads\sw_sdk_142.zip -aoa -y -oC:\projects\csgo-cli\dependencies
+  # 3) SW SDK (prebuild libs + src) 
+  - C:\projects\csgo-cli\secure-file.1.0.31\tools\secure-file.exe -decrypt C:\projects\csgo-cli\downloads\sw_sdk_144.zip.enc -secret %SW_SDK_SECRET% -out C:\projects\csgo-cli\downloads\sw_sdk_144.zip
+  - 7z x C:\projects\csgo-cli\downloads\sw_sdk_144.zip -aoa -y -oC:\projects\csgo-cli\dependencies
   - cd C:\projects\csgo-cli\dependencies
   - ren sdk sw_sdk
   - cd C:\projects\csgo-cli
@@ -64,13 +64,14 @@ install:
   # 6) Curl
   - vcpkg install curl:x64-windows
   - cd C:\Tools\vcpkg\packages
+  - dir C:\Tools\vcpkg\packages
   - ren curl_x64-windows curl
-  - ren openssl_x64-windows openssl
-  #- ren zlib_x64-windows zlib
+  #- ren openssl_x64-windows openssl
+  - ren zlib_x64-windows zlib  
   - dir C:\Tools\vcpkg\packages
   - move C:\Tools\vcpkg\packages\curl C:\projects\csgo-cli\dependencies
-  - move C:\Tools\vcpkg\packages\openssl C:\projects\csgo-cli\dependencies
-  #- move C:\Tools\vcpkg\packages\zlib C:\projects\csgo-cli\dependencies
+  #- move C:\Tools\vcpkg\packages\openssl C:\projects\csgo-cli\dependencies
+  - move C:\Tools\vcpkg\packages\zlib C:\projects\csgo-cli\dependencies
   # 7) Cert for curl (cacert.pem)
   - ps: Invoke-WebRequest "https://curl.haxx.se/ca/cacert.pem" -OutFile C:\projects\csgo-cli\dependencies\curl\bin\cacert.pem  
   # 8) RapidJSON
