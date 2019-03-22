@@ -36,7 +36,7 @@ init:
 install:
   # 1) Get Git Submodules: csgo-protobufs
   - git submodule update --init --recursive
-  # 2) Secure-File (needed to decrypt steamworks sdk)
+  # 2) Secure-File (needed to decrypt sw sdk)
   - nuget install secure-file -Version 1.0.31
   - ps: Test-Path C:\projects\csgo-cli\secure-file.1.0.31\tools\secure-file.exe 
   # 3) SW SDK (prebuild libs + src) 
@@ -90,7 +90,7 @@ before_build:
   # 1) Compile Protobuf
   - cd C:\projects\csgo-cli\dependencies\protobuf\cmake
   # 1a) Configure Protobuf
-  - cmake -G "Visual Studio 14 2015 Win64" -Dprotobuf_BUILD_TESTS=OFF -Dprotobuf_BUILD_EXAMPLES=OFF -Dprotobuf_MSVC_STATIC_RUNTIME=OFF
+  - cmake -G "Visual Studio 15 2017" -A x64 -Dprotobuf_BUILD_TESTS=OFF -Dprotobuf_BUILD_EXAMPLES=OFF -Dprotobuf_MSVC_STATIC_RUNTIME=OFF
   # 1b) Build Protobuf
   - cmake --build . --config Release --target install
   # 2) Patch CSGO Protobufs
@@ -99,7 +99,7 @@ before_build:
   - cd C:\projects\csgo-cli
 
 build_script:
-  - cmake -G "Visual Studio 14 2015 Win64" -DCMAKE_TOOLCHAIN_FILE=c:/tools/vcpkg/scripts/buildsystems/vcpkg.cmake
+  - cmake -G "Visual Studio 15 2017" -A x64 -DCMAKE_TOOLCHAIN_FILE=c:/tools/vcpkg/scripts/buildsystems/vcpkg.cmake
   - dir C:\projects\csgo-cli
   - msbuild C:\projects\csgo-cli\csgo_cli.sln /m /p:Configuration=Release /p:Platform=x64 /logger:"C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll" 
 
