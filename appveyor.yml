@@ -90,7 +90,7 @@ before_build:
   # 1) Compile Protobuf
   - cd C:\projects\csgo-cli\dependencies\protobuf\cmake
   # 1a) Configure Protobuf
-  - cmake -G "Visual Studio 15 2017" -A x64 -Dprotobuf_BUILD_TESTS=OFF -Dprotobuf_BUILD_EXAMPLES=OFF -Dprotobuf_MSVC_STATIC_RUNTIME=OFF -DZLIB_LIBRARY=C:\projects\csgo-cli\dependencies\zlib\lib\zlib.lib -DZLIB_INCLUDE_DIR=C:\projects\csgo-cli\dependencies\zlib\include .
+  - cmake -G "Visual Studio 15 2017" -A x64 -Dprotobuf_BUILD_TESTS=OFF -protobuf_BUILD_CONFORMANCE=OFF -Dprotobuf_BUILD_EXAMPLES=OFF -Dprotobuf_MSVC_STATIC_RUNTIME=OFF -DZLIB_LIBRARY=C:\projects\csgo-cli\dependencies\zlib\lib\zlib.lib -DZLIB_INCLUDE_DIR=C:\projects\csgo-cli\dependencies\zlib\include .
   # 1b) Build Protobuf
   - cmake --build . --config Release --target install
   # 2) Patch CSGO Protobufs
