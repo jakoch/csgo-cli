@@ -55,18 +55,10 @@ find_package(Steamworks REQUIRED)
 #
 # Google Protobuf
 #
-set(PROTOBUF_INCLUDE_DIR "${CMAKE_SOURCE_DIR}/dependencies/protobuf/src")
-
-if(WIN32)
-    set(PROTOBUF_LIBRARY       "${CMAKE_SOURCE_DIR}/dependencies/protobuf/cmake/release/libprotobuf.lib")
-    set(PROTOBUF_LIBRARY_DEBUG "${CMAKE_SOURCE_DIR}/dependencies/protobuf/cmake/release/libprotobuf.lib")
-endif()
-
-if(WIN32)
-    set(PROTOBUF_PROTOC_EXECUTABLE "${CMAKE_SOURCE_DIR}/dependencies/protobuf/cmake/release/protoc.exe")
-else()
-    set(PROTOBUF_PROTOC_EXECUTABLE "${CMAKE_SOURCE_DIR}/dependencies/protobuf/cmake/release/protoc")
-endif()
+set(PROTOBUF_INCLUDE_DIR        "${CMAKE_SOURCE_DIR}/dependencies/protobuf/src")
+set(PROTOBUF_IMPORT_DIRS)       "${CMAKE_SOURCE_DIR}/dependencies/protobuf/src"
+set(PROTOBUF_LIBRARY            "${CMAKE_SOURCE_DIR}/dependencies/protobuf/cmake/release/libprotobuf.lib")    
+set(PROTOBUF_PROTOC_EXECUTABLE  "${CMAKE_SOURCE_DIR}/dependencies/protobuf/cmake/release/protoc.exe")
 
 find_package(Protobuf REQUIRED)
 
