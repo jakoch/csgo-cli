@@ -123,7 +123,7 @@ after_build:
   # 3) package dependencies folder  
   # 3a) copy securefile + enrypted sw_sdk
   - copy C:\projects\csgo-cli\secure-file.1.0.31\tools\secure-file.exe C:\projects\csgo-cli\dependencies
-  - copy C:\projects\csgo-cli\downloads\sw_sdk_142.zip.enc C:\projects\csgo-cli\dependencies
+  - copy C:\projects\csgo-cli\downloads\sw_sdk_144.zip.enc C:\projects\csgo-cli\dependencies
   # 3b) delete unecrypted sw_sdk folder
   - cd C:\projects\csgo-cli\dependencies
   - rmdir /S /Q sw_sdk
