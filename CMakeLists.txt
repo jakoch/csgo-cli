@@ -222,9 +222,6 @@ set(FILES_TO_DEPLOY
     "${CMAKE_SOURCE_DIR}/dependencies/curl/bin/libcurl.dll"
     # mpir
     "${CMAKE_SOURCE_DIR}/dependencies/mpir/bin/mpir.dll"
-    # openssl
-    "${CMAKE_SOURCE_DIR}/dependencies/openssl/bin/libeay32.dll"
-    "${CMAKE_SOURCE_DIR}/dependencies/openssl/bin/ssleay32.dll"
     # zlib
     "${CMAKE_SOURCE_DIR}/dependencies/zlib/bin/zlib1.dll"
 )
