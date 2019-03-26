@@ -25,13 +25,13 @@ public:
     std::string getMatchResult(const CMsgGCCStrike15_v2_MatchmakingServerRoundStats & roundStats);
     int getMatchResultNum(const CMsgGCCStrike15_v2_MatchmakingServerRoundStats & roundStats);
     
-    CMsgGCCStrike15_v2_MatchList exposedProt;
+    CMsgGCCStrike15_v2_MatchList matchList;
 
 private:
-    void OnClientWelcome(const CMsgClientWelcome& msg);
+    //void OnClientWelcome(const CMsgClientWelcome& msg);
     void OnMatchList(const CMsgGCCStrike15_v2_MatchList& msg);
-    void LoadOldMatchList();
-    void SaveMatchList();
+    //void LoadOldMatchList();
+    //void SaveMatchList();
 
 private:
     bool m_updateComplete;

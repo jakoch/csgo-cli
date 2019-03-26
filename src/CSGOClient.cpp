@@ -127,19 +127,20 @@ void CSGOClient::Destroy()
     m_instance = nullptr;
 }
 
-void CSGOClient::WaitForGcConnect()
+void CSGOClient::WaitForGameClientConnect()
 {
-    if (m_connectedToGc) {
+    if (m_connectedToGameClient) {
         return;
     }
 
     std::unique_lock<std::mutex> lock(m_connectedMutex);
-    m_connectedCV.wait_for(lock, std::chrono::milliseconds(CSGO_CLI_STEAM_GC_CONNECT_MAX));
-    m_connectedToGc = true;
+	// if this takes longer than 10 seconds we are already connected to the gc
+    m_connectedCV.wait_for(lock, std::chrono::seconds(10));
+    m_connectedToGameClient = true;
 }
 
 void CSGOClient::OnClientWelcome(const CMsgClientWelcome& msg)
 {
-    m_connectedToGc = true;
+    m_connectedToGameClient = true;
     m_connectedCV.notify_all();
 }

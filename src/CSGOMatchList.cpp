@@ -31,7 +31,7 @@ CSGOMatchList::~CSGOMatchList()
 void CSGOMatchList::OnMatchList(const CMsgGCCStrike15_v2_MatchList& msg)
 {
     std::unique_lock<std::mutex> lock(m_matchMutex);
-    exposedProt = msg;
+    /*matchList = msg;
     size_t oldCount = m_matches.size();
     for (auto it = msg.matches().rbegin(); it != msg.matches().rend(); ++it)
     {
@@ -43,7 +43,12 @@ void CSGOMatchList::OnMatchList(const CMsgGCCStrike15_v2_MatchList& msg)
         if (oldmatch == m_matches.end()) {
             m_matches.push_back(*it);
         }
-    }
+    }*/
+
+	for (auto it = msg.matches().rbegin(); it != msg.matches().rend(); ++it) {
+		m_matches.push_back(*it);
+	}
+
     m_updateComplete = true;
     lock.unlock();
     m_updateCv.notify_all();
@@ -66,7 +71,7 @@ void CSGOMatchList::RefreshWait()
     Refresh();
     std::unique_lock<std::mutex> lock(m_matchMutex);
 
-    m_updateCv.wait_for(lock, std::chrono::milliseconds(CSGO_CLI_STEAM_CMSG_TIMEOUT));
+	m_updateCv.wait_for(lock, std::chrono::milliseconds(CSGO_CLI_STEAM_CMSG_TIMEOUT));
 
     if (!m_updateComplete) {
         throw CSGO_CLI_TimeoutException();
@@ -95,8 +100,6 @@ int CSGOMatchList::getOwnIndex(const CMsgGCCStrike15_v2_MatchmakingServerRoundSt
 
 int CSGOMatchList::getPlayerIndex(uint32 accid, const CMsgGCCStrike15_v2_MatchmakingServerRoundStats& roundStats)
 {
-    //uint32 accid = SteamUser()->GetSteamID().GetAccountID();
-
     for (int i = 0; i < roundStats.reservation().account_ids().size(); ++i) {
         if (roundStats.reservation().account_ids(i) == accid) {
             return i;

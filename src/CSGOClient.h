@@ -50,9 +50,9 @@ public:
     void RemoveHandler(uint32 msgId, IGCMsgHandler* handler);
 
     /**
-     * Blocks until we are connected to the gc
+     * Blocks until we are connected to the GameClient
      */
-    void WaitForGcConnect();
+    void WaitForGameClientConnect();
 
 private:
     /**
@@ -82,7 +82,7 @@ private:
     GCMsgHandler<CMsgClientWelcome> m_welcomeHandler;
     std::condition_variable m_connectedCV;
     std::mutex m_connectedMutex;
-    bool m_connectedToGc = false;
+    bool m_connectedToGameClient = false;
 
     ISteamGameCoordinator* m_gameCoordinator;
 

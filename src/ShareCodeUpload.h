@@ -16,7 +16,9 @@ size_t CurlWrite_CallbackFunc_StdString(void *contents, size_t size, size_t nmem
 	try {
 		s->resize(oldLength + newLength);
 	}
-	catch (std::bad_alloc &e) {
+	catch (std::bad_alloc &e) {	
+		// self-assign to avoid unused/unreferenzed variable e
+		e = e;
 		//handle memory problem
 		return 0;
 	}

@@ -28,10 +28,20 @@ void Error(const char* title, const char* text)
     printf("%s: %s\n", title, text);
 }
 
+std::string getYear()
+{
+	auto now = std::chrono::system_clock::now();
+	auto in_time_t = std::chrono::system_clock::to_time_t(now);
+
+	std::stringstream ss;
+	ss << std::put_time(std::localtime(&in_time_t), "%Y");
+	return ss.str();
+}
+
 void PrintHelp()
 {
 	std::cout << "" << CSGO_CLI_BINARYNAME << " - v" << CSGO_CLI_VERSION << "\n"
-		<< "Copyright (c) 2018 Jens A. Koch.\n"
+		<< "Copyright (c) " << getYear() << " Jens A. Koch.\n"
 		<< "\n"
 		<< " CS:GO Console shows your user account, stats and latest matches.\n"
 		<< " You can also use the tool to upload demo sharecodes to csgostats.gg.\n"
@@ -61,8 +71,6 @@ const wchar_t* toWChar(const char *c)
 
     return wc;
 }
-
-struct stop_now_t { };
 
 int main(int argc, char** argv)
 {
@@ -184,12 +192,19 @@ int main(int argc, char** argv)
         } else if(option != ""){
             std::cerr << "ERROR (invalid argument): " << option << '/n';
 			std::cerr << "Check '" << CSGO_CLI_BINARYNAME << " -help/n" << std::endl;
-			//PrintHelp();
             return 1;
         }
     }
 
-    if(paramVerbose) std::clog << "LOG:" << "[ Start ] STEAM_INIT\n";
+	if (paramVerbose) {
+		std::clog << "LOG: PrintUser: " << int(paramPrintUser);
+		std::clog << "LOG: PrintMatches: " << int(paramPrintMatches);
+		// std::clog << "LOG: PrintPerformance: " << int(paramPrintPerf);
+		std::clog << "LOG: UploadShareCodes: " << int(paramUpload);
+		std::clog << "LOG: VerboseMode: " << int(paramVerbose);
+	}
+
+	if (paramVerbose) std::clog << "LOG:" << "[ Start ] STEAM_INIT\n";
 
     if (SteamAPI_RestartAppIfNecessary(k_uAppIdInvalid)) {
         return 1;
@@ -246,18 +261,19 @@ int main(int argc, char** argv)
     });
     if(paramVerbose) std::clog << "LOG:" << "[ End   ] CallbackThread & Steam_RunCallbacks\n";
 
-    if(paramVerbose) std::clog << "LOG:" << "[ Start ] Trying-GameClient-Connect\n";
+    if(paramVerbose) std::clog << "LOG:" << "[ Start ] Trying to establish a GameClient Connection\n";
     bool resultGameClientConnection = false;
     try
     {
         // make sure we are connected to the GameClient
-        if(paramVerbose) std::clog << "LOG:" << "Requesting: GameClient Connection\n";
-        CSGOClient::GetInstance()->WaitForGcConnect();
-        if(paramVerbose) std::clog << "LOG:" << "Successful: GameClient connected!\n";
+        if(paramVerbose) std::clog << "LOG:" << "          Requesting: GameClient Connection\n";
+        CSGOClient::GetInstance()->WaitForGameClientConnect();
+        if(paramVerbose) std::clog << "LOG:" << "          Successful: GameClient connected!\n";
         resultGameClientConnection = true;
 
         linkObj.account_id  = SteamUser()->GetSteamID().GetAccountID();
         linkObj.steam_id    = SteamUser()->GetSteamID().ConvertToUint64();
+		//linkObj.steam_player_level = SteamUser()->GetPlayerSteamLevel();
         linkObj.playername  = toWChar(SteamFriends()->GetPersonaName());
     }
     catch (ExceptionHandler& e)
@@ -271,32 +287,36 @@ int main(int argc, char** argv)
         Error("Fatal error", "GameClient could not connect.\n");
         return 1;
     }
-    if (paramVerbose) std::clog << "LOG:" << "[ End   ] Trying-GameClient-Connect\n";
+    if (paramVerbose) std::clog << "LOG:" << "[ End   ] Trying to establish a GameClient Connection\n";
 
     bool resultClientHello = false;
     if (paramPrintUser)
     {
-        if (paramVerbose) std::clog << "LOG:" << "[ Start ] [ Thread ] Hello\n";
+        if (paramVerbose) std::clog << "LOG:" << "[ Start ] [ Thread ] Hello Matchmaking\n";
 
         auto hellothread = std::thread([&linkObj, paramVerbose, &resultClientHello, ranks, levels]()
         {
             try
             {
-                std::this_thread::sleep_for(std::chrono::milliseconds(CSGO_CLI_STEAM_HELLO_DELAY));
+				std::this_thread::sleep_for(std::chrono::milliseconds(CSGO_CLI_STEAM_HELLO_DELAY));
 
                 CSGOMMHello mmhello;
-                if (paramVerbose) std::clog << "LOG:" << "requesting MMHello\n";
+                if (paramVerbose) std::clog << "LOG:" << "          Requesting: MMHello\n";
                 mmhello.RefreshWait();
-                if (paramVerbose) std::clog << "LOG:" << "got MMHello\n";
+				if (paramVerbose) std::clog << "LOG:" << "          Got MMHello\n";
 
                 resultClientHello = true;
-                //if (paramVerbose) std::clog << "DEBUG:" << mmhello.exposedProt.DebugString();
+
+				//if (paramVerbose) std::clog << "DEBUG:" << mmhello.data.DebugString();
                 
+				// player level
                 linkObj.player_level      = mmhello.data.player_level();
                 linkObj.player_level_str  = levels[mmhello.data.player_level() - 1];
                 linkObj.player_cur_xp     = mmhello.data.player_cur_xp();
-				
+
+				if (paramVerbose) std::clog << "LOG:" << "          Got Playerlevel data\n";
                 /*
+				// medals
 				linkObj.medals_arms       = mmhello.data.medals().medal_arms();
                 linkObj.medals_combat     = mmhello.data.medals().medal_combat();
                 linkObj.medals_global     = mmhello.data.medals().medal_global();
@@ -304,28 +324,42 @@ int main(int argc, char** argv)
                 linkObj.medals_weapon     = mmhello.data.medals().medal_weapon();
 				*/
 
+				// vac status
                 linkObj.vac_banned        = mmhello.data.vac_banned();
                 linkObj.penalty_seconds   = mmhello.data.penalty_seconds();
                 linkObj.penalty_reason    = mmhello.data.penalty_reason();
 
-                if (mmhello.data.ranking().has_rank_id())
-                {
-                    linkObj.rank_id   = mmhello.data.ranking().rank_id();
-                    linkObj.rank_str  = ranks[mmhello.data.ranking().rank_id() - 1];
-                }
-                if (mmhello.data.ranking().has_wins())
-                    linkObj.rank_wins = mmhello.data.ranking().wins();
-                if (mmhello.data.ranking().has_rank_change())
-                    linkObj.rank_change = mmhello.data.ranking().rank_change();
-                if (mmhello.data.commendation().has_cmd_friendly())
-                    linkObj.cmd_friendly = mmhello.data.commendation().cmd_friendly();
-                if (mmhello.data.commendation().has_cmd_teaching())
-                    linkObj.cmd_teaching = mmhello.data.commendation().cmd_teaching();
-                if (mmhello.data.commendation().has_cmd_leader())
-                    linkObj.cmd_leader = mmhello.data.commendation().cmd_leader();
-            }
-            catch (stop_now_t) {
-                return 0;
+				if (paramVerbose) std::clog << "LOG:" << "          Got Vac data\n";
+
+				// ranking
+				/*if (mmhello.data.has_ranking()) {
+					if (mmhello.data.ranking().has_rank_id())
+					{
+						linkObj.rank_id = mmhello.data.ranking().rank_id();
+						linkObj.rank_str = ranks[mmhello.data.ranking().rank_id() - 1];
+					}
+					if (mmhello.data.ranking().has_wins()) {
+						linkObj.rank_wins = mmhello.data.ranking().wins();
+					}
+					if (mmhello.data.ranking().has_rank_change()) {
+						linkObj.rank_change = mmhello.data.ranking().rank_change();
+					}
+					if (paramVerbose) std::clog << "LOG:" << "          Got Ranks\n";
+				}
+				
+				// commendation
+				if (mmhello.data.has_commendation()) {					
+					if (mmhello.data.commendation().has_cmd_friendly()) {
+						linkObj.cmd_friendly = mmhello.data.commendation().cmd_friendly();
+					}
+					if (mmhello.data.commendation().has_cmd_teaching()) {
+						linkObj.cmd_teaching = mmhello.data.commendation().cmd_teaching();
+					}
+					if (mmhello.data.commendation().has_cmd_leader()) {
+						linkObj.cmd_leader = mmhello.data.commendation().cmd_leader();
+					}
+					if (paramVerbose) std::clog << "LOG:" << "          Got Commendation\n";
+				}*/
             }
             catch (CSGO_CLI_TimeoutException)
             {
@@ -337,12 +371,14 @@ int main(int argc, char** argv)
                 Error("Fatal error", e.what());
                 resultClientHello = false;
             }
-            if (paramVerbose) std::clog << "LOG:" << "[ End   ] [ Thread ] Hello\n";
+            if (paramVerbose) std::clog << "LOG:" << "[ End   ] [ Thread ] Hello Matchmaking\n";
             return 0;
         });
-
-        hellothread.join();
+		
+		hellothread.join();
     }
+
+	if (paramVerbose) std::clog << "LOG:" << "after hello thread.";
 
     bool resultMatchList = false;
 
@@ -462,9 +498,6 @@ int main(int argc, char** argv)
                 if (paramVerbose) std::clog << "LOG:" << "[ End   ] processing MatchList\n";
 
             }
-            catch (stop_now_t) {
-                return 0;
-            }
             catch (CSGO_CLI_TimeoutException)
             {
                 Error("Warning", "Timeout on receiving CMsgGCCStrike15_v2_MatchList.\n");
@@ -478,31 +511,30 @@ int main(int argc, char** argv)
             if (paramVerbose) std::clog << "LOG:" << "[ End   ] [ Thread ] MatchList\n";
             return 0;
         });
-
-        matchthread.join();
+				
+		matchthread.join();
     }
-
-    //if(paramVerbose) std::clog << "LOG:" << "Waiting for ThreadResults...\n";
-    //if(paramVerbose) std::clog << "LOG:" << "Waiting for ThreadResults - COMPLETED\n";
 
     // OUTPUT
 
     if (paramPrintUser && resultClientHello)
     {
         wprintf(L"\nName:               %s\n", linkObj.playername);
-        std::cout << std::left << std::setw(20) << "SteamID64:" << linkObj.steam_id << "/n";
-        //std::cout << std::left << std::setw(20) << "SteamID32:" << toSteamID32(linkObj.steam_id) << "/n";
-        std::cout << std::left << std::setw(20) << "SteamID:" << toSteamIDClassic(linkObj.steam_id) << "/n";
-        std::cout << std::left << std::setw(20) << "Rank:" << linkObj.rank_str << " (" << linkObj.rank_id << "/" << ranks.size() << ")\n";
-        std::cout << std::left << std::setw(20) << "MatchMaking Wins:" << linkObj.rank_wins << "\n";
+		fflush(stdout);
+
+        std::cout << std::left << std::setw(20) << "SteamID64:" << linkObj.steam_id << std::endl;
+        //std::cout << std::left << std::setw(20) << "SteamID32:" << toSteamID32(linkObj.steam_id) << std::endl;
+        std::cout << std::left << std::setw(20) << "SteamID:" << toSteamIDClassic(linkObj.steam_id) << std::endl;
+        std::cout << std::left << std::setw(20) << "Rank:" << linkObj.rank_str << "(" << linkObj.rank_id << "/" << ranks.size() << ")" << std::endl;
+        std::cout << std::left << std::setw(20) << "MatchMaking Wins:" << linkObj.rank_wins << std::endl;
         std::cout << std::left << std::setw(20) << "Player Level:" 
             << linkObj.player_level_str 
             << " (" << linkObj.player_level << "/40)" 
-            << " (XP:" << linkObj.player_cur_xp << ")\n";
+            << " (XP:" << linkObj.player_cur_xp << ")" << std::endl;
         std::cout << std::left << std::setw(20) << "Likes: "
             << linkObj.cmd_friendly     << " x friendly "
             << linkObj.cmd_teaching     << " x teaching "
-            << linkObj.cmd_leader       << " x leader\n";
+            << linkObj.cmd_leader       << " x leader" << std::endl;
         /*
 		std::cout << std::left << std::setw(20) << "Medals: "
             << linkObj.medals_arms      << " x arms "
@@ -511,8 +543,8 @@ int main(int argc, char** argv)
             << linkObj.medals_team      << " x team "
             << linkObj.medals_weapon    << " x weapon\n";
 			*/
-        std::cout << std::left << std::setw(20) << "VAC Banned:" << linkObj.vac_banned << "/n";
-        //std::cout << std::left << std::setw(20) << "Penalty:" << linkObj.penalty_reason << " (" << (linkObj.penalty_seconds / 60) << "m)\n";
+        std::cout << std::left << std::setw(20) << "VAC Banned:" << linkObj.vac_banned << std::endl;
+        //std::cout << std::left << std::setw(20) << "Penalty:" << linkObj.penalty_reason << " (" << (linkObj.penalty_seconds / 60) << "m)" << std::endl;
     }
     else if (paramPrintUser)
     {
@@ -542,7 +574,7 @@ int main(int argc, char** argv)
                 << std::setw(2)  << std::right << match.score_ally           << " : "
                 << std::setw(2)  << std::right << match.score_enemy          << " | ";
             std::cout << std::endl;
-            //std::cout << "Demolink:"              << match.demolink       << "/n";
+            //std::cout << "Demolink:"              << match.demolink       << "\n";
             //std::cout << "Match IP:"              << match.server_ip      << "/n";
             //std::cout << "Match Port:"            << match.tv_port        << "/n";
             //std::cout << "Match Reservation ID:"  << match.reservation_id << "/n";
@@ -626,11 +658,15 @@ int main(int argc, char** argv)
         result = 1;
     }
 
+	if (paramVerbose) std::clog << "LOG:" << "Thread + GameClient + SteamAPI Shutdown...\n";
+
     // shutdown
     running = false;
     CallbackThread.join();
     CSGOClient::Destroy();
     SteamAPI_Shutdown();
+
+	if (paramVerbose) std::clog << "LOG:" << "Thread + GameClient + SteamAPI Shutdown: Done.\n";
 
     return result;
 }
