@@ -148,20 +148,20 @@ add_executable(csgo_cli
     # application files
         src/main.cpp
         src/VersionAndConstants.h
-        src/CSGOMatchData.h
         src/CSGOClient.h
         src/CSGOClient.cpp
         src/GCMsgHandler.h
         src/CSGOMMHello.h
         src/CSGOMMHello.cpp
-        src/CSGOMatchPlayerScore.h
-        src/CSGOMatchPlayerScore.cpp
-        src/CSGOMMLinkObject.h
-        src/CSGOMMLinkObject.cpp
         src/CSGOMatchList.h
-        src/CSGOMatchList.cpp   
+        src/CSGOMatchList.cpp 
+		src/CSGOMatchData.h
+		src/CSGOMatchPlayerScore.h
+        src/CSGOMatchPlayerScore.cpp
         src/ExceptionHandler.h
         src/ExceptionHandler.cpp
+		src/DataObject.h
+        src/DataObject.cpp
         src/SteamId.h
         src/ShareCode.h
         src/ShareCodeUpload.h
