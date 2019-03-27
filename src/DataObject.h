@@ -11,6 +11,7 @@ class DataObject
 public:
 	std::string getPlayerLevel();
 	std::string getPlayerRank();
+	std::string getVacStatus();
 	std::string getLevelName(int i);
 	std::string getRankName(int i);
 
@@ -33,19 +34,19 @@ public:
 	// player level
 	uint32 player_level = 0;
 	std::string player_level_str;
-	uint32 player_cur_xp;
+	uint32 player_cur_xp = 0;
 
 	// medals
-	uint32 medals_arms;
-	uint32 medals_combat;
-	uint32 medals_global;
-	uint32 medals_team;
-	uint32 medals_weapon;
+	uint32 medals_arms = 0;
+	uint32 medals_combat = 0;
+	uint32 medals_global = 0;
+	uint32 medals_team = 0;
+	uint32 medals_weapon = 0;
 
 	// vac status
 	uint32 vac_banned = 0;
-	uint32 penalty_reason;
-	uint32 penalty_seconds;
+	uint32 penalty_reason = 0;
+	uint32 penalty_seconds = 0;
 
 	/*uint32 global_stats_players_online = 0;
 	uint32 global_stats_servers_online = 0;

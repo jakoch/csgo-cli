@@ -22,6 +22,21 @@
 #include "ShareCodeUpload.h"
 #include "SteamId.h"
 #include "ShareCode.h"
+#include "ConsoleTable.h"
+
+struct TableFormat {
+	int width;
+	TableFormat() : width(20) {}
+	template<typename T>
+	TableFormat& operator<<(const T& data) {
+		std::cout << std::left << std::setw(width) << data;
+		return *this;
+	}
+	TableFormat& operator<<(std::ostream&(*out)(std::ostream&)) {
+		std::cout << out;
+		return *this;
+	}
+};
 
 void Error(const char* title, const char* text)
 {
@@ -135,7 +150,7 @@ std::thread createCallbackThread(bool &running, bool &verbose)
 	return CallbackThread;
 }
 
-void initGameClientConnection(DataObject linkObj, bool &verbose)
+void initGameClientConnection(DataObject &data, bool &verbose)
 {
 	if (verbose) std::clog << "LOG:" << "[ Start ] Trying to establish a GameClient Connection\n";
 	bool resultGameClientConnection = false;
@@ -147,10 +162,10 @@ void initGameClientConnection(DataObject linkObj, bool &verbose)
 		if (verbose) std::clog << "LOG:" << "          Successful: GameClient connected!\n";
 		resultGameClientConnection = true;
 
-		linkObj.account_id = SteamUser()->GetSteamID().GetAccountID();
-		linkObj.steam_id = SteamUser()->GetSteamID().ConvertToUint64();
-		linkObj.steam_player_level = SteamUser()->GetPlayerSteamLevel();
-		linkObj.playername = toWChar(SteamFriends()->GetPersonaName());
+		data.account_id			= SteamUser()->GetSteamID().GetAccountID();
+		data.steam_id			= SteamUser()->GetSteamID().ConvertToUint64();
+		data.steam_player_level	= SteamUser()->GetPlayerSteamLevel();
+		data.playername			= toWChar(SteamFriends()->GetPersonaName());
 	}
 	catch (ExceptionHandler& e)
 	{
@@ -166,13 +181,13 @@ void initGameClientConnection(DataObject linkObj, bool &verbose)
 	if (verbose) std::clog << "LOG:" << "[ End   ] Trying to establish a GameClient Connection\n";
 }
 
-bool getAccountInfo(DataObject linkObj, bool &verbose)
+bool getUserInfo(DataObject &data, bool &verbose)
 {
 	if (verbose) std::clog << "LOG:" << "[ Start ] [ Thread ] getUserInfo\n";
 
 	bool resultClientHello = false;
 
-	auto hellothread = std::thread([&linkObj, verbose, &resultClientHello]()
+	auto hellothread = std::thread([&data, verbose, &resultClientHello]()
 	{
 		try
 		{
@@ -188,35 +203,34 @@ bool getAccountInfo(DataObject linkObj, bool &verbose)
 			//if (paramVerbose) std::clog << "DEBUG:" << mmhello.data.DebugString();
 
 			// player level
-			linkObj.player_level		= mmhello.data.player_level();
-			linkObj.player_cur_xp		= mmhello.data.player_cur_xp();
+			data.player_level		= mmhello.data.player_level();
+			data.player_cur_xp		= mmhello.data.player_cur_xp();
 			// medals
-			/*linkObj.medals_arms		= mmhello.data.medals().medal_arms();
-			linkObj.medals_combat		= mmhello.data.medals().medal_combat();
-			linkObj.medals_global		= mmhello.data.medals().medal_global();
-			linkObj.medals_team			= mmhello.data.medals().medal_team();
-			linkObj.medals_weapon		= mmhello.data.medals().medal_weapon();*/
+			/*data.medals_arms		= mmhello.data.medals().medal_arms();
+			data.medals_combat		= mmhello.data.medals().medal_combat();
+			data.medals_global		= mmhello.data.medals().medal_global();
+			data.medals_team		= mmhello.data.medals().medal_team();
+			data.medals_weapon		= mmhello.data.medals().medal_weapon();*/
 			// vac status
-			linkObj.vac_banned			= mmhello.data.vac_banned();
-			linkObj.penalty_seconds		= mmhello.data.penalty_seconds();
-			linkObj.penalty_reason		= mmhello.data.penalty_reason();
+			data.vac_banned			= mmhello.data.vac_banned();
+			data.penalty_seconds	= mmhello.data.penalty_seconds();
+			data.penalty_reason		= mmhello.data.penalty_reason();
 			// ranks
 			if (mmhello.data.has_ranking()) {				
-				linkObj.rank_id			= mmhello.data.ranking().rank_id();
-				linkObj.rank_wins		= mmhello.data.ranking().wins();				
-				linkObj.rank_change		= mmhello.data.ranking().rank_change();
-								
+				data.rank_id		= mmhello.data.ranking().rank_id();
+				data.rank_wins		= mmhello.data.ranking().wins();				
+				data.rank_change	= mmhello.data.ranking().rank_change();								
 			}
 			// commendations
 			if (mmhello.data.has_commendation()) {				
-				linkObj.cmd_friendly	= mmhello.data.commendation().cmd_friendly();
-				linkObj.cmd_teaching	= mmhello.data.commendation().cmd_teaching();
-				linkObj.cmd_leader		= mmhello.data.commendation().cmd_leader();			
+				data.cmd_friendly	= mmhello.data.commendation().cmd_friendly();
+				data.cmd_teaching	= mmhello.data.commendation().cmd_teaching();
+				data.cmd_leader		= mmhello.data.commendation().cmd_leader();			
 			}
 		}
 		catch (CSGO_CLI_TimeoutException)
 		{
-			Error("Warning", "Timeout on receiving CMsgGCCStrike15_v2_MatchmakingGC2ClientHello\n");
+			Error("Warning", "Timeout on receiving UserInfo.\n");
 			resultClientHello = false;
 		}
 		catch (ExceptionHandler& e)
@@ -224,7 +238,7 @@ bool getAccountInfo(DataObject linkObj, bool &verbose)
 			Error("Fatal error", e.what());
 			resultClientHello = false;
 		}
-		if (verbose) std::clog << "LOG:" << "[ End   ] [ Thread ] Hello Matchmaking\n";
+		if (verbose) std::clog << "LOG:" << "[ End   ] [ Thread ] getUserInfo\n";
 		return 0;
 	});
 
@@ -233,13 +247,13 @@ bool getAccountInfo(DataObject linkObj, bool &verbose)
 	return resultClientHello;
 }
 
-bool getMatches(DataObject linkObj, bool &verbose)
+bool getMatches(DataObject &data, bool &verbose)
 {
 	bool resultMatchList = false;
 	
 	if (verbose) std::clog << "LOG:" << "[ Start ] [ Thread ] MatchList\n";
 
-	auto matchthread = std::thread([&linkObj, verbose, &resultMatchList]()
+	auto matchthread = std::thread([&data, verbose, &resultMatchList]()
 	{
 		try
 		{
@@ -345,7 +359,7 @@ bool getMatches(DataObject linkObj, bool &verbose)
 				parsedMatch.result = roundStats.match_result();
 				parsedMatch.result_str = matchList.getMatchResult(roundStats);
 
-				linkObj.matches.push_back(parsedMatch);
+				data.matches.push_back(parsedMatch);
 
 				if (verbose) std::clog << "LOG:" << "[ End   ] processing Match\n";
 			}
@@ -354,7 +368,7 @@ bool getMatches(DataObject linkObj, bool &verbose)
 		}
 		catch (CSGO_CLI_TimeoutException)
 		{
-			Error("Warning", "Timeout on receiving CMsgGCCStrike15_v2_MatchList.\n");
+			Error("Warning", "Timeout on receiving MatchList.\n");
 			resultMatchList = false;
 		}
 		catch (ExceptionHandler& e)
@@ -371,160 +385,92 @@ bool getMatches(DataObject linkObj, bool &verbose)
 	return resultMatchList;
 }
 
-
 void exitIfGameIsRunning()
 {
 #ifdef _WIN32
 	HWND test = FindWindowW(0, L"Counter-Strike: Global Offensive");
 	if (test != NULL)
 	{
-		Error("Warning", "CS:GO is currently running.\nPlease close the game, before running this program.\n");
+		Error("Warning", "\nCS:GO is currently running.\nPlease close the game, before running this program.\n");
 		exit(1);
 	}
 #endif
 }
 
-const std::vector<std::string> ranks = {
-		"-unranked-",
-		"Silver 1",
-		"Silver 2",
-		"Silver 3",
-		"Silver 4",
-		"Silver Elite",
-		"Silver Elite Master"
-		"Gold Nova 1",
-		"Gold Nova 2",
-		"Gold Nova 3",
-		"Gold Nova 4",
-		"Master Guardian 1",              // single AK
-		"Master Guardian 2",              // AK with wings
-		"Master Guardian Elite",          // double AK
-		"Distinguished Master Guardian",  // star
-		"Legendary Eagle",                // eagle
-		"Legendary Eagle Master",         // eagle with wings
-		"Supreme Master First Class",     // small globe
-		"Global Elite",                   // big globe
-};
-
-const std::vector<std::string> levels =
+void printAccountInfo(DataObject &data)
 {
-	"Not Recruited",
-	"Recruit",
-	"Private",
-	"Private",
-	"Private",
-	"Corporal",
-	"Corporal",
-	"Corporal",
-	"Corporal",
-	"Sergeant",
-	"Sergeant",
-	"Sergeant",
-	"Sergeant",
-	"Master Sergeant",
-	"Master Sergeant",
-	"Master Sergeant",
-	"Master Sergeant",
-	"Sergeant Major",
-	"Sergeant Major",
-	"Sergeant Major",
-	"Sergeant Major",
-	"Lieutenant",
-	"Lieutenant",
-	"Lieutenant",
-	"Lieutenant",
-	"Captain",
-	"Captain",
-	"Captain",
-	"Captain",
-	"Major",
-	"Major",
-	"Major",
-	"Major",
-	"Colonel",
-	"Colonel",
-	"Colonel",
-	"Brigadier General",
-	"Major General",
-	"Lieutenant General",
-	"General",
-	"Global General"
-};
+	char name[40];
+	sprintf(name, "%ls", data.playername); // %ls format = wchar_t*
 
-void printAccountInfo(DataObject data)
-{
-	wprintf(L"\nName:               %s\n", data.playername);
-	fflush(stdout);
+	char rank[50];
+	sprintf(rank, "%s (%d/18)", data.getPlayerRank().c_str(), data.rank_id);
 
-	std::cout << std::left << std::setw(20) << "SteamID64:" << data.steam_id << std::endl;
-	//std::cout << std::left << std::setw(20) << "SteamID32:" << toSteamID32(linkObj.steam_id) << std::endl;
-	std::cout << std::left << std::setw(20) << "SteamID:" << toSteamIDClassic(data.steam_id) << std::endl;
-	std::cout << std::left << std::setw(20) << "Rank:" << data.rank_str << "(" << data.rank_id << "/" << ranks.size() << ")" << std::endl;
-	std::cout << std::left << std::setw(20) << "MatchMaking Wins:" << data.rank_wins << std::endl;
-	std::cout << std::left << std::setw(20) << "Player Level:"
-		<< data.player_level_str
-		<< " (" << data.player_level << "/40)"
-		<< " (XP:" << data.player_cur_xp << ")" << std::endl;
-	std::cout << std::left << std::setw(20) << "Likes: "
-		<< data.cmd_friendly << " x friendly "
-		<< data.cmd_teaching << " x teaching "
-		<< data.cmd_leader << " x leader" << std::endl;
+	char level[50];
+	sprintf(level, "%s (%d/40) (XP:%d)", data.getPlayerLevel().c_str(), data.player_level, data.player_cur_xp);
+
+	char likes[50];
+	sprintf(likes, "%d x friendly, %d x teaching, %d x leader", data.cmd_friendly, data.cmd_teaching, data.cmd_leader);
+
 	/*
-	std::cout << std::left << std::setw(20) << "Medals: "
-		<< linkObj.medals_arms      << " x arms "
-		<< linkObj.medals_combat    << " x combat "
-		<< linkObj.medals_global    << " x global "
-		<< linkObj.medals_team      << " x team "
-		<< linkObj.medals_weapon    << " x weapon\n";
-		*/
-	std::cout << std::left << std::setw(20) << "VAC Banned:" << data.vac_banned << std::endl;
-	//std::cout << std::left << std::setw(20) << "Penalty:" << linkObj.penalty_reason << " (" << (linkObj.penalty_seconds / 60) << "m)" << std::endl;
+	char medals[50];
+	sprintf(likes, "%d x arms, %d x combat, %d x global, %d x team, %d x weapon", 
+		data.medals_arms, data.medals_combat, data.medals_global, data.medals_team, data.medals_weapon);
+	*/
+
+	char penalty[100];
+	sprintf(penalty, "%d (%d/60m)", data.penalty_reason, (data.penalty_seconds / 60));
+
+	TableFormat t;
+	t << std::endl;
+	t << "Name:"			    << name								<< std::endl;
+	t << "SteamID64:"			<< data.steam_id					<< std::endl;
+	//t << "SteamID32:"			<< toSteamID32(data.steam_id)		<< std::endl;
+	t << "SteamID:"				<< toSteamIDClassic(data.steam_id)	<< std::endl;
+	t << "Rank:"				<< rank								<< std::endl;
+	t << "MatchMaking Wins:"	<< data.rank_wins					<< std::endl;
+	t << "Player Level:"		<< level							<< std::endl;
+	t << "Likes: "				<< likes							<< std::endl;
+	//t << "Medals:"            << medals							<< std::endl;
+	t << "VAC Status:"			<< data.getVacStatus()				<< std::endl;
+	t << "Penalty:"				<< penalty							<< std::endl;
 }
 
-void printMatches(DataObject data)
+void printMatches(DataObject &data)
 {
 	wprintf(L"\n Hello %s!\n\n Here are your latest matches:\n", data.playername);
-	std::cout << std::endl;
-	std::cout << " | "
-		<< std::setw(19) << std::left << "Match Played" << " | "
-		<< std::setw(8) << std::left << "Duration" << " | "
-		<< std::setw(8) << std::left << "Map" << " | "
-		<< std::setw(7) << std::left << "Result" << " | "
-		<< std::setw(7) << std::left << "Score" << " | ";
-	std::cout << std::endl;
 
+	ConsoleTable t{ "Match Played", "Duration", "Map", "Result", "Score Ally", "Score Enemy" };
+	t.setPadding(1);
+	t.setStyle(0);
+
+	int i = 0;
 	for (auto &match : data.matches)
-	{
-		std::cout << " | "
-			<< std::setw(19) << std::left << match.matchtime_str << " | "
-			<< std::setw(8) << std::left << match.match_duration_str << " | "
-			<< std::setw(8) << std::left << (((match.map).empty()) ? "? " : match.map) << " | "
-			<< std::setw(7) << std::left << match.result_str << " | "
-			<< std::setw(2) << std::right << match.score_ally << " : "
-			<< std::setw(2) << std::right << match.score_enemy << " | ";
-		std::cout << std::endl;
-		//std::cout << "Demolink:"              << match.demolink       << "\n";
-		//std::cout << "Match IP:"              << match.server_ip      << "/n";
-		//std::cout << "Match Port:"            << match.tv_port        << "/n";
-		//std::cout << "Match Reservation ID:"  << match.reservation_id << "/n";
-		//std::cout << "Demo ShareCode:"        << match.sharecode      << "/n";
-		//std::cout   << "MatchID:"               << match.matchid        << "/n";
+	{		
+		t.updateRow(i, 0, match.matchtime_str);
+		t.updateRow(i, 1, match.match_duration_str);
+		t.updateRow(i, 2, (((match.map).empty()) ? "? " : match.map));
+		t.updateRow(i, 3, match.result_str);
+		t.updateRow(i, 4, std::to_string(match.score_ally));
+		t.updateRow(i, 5, std::to_string(match.score_enemy));
+		//std::cout << "Demolink:"              << match.demolink       ;
+		//std::cout << "Match IP:"              << match.server_ip      ;
+		//std::cout << "Match Port:"            << match.tv_port        ;
+		//std::cout << "Match Reservation ID:"  << match.reservation_id ;
+		//std::cout << "Demo ShareCode:"        << match.sharecode      ;
+		//std::cout << "MatchID:"               << match.matchid        ;
+		i++;
 	}
 }
 
-void printScoreboard(DataObject data)
+void printScoreboard(DataObject &data)
 {
 	std::cout << std::endl;
-	std::cout << " | "
-		<< std::setw(19) << std::left << "Match Played" << " | "
-		<< std::setw(4) << std::left << "Res." << " | "
-		<< std::setw(7) << std::left << "Score" << " || "
-		<< std::setw(2) << std::left << "K" << " | "
-		<< std::setw(2) << std::left << "A" << " | "
-		<< std::setw(2) << std::left << "D" << " | "
-		<< std::setw(3) << std::left << "MVP" << " | "
-		<< std::setw(5) << std::left << "Score";
-	std::cout << std::endl;
+
+	ConsoleTable t{ "Match Played", "Res.", "Score", "K", "A", "D", "MVP", "Score" };
+	t.setPadding(1);
+	t.setStyle(0);
+
+	int i = 0;
 
 	for (auto &match : data.matches)
 	{
@@ -532,25 +478,21 @@ void printScoreboard(DataObject data)
 		{
 			if (player.account_id == data.account_id)
 			{
-				std::cout << "|| "
-					<< std::setw(19) << std::left << match.matchtime_str << " | "
-					<< std::setw(4) << std::left << match.result_str << " | "
-					<< std::setw(2) << std::right << match.score_ally
-					<< " : "
-					<< std::setw(2) << std::right << match.score_enemy
-					<< " ||"
-					<< std::setw(3) << std::right << player.kills << " |"
-					<< std::setw(3) << std::right << player.assists << " |"
-					<< std::setw(3) << std::right << player.deaths << " |"
-					<< std::setw(3) << std::right << player.mvps << " | "
-					<< std::setw(5) << std::right << player.score;
-				std::cout << std::endl;
+				t.updateRow(i, 0, match.matchtime_str);
+				t.updateRow(i, 1, match.result_str);
+				t.updateRow(i, 2, std::to_string(match.score_ally));
+				t.updateRow(i, 3, std::to_string(match.score_enemy));
+				t.updateRow(i, 4, std::to_string(player.kills));
+				t.updateRow(i, 5, std::to_string(player.assists));
+				t.updateRow(i, 6, std::to_string(player.deaths));
+				t.updateRow(i, 7, std::to_string(player.mvps));
+				t.updateRow(i, 8, std::to_string(player.score));
 			}
 		}
 	}
 }
 
-void uploadDemoShareCode(DataObject data)
+void uploadDemoShareCode(DataObject &data)
 {
 	std::cout << "\n Uploading Demo ShareCodes to https://csgostats.gg/:" << std::endl;
 
@@ -585,8 +527,6 @@ int main(int argc, char** argv)
 	bool paramPrintMatches = false;
 	bool paramPrintScoreboard = false;
 	bool paramUploadShareCode = false;
-
-	DataObject data;
 	
 	// default action
 	if (argc <= 1)
@@ -612,7 +552,7 @@ int main(int argc, char** argv)
 		else if (option == "-matches") {
 			paramPrintMatches = true;
 		}
-		else if (option == "-perf") {
+		else if (option == "-scoreboard") {
 			paramPrintScoreboard = true;
 		}
 		else if (option == "-user") {
@@ -623,8 +563,8 @@ int main(int argc, char** argv)
 			paramUploadShareCode = true;
 		}
 		else if (option != "") {
-			std::cerr << "ERROR (invalid argument): " << option << '/n';
-			std::cerr << "Check '" << CSGO_CLI_BINARYNAME << " -help/n" << std::endl;
+			std::cerr << "ERROR (invalid argument): " << option << std::endl;
+			std::cerr << "Please check: '" << CSGO_CLI_BINARYNAME << " -help'" << std::endl;
 			return 1;
 		}
 	}
@@ -636,13 +576,15 @@ int main(int argc, char** argv)
 	bool running = true;
 
 	std::thread CallbackThread = createCallbackThread(running, paramVerbose);	
+	
+	DataObject data;
 
 	initGameClientConnection(data, paramVerbose);
 
 	// GET DATA
 
 	if (paramPrintUser) {
-		if (!getAccountInfo(data, paramVerbose)) {
+		if (!getUserInfo(data, paramVerbose)) {
 			Error("\nError", "Steam did not respond in time. Could not print -user.\n");
 			exit(1);
 		}
@@ -675,14 +617,10 @@ int main(int argc, char** argv)
 	
     // SHUTDOWN
 
-	if (paramVerbose) std::clog << "LOG:" << "Init Shutdown...\n";
-
     running = false;
     CallbackThread.join();
     CSGOClient::Destroy();
     SteamAPI_Shutdown();
-
-	if (paramVerbose) std::clog << "LOG:" << "Shutdown: Done.\n";
 
     return result;
 }
