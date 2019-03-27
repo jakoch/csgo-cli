@@ -4,7 +4,6 @@
 #include <condition_variable>
 #include "CSGOClient.h"
 
-
 /**
  * utility class to store and update the match list
  */

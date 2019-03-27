@@ -54,6 +54,7 @@ public:
 	uint32 global_stats_servers_available = 0;
 	uint32 global_stats_ongoing_matches = 0;*/
 
+	bool has_matches_played = 0;
 	std::vector<CSGOMatchData> matches;
 
 private:	

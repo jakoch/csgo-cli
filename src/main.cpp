@@ -153,14 +153,14 @@ std::thread createCallbackThread(bool &running, bool &verbose)
 void initGameClientConnection(DataObject &data, bool &verbose)
 {
 	if (verbose) std::clog << "LOG:" << "[ Start ] Trying to establish a GameClient Connection\n";
-	bool resultGameClientConnection = false;
+	bool result = false;
 	try
 	{
 		// make sure we are connected to the GameClient
 		if (verbose) std::clog << "LOG:" << "          Requesting: GameClient Connection\n";
 		CSGOClient::GetInstance()->WaitForGameClientConnect();
 		if (verbose) std::clog << "LOG:" << "          Successful: GameClient connected!\n";
-		resultGameClientConnection = true;
+		result = true;
 
 		data.account_id			= SteamUser()->GetSteamID().GetAccountID();
 		data.steam_id			= SteamUser()->GetSteamID().ConvertToUint64();
@@ -170,10 +170,10 @@ void initGameClientConnection(DataObject &data, bool &verbose)
 	catch (ExceptionHandler& e)
 	{
 		Error("Fatal error", e.what());
-		resultGameClientConnection = false;
+		result = false;
 	}
 
-	if (!resultGameClientConnection)
+	if (!result)
 	{
 		Error("Fatal error", "GameClient could not connect.\n");
 		exit(1);
@@ -184,10 +184,10 @@ void initGameClientConnection(DataObject &data, bool &verbose)
 bool getUserInfo(DataObject &data, bool &verbose)
 {
 	if (verbose) std::clog << "LOG:" << "[ Start ] [ Thread ] getUserInfo\n";
+	
+	bool result = false;
 
-	bool resultClientHello = false;
-
-	auto hellothread = std::thread([&data, verbose, &resultClientHello]()
+	auto hellothread = std::thread([&data, verbose, &result]()
 	{
 		try
 		{
@@ -198,7 +198,7 @@ bool getUserInfo(DataObject &data, bool &verbose)
 			mmhello.RefreshWait();
 			if (verbose) std::clog << "LOG:" << "          Got Hello\n";
 
-			resultClientHello = true;
+			result = true;
 
 			//if (paramVerbose) std::clog << "DEBUG:" << mmhello.data.DebugString();
 
@@ -231,12 +231,12 @@ bool getUserInfo(DataObject &data, bool &verbose)
 		catch (CSGO_CLI_TimeoutException)
 		{
 			Error("Warning", "Timeout on receiving UserInfo.\n");
-			resultClientHello = false;
+			result = false;
 		}
 		catch (ExceptionHandler& e)
 		{
 			Error("Fatal error", e.what());
-			resultClientHello = false;
+			result = false;
 		}
 		if (verbose) std::clog << "LOG:" << "[ End   ] [ Thread ] getUserInfo\n";
 		return 0;
@@ -244,16 +244,16 @@ bool getUserInfo(DataObject &data, bool &verbose)
 
 	hellothread.join();
 
-	return resultClientHello;
+	return result;
 }
 
 bool getMatches(DataObject &data, bool &verbose)
 {
-	bool resultMatchList = false;
-	
 	if (verbose) std::clog << "LOG:" << "[ Start ] [ Thread ] MatchList\n";
 
-	auto matchthread = std::thread([&data, verbose, &resultMatchList]()
+	bool result = false;
+	
+	auto matchthread = std::thread([&data, verbose, &result]()
 	{
 		try
 		{
@@ -264,104 +264,112 @@ bool getMatches(DataObject &data, bool &verbose)
 			matchList.RefreshWait();
 			if (verbose) std::clog << "LOG:" << "got MatchList\n";
 
-			resultMatchList = true;
+			result = true;
 
 			if (verbose) std::clog << "LOG:" << "[ Start ] processing MatchList\n";
 
-			for (auto &match : matchList.Matches())
-			{
-				if (verbose) std::clog << "LOG:" << "[ Start ] processing Match\n";
+			// empty match history
+			if (matchList.Matches().size() == 0) {
+				data.has_matches_played = false;				
+			}
+			else {
+				data.has_matches_played = true;
+				
+				for (auto &match : matchList.Matches())
+				{
+					if (verbose) std::clog << "LOG:" << "[ Start ] processing Match\n";
 
-				CSGOMatchData parsedMatch;
+					CSGOMatchData parsedMatch;
 
-				// MATCHID
-				parsedMatch.matchid = match.matchid();
+					// MATCHID
+					parsedMatch.matchid = match.matchid();
 
-				// MATCHTIME
-				parsedMatch.matchtime = match.matchtime();
+					// MATCHTIME
+					parsedMatch.matchtime = match.matchtime();
 
-				// MATCHTIME_STR
-				char buffer_local[80];
-				strftime(buffer_local, 80, "%Y-%m-%d %H:%M:%S", localtime(&parsedMatch.matchtime));
-				parsedMatch.matchtime_str = buffer_local;
+					// MATCHTIME_STR
+					char buffer_local[30];
+					strftime(buffer_local, 30, "%Y-%m-%d %H:%M:%S", localtime(&parsedMatch.matchtime));
+					parsedMatch.matchtime_str = buffer_local;
 
-				// EXTRACT REPLAY INFO
-				parsedMatch.server_ip = match.watchablematchinfo().server_ip();
-				parsedMatch.tv_port = match.watchablematchinfo().tv_port();
+					// EXTRACT REPLAY INFO
+					parsedMatch.server_ip = match.watchablematchinfo().server_ip();
+					parsedMatch.tv_port = match.watchablematchinfo().tv_port();
 
-				//std::cout << match.DebugString();
-				//std::cout << match.watchablematchinfo().DebugString();
+					//std::cout << match.DebugString();
+					//std::cout << match.watchablematchinfo().DebugString();
 
-				// iterate roundstats
-				CMsgGCCStrike15_v2_MatchmakingServerRoundStats roundStats;
-				for (int i = 0; i < match.roundstatsall().size(); ++i) {
-					roundStats = match.roundstatsall(i);
+					// iterate roundstats				
+					CMsgGCCStrike15_v2_MatchmakingServerRoundStats roundStats;
+					for (int i = 0; i < match.roundstatsall().size(); ++i) {
+						roundStats = match.roundstatsall(i);
 
-					// ROUNDSTATS per player
-					/*for (auto &account_id : roundStats.reservation().account_ids())
-					{
-						if (paramVerbose) std::clog << "LOG:" << "[ Start ] MATCH-PLAYER\n";
+						// ROUNDSTATS per player
+						/*for (auto &account_id : roundStats.reservation().account_ids())
+						{
+							if (paramVerbose) std::clog << "LOG:" << "[ Start ] MATCH-PLAYER\n";
 
-						CSGOMatchPlayerScore player;
-						player.index = matchList.getPlayerIndex(account_id, roundStats);
-						player.account_id = account_id;
-						player.steam_id = CSteamID(player.account_id, k_EUniversePublic, k_EAccountTypeIndividual).ConvertToUint64();
-						player.kills = roundStats.kills(player.index);
-						player.assists = roundStats.assists(player.index);
-						player.deaths = roundStats.deaths(player.index);
-						player.mvps = roundStats.mvps(player.index);
-						player.score = roundStats.scores(player.index);
+							CSGOMatchPlayerScore player;
+							player.index = matchList.getPlayerIndex(account_id, roundStats);
+							player.account_id = account_id;
+							player.steam_id = CSteamID(player.account_id, k_EUniversePublic, k_EAccountTypeIndividual).ConvertToUint64();
+							player.kills = roundStats.kills(player.index);
+							player.assists = roundStats.assists(player.index);
+							player.deaths = roundStats.deaths(player.index);
+							player.mvps = roundStats.mvps(player.index);
+							player.score = roundStats.scores(player.index);
 
-						parsedMatch.scoreboard.push_back(player);
+							parsedMatch.scoreboard.push_back(player);
 
-						if (paramVerbose) std::clog << "LOG:" << "[ End   ] MATCH-PLAYER\n";
-					}*/
+							if (paramVerbose) std::clog << "LOG:" << "[ End   ] MATCH-PLAYER\n";
+						}*/
 
-					//std::cout << match.roundstatsall(i).DebugString() << "/n";
+						//std::cout << match.roundstatsall(i).DebugString() << "/n";
+					}
+
+					// RESERVATION ID (from last roundstats item)
+					parsedMatch.reservation_id = roundStats.reservationid();
+
+					// MATCH DURATION in secs
+					parsedMatch.match_duration = roundStats.match_duration();
+
+					// MATCH DURATION STRING min:sec
+					char buffer_local2[8];
+					strftime(buffer_local2, 8, "%M:%S", localtime(&parsedMatch.match_duration));
+					parsedMatch.match_duration_str = buffer_local2;
+
+					// map
+					parsedMatch.map = match.watchablematchinfo().game_map();
+					parsedMatch.mapgroup = match.watchablematchinfo().game_mapgroup();
+					parsedMatch.gametype = match.watchablematchinfo().game_type();
+
+					//if (paramVerbose) std::clog << "LOG:" << match.DebugString();
+
+					// link to replay / demo
+					// roundStats.map() is the http link to the bz2 archived demo file
+					parsedMatch.demolink = roundStats.map();
+
+					//if (paramVerbose) std::clog << "LOG:" << roundStats.DebugString();
+
+					// calculate ShareCode for demo
+					parsedMatch.sharecode = toDemoShareCode(parsedMatch.matchid, parsedMatch.reservation_id, parsedMatch.tv_port);
+
+					if (matchList.getOwnIndex(roundStats) >= 5) {
+						parsedMatch.score_ally = roundStats.team_scores(1);
+						parsedMatch.score_enemy = roundStats.team_scores(0);
+					}
+					else {
+						parsedMatch.score_ally = roundStats.team_scores(0);
+						parsedMatch.score_enemy = roundStats.team_scores(1);
+					}
+
+					parsedMatch.result = roundStats.match_result();
+					parsedMatch.result_str = matchList.getMatchResult(roundStats);
+
+					data.matches.push_back(parsedMatch);
+
+					if (verbose) std::clog << "LOG:" << "[ End   ] processing Match\n";
 				}
-
-				// RESERVATION ID (from last roundstats item)
-				parsedMatch.reservation_id = roundStats.reservationid();
-
-				// MATCH DURATION in secs
-				parsedMatch.match_duration = roundStats.match_duration();
-
-				// MATCH DURATION STRING min:sec
-				char buffer_local2[80];
-				strftime(buffer_local2, 80, "%M:%S", localtime(&parsedMatch.match_duration));
-				parsedMatch.match_duration_str = buffer_local2;
-
-				// map
-				parsedMatch.map = match.watchablematchinfo().game_map();
-				parsedMatch.mapgroup = match.watchablematchinfo().game_mapgroup();
-				parsedMatch.gametype = match.watchablematchinfo().game_type();
-
-				//if (paramVerbose) std::clog << "LOG:" << match.DebugString();
-
-				// link to replay / demo
-				// roundStats.map() is the http link to the bz2 archived demo file
-				parsedMatch.demolink = roundStats.map();
-
-				//if (paramVerbose) std::clog << "LOG:" << roundStats.DebugString();
-
-				// calculate ShareCode for demo
-				parsedMatch.sharecode = toDemoShareCode(parsedMatch.matchid, parsedMatch.reservation_id, parsedMatch.tv_port);
-
-				if (matchList.getOwnIndex(roundStats) >= 5) {
-					parsedMatch.score_ally = roundStats.team_scores(1);
-					parsedMatch.score_enemy = roundStats.team_scores(0);
-				}
-				else {
-					parsedMatch.score_ally = roundStats.team_scores(0);
-					parsedMatch.score_enemy = roundStats.team_scores(1);
-				}
-
-				parsedMatch.result = roundStats.match_result();
-				parsedMatch.result_str = matchList.getMatchResult(roundStats);
-
-				data.matches.push_back(parsedMatch);
-
-				if (verbose) std::clog << "LOG:" << "[ End   ] processing Match\n";
 			}
 			if (verbose) std::clog << "LOG:" << "[ End   ] processing MatchList\n";
 
@@ -369,12 +377,12 @@ bool getMatches(DataObject &data, bool &verbose)
 		catch (CSGO_CLI_TimeoutException)
 		{
 			Error("Warning", "Timeout on receiving MatchList.\n");
-			resultMatchList = false;
+			result = false;
 		}
 		catch (ExceptionHandler& e)
 		{
 			Error("Fatal error", e.what());
-			resultMatchList = false;
+			result = false;
 		}
 		if (verbose) std::clog << "LOG:" << "[ End   ] [ Thread ] MatchList\n";
 		return 0;
@@ -382,7 +390,7 @@ bool getMatches(DataObject &data, bool &verbose)
 
 	matchthread.join();
 
-	return resultMatchList;
+	return result;
 }
 
 void exitIfGameIsRunning()
@@ -437,7 +445,14 @@ void printAccountInfo(DataObject &data)
 
 void printMatches(DataObject &data)
 {
-	wprintf(L"\n Hello %s!\n\n Here are your latest matches:\n", data.playername);
+	wprintf(L"\nHello %s!\n\n", data.playername);
+
+	if (!data.has_matches_played) {
+		std::cout << "Your CS:GO match history is empty!" << std::endl;
+		return;
+	}
+
+	std::cout << "Here are your latest matches:" << std::endl;
 
 	ConsoleTable t{ "Match Played", "Duration", "Map", "Result", "Score Ally", "Score Enemy" };
 	t.setPadding(1);
@@ -445,7 +460,7 @@ void printMatches(DataObject &data)
 
 	int i = 0;
 	for (auto &match : data.matches)
-	{		
+	{
 		t.updateRow(i, 0, match.matchtime_str);
 		t.updateRow(i, 1, match.match_duration_str);
 		t.updateRow(i, 2, (((match.map).empty()) ? "? " : match.map));
