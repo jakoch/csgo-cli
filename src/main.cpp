@@ -448,7 +448,7 @@ void printMatches(DataObject &data)
 	wprintf(L"\nHello %s!\n\n", data.playername);
 
 	if (!data.has_matches_played) {
-		std::cout << "Your CS:GO match history is empty!" << std::endl;
+		std::cout << "Your CS:GO match history is empty." << std::endl;
 		return;
 	}
 
@@ -481,6 +481,11 @@ void printScoreboard(DataObject &data)
 {
 	std::cout << std::endl;
 
+	if (!data.has_matches_played) {
+		std::cout << "Your CS:GO match history is empty." << std::endl;
+		return;
+	}
+
 	ConsoleTable t{ "Match Played", "Res.", "Score", "K", "A", "D", "MVP", "Score" };
 	t.setPadding(1);
 	t.setStyle(0);
@@ -509,6 +514,11 @@ void printScoreboard(DataObject &data)
 
 void uploadDemoShareCode(DataObject &data)
 {
+	if (!data.has_matches_played) {
+		std::cout << "Your CS:GO match history is empty." << std::endl;
+		return;
+	}
+
 	std::cout << "\n Uploading Demo ShareCodes to https://csgostats.gg/:" << std::endl;
 
 	for (auto &match : data.matches)

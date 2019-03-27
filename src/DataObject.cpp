@@ -12,7 +12,7 @@ std::string DataObject::getPlayerRank()
 
 std::string DataObject::getVacStatus()
 {
-	return (vac_banned == 1) ? "banned" : "-";
+	return (vac_banned == 1) ? "banned" : "ok";
 }
 
 std::string DataObject::getLevelName(int i)
