@@ -94,3 +94,13 @@ The package excludes the Steamworks SDK, whose source is non-redistributable.
   - [x] curl based share-code uploader
   - [x] rapid-json based response parser
 - [ ] store matches locally (json, cvs, sqlite) to avoid re-posting sharecodes
+
+##### Development Notes
+
+- ShareCode Uploading to csgostats.gg
+  - The file containing the logic for uploading the ShareCode is ShareCodeUpload.h
+  - uploadShareCode() uses curl to POST the ShareCode
+  - The reponse is then parsed by processJsonResponse()
+  - There are 3 response types: error, queued, complete. See testProcessJsonResponse()
+  - For testing purposes: Posting a ShareCode to csgostats.gg using cURL on the CLI
+    - `curl "https://csgostats.gg/match/upload/ajax" -H "accept-language: en" -H "content-type: application/x-www-form-urlencoded; charset=UTF-8" -H "accept: application/json, text/javascript, */*; q=0.01" -H "x-requested-with: XMLHttpRequest" --data "sharecode=CSGO-WSACM-qX5Gv-ikbi3-Z6uOW-TGwPB&index=0"`
