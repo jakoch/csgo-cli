@@ -181,7 +181,7 @@ void initGameClientConnection(DataObject &data, bool &verbose)
 	if (verbose) std::clog << "LOG:" << "[ End   ] Trying to establish a GameClient Connection\n";
 }
 
-bool getUserInfo(DataObject &data, bool &verbose)
+bool requestPlayersProfile(DataObject &data, bool &verbose)
 {
 	if (verbose) std::clog << "LOG:" << "[ Start ] [ Thread ] getUserInfo\n";
 	
@@ -247,7 +247,7 @@ bool getUserInfo(DataObject &data, bool &verbose)
 	return result;
 }
 
-bool getMatches(DataObject &data, bool &verbose)
+bool requestRecentMatches(DataObject &data, bool &verbose)
 {
 	if (verbose) std::clog << "LOG:" << "[ Start ] [ Thread ] MatchList\n";
 
@@ -405,7 +405,7 @@ void exitIfGameIsRunning()
 #endif
 }
 
-void printAccountInfo(DataObject &data)
+void printPlayersProfile(DataObject &data)
 {
 	char name[40];
 	sprintf(name, "%ls", data.playername); // %ls format = wchar_t*
@@ -609,14 +609,14 @@ int main(int argc, char** argv)
 	// GET DATA
 
 	if (paramPrintUser) {
-		if (!getUserInfo(data, paramVerbose)) {
+		if (!requestPlayersProfile(data, paramVerbose)) {
 			Error("\nError", "Steam did not respond in time. Could not print -user.\n");
 			exit(1);
 		}
 	}
 
 	if (paramPrintMatches || paramPrintScoreboard || paramUploadShareCode) {
-		if (!getMatches(data, paramVerbose)) {
+		if (!requestRecentMatches(data, paramVerbose)) {
 			Error("\nError", "Steam did not respond in time.\n");
 			exit(1);
 		}
@@ -625,7 +625,7 @@ int main(int argc, char** argv)
     // OUTPUT
 
 	if (paramPrintUser) {		
-		printAccountInfo(data);
+		printPlayersProfile(data);
 	}
 
 	if (paramPrintMatches) {
