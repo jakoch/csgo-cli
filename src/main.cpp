@@ -515,7 +515,7 @@ void printScoreboard(DataObject &data)
 void uploadDemoShareCode(DataObject &data)
 {
 	if (!data.has_matches_played) {
-		std::cout << "Your CS:GO match history is empty." << std::endl;
+		std::cout << "No demo sharecodes to upload." << std::endl;
 		return;
 	}
 
