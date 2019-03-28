@@ -486,6 +486,8 @@ void printScoreboard(DataObject &data)
 		return;
 	}
 
+	std::cout << "Here is your scoreboard:" << std::endl;
+
 	ConsoleTable t{ "Match Played", "Res.", "Score", "K", "A", "D", "MVP", "Score" };
 	t.setPadding(1);
 	t.setStyle(0);
