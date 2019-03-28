@@ -9,7 +9,7 @@
 #include <functional> // std::greater
 
 /**
- * ConmsoleTable - A console based table structure
+ * ConsoleTable - A console based table structure
  * Github: https://github.com/766F6964/ConsoleTable
  * License: LGPL3
  */

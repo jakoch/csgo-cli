@@ -55,6 +55,8 @@ iteratable objects for further processing and output.
 - [RapidJson](http://rapidjson.org/)
   - RapidJson is a fast JSON parser/generator for C++ with both SAX/DOM style API.
   - It is used to parse the JSON responses from the csgostats server (error, complete, queued).
+- [ConsoleTable](https://github.com/766F6964/ConsoleTable) (inside /src)
+  - ConsoleTable is used to print tables to the console.
 - [CMake](https://cmake.org/)
   - CMake is used as build tool.
 - [Appveyor](https://www.appveyor.com/)
