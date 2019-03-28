@@ -41,7 +41,7 @@ int uploadShareCode(std::string shareCode, std::string& responseContent)
 	  char errorBuffer[CURL_ERROR_SIZE];
 
 	  // provide a buffer for storing errors
-	  //curl_easy_setopt(curl, CURLOPT_ERRORBUFFER, errorBuffer);
+	  curl_easy_setopt(curl, CURLOPT_ERRORBUFFER, errorBuffer);
 
       // 0. "pre-upload" request
 
