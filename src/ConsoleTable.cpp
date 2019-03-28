@@ -61,10 +61,12 @@ ConsoleTable &ConsoleTable::operator+=(std::initializer_list<std::string> row) {
 }
 
 ConsoleTable &ConsoleTable::operator-=(const uint32_t rowIndex) {
-	if (rows.size() < rowIndex)
+	if (rows.size() < rowIndex) {
 		throw std::out_of_range{ "Row index out of range." };
-
+	}
+	
 	removeRow(rowIndex);
+	return *this;
 }
 
 std::string ConsoleTable::getLine(RowType rowType) const {
