@@ -118,7 +118,7 @@ after_build:
   # 1.4) CHECK: output content of folder, to see if everything is present
   - dir C:\projects\csgo-cli\csgo-cli\
   # 1.5) package release folder
-  - 7z a csgo-cli.zip \csgo-cli\
+  - 7z a csgo-cli.zip csgo-cli
   # 2) test csgo-cli
   - C:\projects\csgo-cli\csgo-cli\csgo_cli.exe -V
   - C:\projects\csgo-cli\csgo-cli\csgo_cli.exe -help
