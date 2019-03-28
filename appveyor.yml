@@ -105,31 +105,33 @@ build_script:
 
 after_build:
   # 1) prepare packaging for csgo-cli
-  # 1a) check release folder
+  # 1.1) check release folder
   - dir C:\projects\csgo-cli\build\
   - dir C:\projects\csgo-cli\build\Release\
-  # 1b) copy stuff from release to build
+  # 1.2) copy stuff from release to build folder and remove release folder
   - copy C:\projects\csgo-cli\build\Release\*.* C:\projects\csgo-cli\build
   - cd C:\projects\csgo-cli\build
   - rmdir /s /q Release
+  # 1.3) rename build folder to csgo-cli
   - cd C:\projects\csgo-cli
-  # 1c) CHECK: output content of folder, to see if everything is present
-  - dir C:\projects\csgo-cli\build\
-  # 1d) package release folder
-  - 7z a csgo-cli.zip C:\projects\csgo-cli\build\*.*
+  - ren build csgo-cli
+  # 1.4) CHECK: output content of folder, to see if everything is present
+  - dir C:\projects\csgo-cli\csgo-cli\
+  # 1.5) package release folder
+  - 7z a csgo-cli.zip \csgo-cli\
   # 2) test csgo-cli
-  - C:\projects\csgo-cli\build\csgo_cli -V
-  - C:\projects\csgo-cli\build\csgo_cli -help
+  - C:\projects\csgo-cli\csgo-cli\csgo_cli.exe -V
+  - C:\projects\csgo-cli\csgo-cli\csgo_cli.exe -help
   # 3) package dependencies folder  
-  # 3a) delete unecrypted sw_sdk folder
+  # 3.1) delete unecrypted sw_sdk folder
   - cd C:\projects\csgo-cli\dependencies
   - rmdir /S /Q sw_sdk
   - rmdir /S /Q csgo-protobufs-patch
-  # 3b) copy securefile + enrypted sw_sdk
+  # 3.2) copy securefile + enrypted sw_sdk
   - mkdir C:\projects\csgo-cli\dependencies\sw_sdk
   - copy C:\projects\csgo-cli\secure-file.1.0.31\tools\secure-file.exe C:\projects\csgo-cli\dependencies\sw_sdk
   - copy C:\projects\csgo-cli\downloads\sw_sdk_144.zip.enc C:\projects\csgo-cli\dependencies\sw_sdk
-  # 3c) package dependencies folder
+  # 3.3) package dependencies folder
   - dir C:\projects\csgo-cli\dependencies
   - cd C:\projects\csgo-cli
   - 7z a csgo-cli-deps.zip C:\projects\csgo-cli\dependencies\
