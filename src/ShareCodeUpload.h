@@ -41,22 +41,22 @@ int uploadShareCode(std::string shareCode, std::string& responseContent)
 	  char errorBuffer[CURL_ERROR_SIZE];
 
 	  // provide a buffer for storing errors
-	  curl_easy_setopt(curl, CURLOPT_ERRORBUFFER, errorBuffer);
+	  //curl_easy_setopt(curl, CURLOPT_ERRORBUFFER, errorBuffer);
 
       // 0. "pre-upload" request
 
       // GET request to get the cookies
-      curl_easy_setopt(curl, CURLOPT_URL, "https://csgostats.gg");
-      curl_easy_setopt(curl, CURLOPT_VERBOSE, 1L);
+      //curl_easy_setopt(curl, CURLOPT_URL, "https://csgostats.gg");
+      //curl_easy_setopt(curl, CURLOPT_VERBOSE, 1L);
 
 	  // set the error buffer as empty before performing a request
-	  errorBuffer[0] = 0;
+	  //errorBuffer[0] = 0;
 
       // perform the request
-	  res = curl_easy_perform(curl);
+	  //res = curl_easy_perform(curl);
 	  
 	  // show error infos
-	  if (res != CURLE_OK) {
+	  /*if (res != CURLE_OK) {
 		// if the request did not complete correctly, show the error information
 		size_t len = strlen(errorBuffer);
 		fprintf(stderr, "\nlibcurl: (%d) ", res);
@@ -74,11 +74,11 @@ int uploadShareCode(std::string shareCode, std::string& responseContent)
 
 		return 1;
 	  }
-
+	  */
       // RESET
       // keeps these info in the curl handle:
       // live connections, Session ID cache, DNS cache, cookies and shares.
-      curl_easy_reset(curl);
+      //curl_easy_reset(curl);
 
 	  // --------------------
 
@@ -98,6 +98,7 @@ int uploadShareCode(std::string shareCode, std::string& responseContent)
 	  
 	  // 4. set headers
 	  struct curl_slist *headers = NULL;
+	  headers = curl_slist_append(headers, "accept-language: en");
 	  headers = curl_slist_append(headers, "Accept: application/json, text/javascript, */*; q=0.01");
 	  headers = curl_slist_append(headers, "x-requested-with: XMLHttpRequest");
 	  headers = curl_slist_append(headers, "content-type: application/x-www-form-urlencoded; charset=UTF-8");
