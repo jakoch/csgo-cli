@@ -2,12 +2,12 @@
 
 std::string DataObject::getPlayerLevel()
 {
-	return getLevelName(player_level);
+	return getLevelName(player_level - 1);
 }
 
 std::string DataObject::getPlayerRank()
 {
-	return getRankName(rank_id);
+	return getRankName(rank_id - 1);
 }
 
 std::string DataObject::getVacStatus()
