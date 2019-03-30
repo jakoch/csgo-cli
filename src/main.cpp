@@ -457,7 +457,7 @@ void printMatches(DataObject &data)
 	ConsoleTable t{ "Match Played", "Duration", "Map", "Result", "Score Ally", "Score Enemy" };
 	t.setPadding(1);
 	t.setStyle(0);
-
+	
 	int i = 0;
 	for (auto &match : data.matches)
 	{
@@ -475,6 +475,8 @@ void printMatches(DataObject &data)
 		//std::cout << "MatchID:"               << match.matchid        ;
 		i++;
 	}
+
+	std::cout << t;
 }
 
 void printScoreboard(DataObject &data)
@@ -512,6 +514,8 @@ void printScoreboard(DataObject &data)
 			}
 		}
 	}
+
+	std::cout << t;
 }
 
 void uploadDemoShareCode(DataObject &data)
