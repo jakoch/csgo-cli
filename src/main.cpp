@@ -65,9 +65,10 @@ void PrintHelp()
 		<< "  command [options] [arguments]\n"
 		<< "\n"
 		<< "Available commands:\n"
-		<< "  -user       " << " Show your profile (SteamID, AccountID, MM-Rank, Likes, VAC-Status)\n"
-		<< "  -matches    " << " Show your past matches in table form\n"
-		<< "  -upload     " << " Upload your past matches to csgostats.gg\n"
+		<< "  -user       "   << " Show your profile (SteamID, AccountID, MM-Rank, Likes, VAC-Status)\n"
+		<< "  -matches    "   << " Show your past matches in table form\n"
+		<< "  -upload     "   << " Upload your past matches to csgostats.gg\n"
+		<< "  -s, sharecode"  << " Upload a demo sharecode to csgostats.gg\n"
 		//<< "  -scoreboard " << " Show your past matches in scoreboard form\n"
 		<< "\n"
 		<< "Options:\n"
@@ -342,13 +343,13 @@ bool requestRecentMatches(DataObject &data, bool &verbose)
 					parsedMatch.mapgroup = match.watchablematchinfo().game_mapgroup();
 					parsedMatch.gametype = match.watchablematchinfo().game_type();
 
-					//if (paramVerbose) std::clog << "LOG:" << match.DebugString();
+					if (verbose) std::clog << "LOG:" << match.DebugString();
 
 					// link to replay / demo
 					// roundStats.map() is the http link to the bz2 archived demo file
 					parsedMatch.demolink = roundStats.map();
 
-					//if (paramVerbose) std::clog << "LOG:" << roundStats.DebugString();
+					//if (verbose) std::clog << "LOG:" << roundStats.DebugString();
 
 					// calculate ShareCode for demo
 					parsedMatch.sharecode = toDemoShareCode(parsedMatch.matchid, parsedMatch.reservation_id, parsedMatch.tv_port);
@@ -520,14 +521,14 @@ void printScoreboard(DataObject &data)
 	std::cout << t;
 }
 
-void uploadDemoShareCode(DataObject &data, bool &verbose)
+void uploadDemoShareCodes(DataObject &data, bool &verbose)
 {
 	if (!data.has_matches_played) {
 		std::cout << "No demo sharecodes to upload." << std::endl;
 		return;
 	}
 
-	std::cout << "\n Uploading Demo ShareCodes to https://csgostats.gg/:" << std::endl;
+	std::cout << "\n Uploading Demo ShareCode to https://csgostats.gg/:" << std::endl;
 	   
 	ShareCodeUpload *codeUpload = new ShareCodeUpload(verbose);
 	
@@ -548,13 +549,13 @@ void uploadDemoShareCode(DataObject &data, bool &verbose)
 	}
 }
 
-/*void testShareCodeUploading()
+void uploadShareCode(std::string &sharecode, bool &verbose)
 {
-	std::string sharecode = "CSGO-eswvd-G6sqt-fFGzy-GPmkB-fUxXD";
-	std::string jsonResponse;
-	bool paramVerbose = true;
+	std::cout << "\n Uploading Demo ShareCode to https://csgostats.gg/:" << std::endl;
 
-	ShareCodeUpload *codeUpload = new ShareCodeUpload(paramVerbose);
+	std::string jsonResponse;
+
+	ShareCodeUpload *codeUpload = new ShareCodeUpload(verbose);
 
 	if (codeUpload->uploadShareCode(sharecode, jsonResponse) == 0)
 	{
@@ -567,23 +568,21 @@ void uploadDemoShareCode(DataObject &data, bool &verbose)
 		Error("\nError", "Could not POST demo sharecode.\n");
 	}
 	exit(1);
-}*/
+}
 
 int main(int argc, char** argv)
 {
 	SetConsoleOutputCP(CP_UTF8);
 
-	// testShareCodeUploading();
-	
-	exitIfGameIsRunning();
-
 	int result = 0;
-
+		
 	bool paramVerbose = false;
 	bool paramPrintUser = false;
 	bool paramPrintMatches = false;
 	bool paramPrintScoreboard = false;
+	bool paramUploadShareCodes = false;
 	bool paramUploadShareCode = false;
+	std::string shareCode;
 	
 	// default action
 	if (argc <= 1)
@@ -617,7 +616,12 @@ int main(int argc, char** argv)
 		}
 		else if (option == "-upload") {
 			paramPrintMatches = true;
+			paramUploadShareCodes = true;
+		}
+		else if (option == "-sharecode" || option == "-s") {
 			paramUploadShareCode = true;
+			shareCode = argv[i + 1];
+			i++;
 		}
 		else if (option != "") {
 			std::cerr << "ERROR (invalid argument): " << option << std::endl;
@@ -626,14 +630,21 @@ int main(int argc, char** argv)
 		}
 	}
 
-	if (paramVerbose && !paramPrintUser && !paramPrintMatches && !paramPrintScoreboard && !paramUploadShareCode) {
+	if (paramVerbose && !paramPrintUser && !paramPrintMatches && !paramPrintScoreboard && !paramUploadShareCode && !paramUploadShareCodes) {
 		std::cerr << "ERROR: You are using (-v|-verbose) without any other command." << std::endl;
 		std::cerr << "Please check: '" << CSGO_CLI_BINARYNAME << " -help'" << std::endl;
 		return 1;
 	}
 
+	if (paramUploadShareCode) {
+		uploadShareCode(shareCode, paramVerbose);
+		return 0;
+	}
+
 	// CONNECT TO STEAM_API
 	
+	exitIfGameIsRunning();
+		
 	initSteamAPI(paramVerbose);
 	
 	bool running = true;
@@ -653,7 +664,7 @@ int main(int argc, char** argv)
 		}
 	}
 
-	if (paramPrintMatches || paramPrintScoreboard || paramUploadShareCode) {
+	if (paramPrintMatches || paramPrintScoreboard || paramUploadShareCodes) {
 		if (!requestRecentMatches(data, paramVerbose)) {
 			Error("\nError", "Steam did not respond in time.\n");
 			exit(1);
@@ -674,8 +685,8 @@ int main(int argc, char** argv)
 		printScoreboard(data);
 	}
 
-	if (paramUploadShareCode) {
-		uploadDemoShareCode(data, paramVerbose);
+	if (paramUploadShareCodes) {
+		uploadDemoShareCodes(data, paramVerbose);
 	}
 	
     // SHUTDOWN
