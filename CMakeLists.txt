@@ -10,7 +10,7 @@ set(CMAKE_INCLUDE_CURRENT_DIR ON)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/build")
 
 if(CMAKE_COMPILER_IS_GNUCXX)
-    set(CMAKE_CXX_FLAGS "-std=c++11")
+    set(CMAKE_CXX_FLAGS "-std=c++14")
     set(CMAKE_EXE_LINKER_FLAGS "-l protobuf -pthread")
     set(CMAKE_SHARED_LINKER_FLAGS "-Wl,--no-undefined")
 endif()
