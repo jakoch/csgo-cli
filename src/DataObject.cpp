@@ -1,13 +1,17 @@
 #include "DataObject.h"
 
-std::string DataObject::getPlayerLevel()
-{
-	return getLevelName(player_level - 1);
-}
-
 std::string DataObject::getPlayerRank()
 {
-	return getRankName(rank_id - 1);
+	int rank = (rank_id < 0) ? rank_id - 1 : rank_id;
+
+	return getRankName(rank);
+}
+
+std::string DataObject::getPlayerLevel()
+{
+	int level = (player_level < 0) ? player_level - 1 : player_level;
+	
+	return getLevelName(level);
 }
 
 std::string DataObject::getVacStatus()

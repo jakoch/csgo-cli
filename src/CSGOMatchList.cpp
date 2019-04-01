@@ -31,7 +31,7 @@ CSGOMatchList::~CSGOMatchList()
 void CSGOMatchList::OnMatchList(const CMsgGCCStrike15_v2_MatchList& msg)
 {
     std::unique_lock<std::mutex> lock(m_matchMutex);
-    /*matchList = msg;
+    matchList = msg;
     size_t oldCount = m_matches.size();
     for (auto it = msg.matches().rbegin(); it != msg.matches().rend(); ++it)
     {
@@ -43,11 +43,11 @@ void CSGOMatchList::OnMatchList(const CMsgGCCStrike15_v2_MatchList& msg)
         if (oldmatch == m_matches.end()) {
             m_matches.push_back(*it);
         }
-    }*/
+    }
 
-	for (auto it = msg.matches().rbegin(); it != msg.matches().rend(); ++it) {
+	/*for (auto it = msg.matches().rbegin(); it != msg.matches().rend(); ++it) {
 		m_matches.push_back(*it);
-	}
+	}*/
 
     m_updateComplete = true;
     lock.unlock();

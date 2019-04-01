@@ -66,16 +66,15 @@ void PrintHelp()
 		<< "\n"
 		<< "Available commands:\n"
 		<< "  -user       " << " Show your profile (SteamID, AccountID, MM-Rank, Likes, VAC-Status)\n"
-		<< "  -matches    " << " Show your past matches in table form\n"		
+		<< "  -matches    " << " Show your past matches in table form\n"
 		<< "  -upload     " << " Upload your past matches to csgostats.gg\n"
 		//<< "  -scoreboard " << " Show your past matches in scoreboard form\n"
-        << "\n"
-        << "Options:\n"
-        << "  -h, help    " << " Display this help message\n"
-        << "  -v, verbose " << " Increase verbosity of messages\n"
-        << "  -V, Version " << " Display application version\n"
-        << "\n"
-    << std::endl;
+		<< "\n"
+		<< "Options:\n"
+		<< "  -h, help    " << " Display this help message\n"
+		<< "  -v, verbose " << " Increase verbosity of messages\n"
+		<< "  -V, Version " << " Display application version\n"
+		<< "\n";
 }
 
 const wchar_t* toWChar(const char *c)
@@ -216,7 +215,7 @@ bool requestPlayersProfile(DataObject &data, bool &verbose)
 			data.penalty_seconds	= mmhello.data.penalty_seconds();
 			data.penalty_reason		= mmhello.data.penalty_reason();
 			// ranks
-			if (mmhello.data.has_ranking()) {				
+			if (mmhello.data.has_ranking()) {	
 				data.rank_id		= mmhello.data.ranking().rank_id();
 				data.rank_wins		= mmhello.data.ranking().wins();				
 				data.rank_change	= mmhello.data.ranking().rank_change();								
@@ -407,6 +406,10 @@ void exitIfGameIsRunning()
 
 void printPlayersProfile(DataObject &data)
 {
+	wprintf(L"\nHello %s!\n\n", data.playername);
+
+	std::cout << "Here is your user profile:\n" << std::endl;
+
 	char name[40];
 	sprintf(name, "%ls", data.playername); // %ls format = wchar_t*
 
@@ -429,7 +432,6 @@ void printPlayersProfile(DataObject &data)
 	sprintf(penalty, "%d (%d/60m)", data.penalty_reason, (data.penalty_seconds / 60));
 
 	TableFormat t;
-	t << std::endl;
 	t << "Name:"			    << name								<< std::endl;
 	t << "SteamID64:"			<< data.steam_id					<< std::endl;
 	//t << "SteamID32:"			<< toSteamID32(data.steam_id)		<< std::endl;
@@ -518,7 +520,7 @@ void printScoreboard(DataObject &data)
 	std::cout << t;
 }
 
-void uploadDemoShareCode(DataObject &data)
+void uploadDemoShareCode(DataObject &data, bool &verbose)
 {
 	if (!data.has_matches_played) {
 		std::cout << "No demo sharecodes to upload." << std::endl;
@@ -526,28 +528,52 @@ void uploadDemoShareCode(DataObject &data)
 	}
 
 	std::cout << "\n Uploading Demo ShareCodes to https://csgostats.gg/:" << std::endl;
-
+	   
+	ShareCodeUpload *codeUpload = new ShareCodeUpload(verbose);
+	
 	for (auto &match : data.matches)
 	{
 		std::string jsonResponse;
 
-		if (uploadShareCode(match.sharecode, jsonResponse) == 0)
+		if (codeUpload->uploadShareCode(match.sharecode, jsonResponse) == 0)
 		{
-			if (processJsonResponse(jsonResponse) != 0)
+			if (codeUpload->processJsonResponse(jsonResponse) != 0)
 			{
 				Error("\nError", "Could not parse the response (to the demo sharecode POST request).\n");
 			}
 		}
 		else {
-			Error("\nError", "Could not POST demo sharecode.\n");
-			//exit(1);
+			Error("\nError", "Could not POST demo sharecode.\n");			
 		}
 	}
 }
 
+/*void testShareCodeUploading()
+{
+	std::string sharecode = "CSGO-eswvd-G6sqt-fFGzy-GPmkB-fUxXD";
+	std::string jsonResponse;
+	bool paramVerbose = true;
+
+	ShareCodeUpload *codeUpload = new ShareCodeUpload(paramVerbose);
+
+	if (codeUpload->uploadShareCode(sharecode, jsonResponse) == 0)
+	{
+		if (codeUpload->processJsonResponse(jsonResponse) != 0)
+		{
+			Error("\nError", "Could not parse the response (to the demo sharecode POST request).\n");
+		}
+	}
+	else {
+		Error("\nError", "Could not POST demo sharecode.\n");
+	}
+	exit(1);
+}*/
+
 int main(int argc, char** argv)
 {
 	SetConsoleOutputCP(CP_UTF8);
+
+	// testShareCodeUploading();
 	
 	exitIfGameIsRunning();
 
@@ -600,6 +626,12 @@ int main(int argc, char** argv)
 		}
 	}
 
+	if (paramVerbose && !paramPrintUser && !paramPrintMatches && !paramPrintScoreboard && !paramUploadShareCode) {
+		std::cerr << "ERROR: You are using (-v|-verbose) without any other command." << std::endl;
+		std::cerr << "Please check: '" << CSGO_CLI_BINARYNAME << " -help'" << std::endl;
+		return 1;
+	}
+
 	// CONNECT TO STEAM_API
 	
 	initSteamAPI(paramVerbose);
@@ -643,7 +675,7 @@ int main(int argc, char** argv)
 	}
 
 	if (paramUploadShareCode) {
-		uploadDemoShareCode(data);
+		uploadDemoShareCode(data, paramVerbose);
 	}
 	
     // SHUTDOWN

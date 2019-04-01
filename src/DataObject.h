@@ -32,9 +32,9 @@ public:
 	uint32 cmd_leader = 0;
 
 	// player level
-	uint32 player_level = 0;
+	int32 player_level = 0;
 	std::string player_level_str;
-	uint32 player_cur_xp = 0;
+	int32 player_cur_xp = 0;
 
 	// medals
 	uint32 medals_arms = 0;
@@ -44,7 +44,7 @@ public:
 	uint32 medals_weapon = 0;
 
 	// vac status
-	uint32 vac_banned = 0;
+	int32 vac_banned = 0;
 	uint32 penalty_reason = 0;
 	uint32 penalty_seconds = 0;
 
@@ -84,40 +84,40 @@ private:
 	{
 		"Not Recruited",
 		"Recruit",
-		"Private",
-		"Private",
-		"Private",
-		"Corporal",
-		"Corporal",
-		"Corporal",
-		"Corporal",
-		"Sergeant",
-		"Sergeant",
-		"Sergeant",
-		"Sergeant",
-		"Master Sergeant",
-		"Master Sergeant",
-		"Master Sergeant",
-		"Master Sergeant",
-		"Sergeant Major",
-		"Sergeant Major",
-		"Sergeant Major",
-		"Sergeant Major",
-		"Lieutenant",
-		"Lieutenant",
-		"Lieutenant",
-		"Lieutenant",
-		"Captain",
-		"Captain",
-		"Captain",
-		"Captain",
-		"Major",
-		"Major",
-		"Major",
-		"Major",
-		"Colonel",
-		"Colonel",
-		"Colonel",
+		"Private I",
+		"Private II",
+		"Private III",
+		"Corporal I",
+		"Corporal II",
+		"Corporal III",
+		"Corporal IV",
+		"Sergeant I",
+		"Sergeant II",
+		"Sergeant III",
+		"Sergeant IV",
+		"Master Sergeant I",
+		"Master Sergeant II",
+		"Master Sergeant III",
+		"Master Sergeant IV",
+		"Sergeant Major I",
+		"Sergeant Major II",
+		"Sergeant Major III",
+		"Sergeant Major IV",
+		"Lieutenant I",
+		"Lieutenant II",
+		"Lieutenant III",
+		"Lieutenant IV",
+		"Captain I",
+		"Captain II",
+		"Captain III",
+		"Captain IV",
+		"Major I",
+		"Major II",
+		"Major III",
+		"Major IV",
+		"Colonel I",
+		"Colonel II",
+		"Colonel III",
 		"Brigadier General",
 		"Major General",
 		"Lieutenant General",
