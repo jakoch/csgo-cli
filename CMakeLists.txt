@@ -165,6 +165,7 @@ add_executable(csgo_cli
         src/SteamId.h
         src/ShareCode.h
         src/ShareCodeUpload.h
+        src/ShareCodeUpload.cpp
         src/ConsoleTable.h
         src/ConsoleTable.cpp
 
