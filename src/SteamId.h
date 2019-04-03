@@ -12,7 +12,9 @@ uint32 calcSteamID32(uint64 steamID64)
 std::string toSteamID32(uint64 steamID64)
 {
 	std::stringstream ss;
+	ss << "[U:1:";
 	ss << calcSteamID32(steamID64);
+	ss << "]";
 	return ss.str();
 }
 

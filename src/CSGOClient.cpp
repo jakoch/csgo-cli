@@ -141,6 +141,9 @@ void CSGOClient::WaitForGameClientConnect()
 
 void CSGOClient::OnClientWelcome(const CMsgClientWelcome& msg)
 {
+	//printf("Received welcome CS:GO Game Coordinator version %s (Connected to %s).",		
+	//	std::to_string(msg.version()).c_str(), msg.location().country().c_str());
+
     m_connectedToGameClient = true;
     m_connectedCV.notify_all();
 }

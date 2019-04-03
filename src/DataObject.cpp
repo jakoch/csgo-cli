@@ -28,3 +28,11 @@ std::string DataObject::getRankName(int i)
 {
 	return ranks[i];
 }
+/*std::string DataObject::getDemoFilename(const CDataGCCStrike15_v2_MatchInfo& match, const CMsgGCCStrike15_v2_MatchmakingServerRoundStats& roundstats) {
+	std::ostringstream out;
+	out << "match730_";
+	out << std::setfill('0') << std::setw(21) << roundstats.reservationid();
+	out << "_" << std::setw(10) << match.watchablematchinfo().tv_port();
+	out << "_" << match.watchablematchinfo().server_ip() << ".dem";
+	return out.str();
+}*/

@@ -14,6 +14,7 @@ public:
 	std::string getVacStatus();
 	std::string getLevelName(int i);
 	std::string getRankName(int i);
+	//std::string getDemoFilename(const CDataGCCStrike15_v2_MatchInfo& match, const CMsgGCCStrike15_v2_MatchmakingServerRoundStats& roundstats);
 
 	uint32 account_id;
 	uint64 steam_id;
@@ -55,6 +56,7 @@ public:
 	uint32 global_stats_ongoing_matches = 0;*/
 
 	bool has_matches_played = 0;
+	int num_matches_played = 0;
 	std::vector<CSGOMatchData> matches;
 
 private:	

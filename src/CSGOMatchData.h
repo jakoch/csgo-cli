@@ -32,7 +32,7 @@ struct CSGOMatchData
 
         uint32 spectators;
 
-        std::vector<CSGOMatchPlayerScore> scoreboard;
+		std::vector<CSGOMatchPlayerScore> scoreboard;
 
         int result;
         std::string result_str;
