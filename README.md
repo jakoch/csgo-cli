@@ -94,6 +94,8 @@ The package excludes the Steamworks SDK, whose source is non-redistributable.
   - [x] curl based share-code uploader
   - [x] rapid-json based response parser
 - [ ] store matches locally (json, cvs, sqlite) to avoid re-posting sharecodes
+- [ ] request additional steam profile data via web-api
+- [ ] colors on the CLI (LOSS red, WIN green)
 
 ##### Development Notes
 
