@@ -1,5 +1,7 @@
+#include "src\VersionAndConstants.h"
 #include "src\ShareCodeUpload.h"
 #include <thread>
+#include <iostream>
 
 ShareCodeUpload::ShareCodeUpload(bool verboseMode)
 {
@@ -69,11 +71,15 @@ CURL* ShareCodeUpload::initCurlConnection()
 			curl_easy_setopt(curl, CURLOPT_VERBOSE, 1L);
 		}
 
+		// prepare user-agent identifier
+		char ua_ident[100];
+		sprintf(ua_ident, "User-Agent: Mozilla/5.0 (compatible; %s)", CSGO_CLI_USERAGENT_ID);
+		
 		// 4. set headers
 		struct curl_slist *headers = NULL;
 		headers = curl_slist_append(headers, "Accept: */*");
 		headers = curl_slist_append(headers, "Accept-Language: en-US;q=0.8,en;q=0.7");
-		headers = curl_slist_append(headers, "User-Agent: Mozilla/5.0 (compatible; Rigor/1.0.0; http://rigor.com)");
+		headers = curl_slist_append(headers, ua_ident);
 		curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
 
 		// 5. start the cookie engine
