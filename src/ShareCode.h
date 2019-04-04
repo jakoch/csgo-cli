@@ -82,7 +82,7 @@ std::string toDemoShareCode(uint64_t matchid, uint64_t reservationid, uint32_t t
     std::cout << "---" << std::endl;
     */
 
-    uint8_t bytes[18];
+    uint8_t bytes[19];
     for (int i = 0; i < 8; ++i) {
         bytes[i] = matchid_reversed[i];
         //printf("%" PRIu8 "\n", matchid_reversed[i]);
@@ -92,9 +92,6 @@ std::string toDemoShareCode(uint64_t matchid, uint64_t reservationid, uint32_t t
         //printf("%" PRIu8 "\n", reservationid_reversed[i]);
     }
     for (int i = 0; i < 8; ++i) {
-		// TODO
-		// warning C4789: buffer 'bytes' of size 22 bytes will be overrun; 1 bytes will be written starting at offset 23
-		// test with: int i = 0; i < 6; ++i
         bytes[i + 16] = tvport_reversed[i];
         //printf("%" PRIu8 "\n", tvport_reversed[i]);
     }
