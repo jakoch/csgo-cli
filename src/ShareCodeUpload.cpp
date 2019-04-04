@@ -64,7 +64,6 @@ CURL* ShareCodeUpload::initCurlConnection()
 		// 4. SSL
 		curl_easy_setopt(curl, CURLOPT_CAINFO, "cacert.pem");
 		curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, 1L); //only for https
-		curl_easy_setopt(curl, CURLOPT_SSL_VERIFYHOST, 1L); //only for https
 			   
 		// 5. enable verbose mode
 		if (verbose) {
@@ -177,7 +176,6 @@ int ShareCodeUpload::uploadShareCode(std::string shareCode, std::string& respons
 	// 6. SSL
 	curl_easy_setopt(curl, CURLOPT_CAINFO, "cacert.pem");
 	curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, 1L); //only for https
-	curl_easy_setopt(curl, CURLOPT_SSL_VERIFYHOST, 1L); //only for https
 
 	// 7. setup method to handle the response data 
 	curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, &CurlWrite_CallbackFunc_StdString);
