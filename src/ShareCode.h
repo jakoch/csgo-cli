@@ -82,7 +82,7 @@ std::string toDemoShareCode(uint64_t matchid, uint64_t reservationid, uint32_t t
     std::cout << "---" << std::endl;
     */
 
-    uint8_t bytes[19];
+    uint8_t bytes[20];
     for (int i = 0; i < 8; ++i) {
         bytes[i] = matchid_reversed[i];
         //printf("%" PRIu8 "\n", matchid_reversed[i]);
