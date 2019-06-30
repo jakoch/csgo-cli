@@ -57,6 +57,8 @@ iteratable objects for further processing and output.
   - It is used to parse the JSON responses from the csgostats server (error, complete, queued).
 - [ConsoleTable](https://github.com/766F6964/ConsoleTable) (inside /src)
   - ConsoleTable is used to print tables to the console.
+- [Curl](https://github.com/curl/curl)
+  - libcurl is used for transferring data.
 - [CMake](https://cmake.org/)
   - CMake is used as build tool.
 - [Appveyor](https://www.appveyor.com/)
