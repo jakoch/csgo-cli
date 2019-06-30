@@ -5,8 +5,8 @@
 
 ShareCodeUpload::ShareCodeUpload(bool verboseMode)
 {
-	verbose = verboseMode;
-	curl    = initCurlConnection();
+	verbose    = verboseMode;
+	CURL *curl = initCurlConnection();
 }
 
 ShareCodeUpload::~ShareCodeUpload()
