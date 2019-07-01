@@ -301,8 +301,8 @@ bool requestRecentMatches(DataObject &data, bool &verbose)
 					parsedMatch.server_ip = match.watchablematchinfo().server_ip();
 					parsedMatch.tv_port = match.watchablematchinfo().tv_port();
 
-					//std::cout << match.DebugString();
-					//std::cout << match.watchablematchinfo().DebugString();
+					std::cout << match.DebugString();
+					std::cout << match.watchablematchinfo().DebugString();
 
 					// iterate roundstats				
 					CMsgGCCStrike15_v2_MatchmakingServerRoundStats roundStats;
@@ -347,7 +347,7 @@ bool requestRecentMatches(DataObject &data, bool &verbose)
 					// map
 					parsedMatch.map = match.watchablematchinfo().game_map();
 					parsedMatch.mapgroup = match.watchablematchinfo().game_mapgroup();
-					parsedMatch.gametype = match.watchablematchinfo().game_type();
+					parsedMatch.gametype = roundStats.reservation().game_type(); //match.watchablematchinfo().game_type();
 
 					//if (verbose) std::clog << "LOG:" << match.DebugString();
 
@@ -485,7 +485,7 @@ void printMatches(DataObject &data)
 	char score[7];
 
 	for (auto &match : data.matches)
-	{ 
+	{
 		sprintf(score, "%d : %d", match.score_ally, match.score_enemy);
 
 		t += {
@@ -500,7 +500,9 @@ void printMatches(DataObject &data)
 			//"Match IP:"              << match.server_ip,
 			//"Match Port:"            << match.tv_port,
 			//"Match Reservation ID:"  << match.reservation_id,
-			//"Demo ShareCode:"        << match.sharecode
+			//"Demo ShareCode:"        << match.sharecode,
+			//"Mapgroup:"			   << match.mapgroup,
+		    //"Gametype:"			   << match.gametype
 		};
 		i++;
 	}
@@ -519,11 +521,11 @@ void printScoreboard(DataObject &data)
 
 	std::cout << " Here is your scoreboard:" << std::endl;
 
-	ConsoleTable t{ "Match Played", "Result", "Score", "K", "A", "D", "MVP", "Score" };
+	ConsoleTable t{ "Match Played", "Result", "Score", "K", "A", "D", "Headshot (%)", "K/D ratio (diff)", "Rating", "MVP", "Score" };
 	t.setPadding(1);
 	t.setStyle(0);
 
-	char score[7];
+	char match_finalscore[7];
 
 	for (auto &match : data.matches)
 	{		
@@ -536,15 +538,19 @@ void printScoreboard(DataObject &data)
 				//std::cout << "AcountID-API:" << data.account_id << std::endl;
 				//std::cout << "AcountID-Match:" << player.account_id << std::endl;
 
-				sprintf(score, "%d : %d", match.score_ally, match.score_enemy);
+				sprintf(match_finalscore, "%d : %d", match.score_ally, match.score_enemy);
+
+				//sprintf(headshot_string, "%d (%d%)", headshot, headshot_percentage = (kills / 100 * headshots))
 
 				t += {
 					match.matchtime_str,
 					match.result_str,
-					score,
+					match_finalscore,
 					std::to_string(player.kills),
 					std::to_string(player.assists),
 					std::to_string(player.deaths),
+						// headshot_string
+						// k/d ratio (kill/death difference)
 					std::to_string(player.mvps),
 					std::to_string(player.score)
 				};
