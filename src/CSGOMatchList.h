@@ -33,7 +33,7 @@ private:
     //void SaveMatchList();
 
 private:
-    bool m_updateComplete;
+    bool m_updateComplete = false;
     std::condition_variable m_updateCv;
     mutable std::mutex m_matchMutex;
     std::vector<CDataGCCStrike15_v2_MatchInfo> m_matches;

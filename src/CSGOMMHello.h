@@ -19,7 +19,7 @@ private:
     void OnMMHello(const CMsgGCCStrike15_v2_MatchmakingGC2ClientHello& msg);
 
 private:
-    bool m_updateComplete;
+	bool m_updateComplete = false;
     std::condition_variable m_updateCv;
     mutable std::mutex m_mmhelloMutex;
     GCMsgHandler<CMsgGCCStrike15_v2_MatchmakingGC2ClientHello> m_mmhelloHandler;

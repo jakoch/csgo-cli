@@ -18,7 +18,7 @@ public:
 
 	uint32 account_id;
 	uint64 steam_id;
-	int steam_player_level;
+	int steam_player_level = 0;
 	const wchar_t* playername; /* playernames might contain UTF-8 symbols */
 
 	// ranking
