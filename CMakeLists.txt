@@ -121,8 +121,9 @@ find_package(CURL REQUIRED)
 #
 # RapidJson
 #
+set(RAPIDJSON_USE_SSE42 ON)
 set(RAPIDJSON_INCLUDEDIR "${CMAKE_SOURCE_DIR}/dependencies/rapidjson/include")
-find_package(RAPIDJSON REQUIRED)
+find_package(RAPIDJSON CONFIG REQUIRED)
 
 #
 # Copy Additional Files
@@ -155,12 +156,12 @@ add_executable(csgo_cli
         src/CSGOMMHello.cpp
         src/CSGOMatchList.h
         src/CSGOMatchList.cpp 
-		src/CSGOMatchData.h
-		src/CSGOMatchPlayerScore.h
+        src/CSGOMatchData.h
+        src/CSGOMatchPlayerScore.h
         src/CSGOMatchPlayerScore.cpp
         src/ExceptionHandler.h
         src/ExceptionHandler.cpp
-		src/DataObject.h
+        src/DataObject.h
         src/DataObject.cpp
         src/SteamId.h
         src/ShareCode.h
@@ -170,8 +171,8 @@ add_executable(csgo_cli
         src/ConsoleTable.cpp
 
     # Generated Protobuf Includes
-		${PROTO_ENGINE_GCMESSAGES_SRC}
-		${PROTO_ENGINE_GCMESSAGES_HDR}
+        ${PROTO_ENGINE_GCMESSAGES_SRC}
+        ${PROTO_ENGINE_GCMESSAGES_HDR}
         ${PROTO_CSTRIKE15_GCMESSAGES_SRC}
         ${PROTO_CSTRIKE15_GCMESSAGES_HDR}
         ${PROTO_STEAMMESSAGES_SRC}
@@ -187,7 +188,7 @@ include_directories(
     "${PROTOBUF_INCLUDE_DIR}"
     "${MPIR_INCLUDE_DIR}"
     "${CURL_INCLUDE_DIRS}"
-	"${RAPIDJSON_INCLUDE_DIRS}"
+    "${RAPIDJSON_INCLUDE_DIRS}"
 )
 
 target_link_libraries(csgo_cli
@@ -201,15 +202,15 @@ target_link_libraries(csgo_cli
 # Create "source-group" folders for these files in Visual Studio
 #
 source_group("Protobuf Protocol Files" FILES
-	proto/engine_gcmessages.proto
+    proto/engine_gcmessages.proto
     proto/cstrike15_gcmessages.proto
     proto/steammessages.proto
     proto/gcsdk_gcmessages.proto
     proto/gcsystemmsgs.proto
 )
 source_group("Protobuf Generated Files" FILES
-	${PROTO_ENGINE_GCMESSAGES_SRC}
-	${PROTO_ENGINE_GCMESSAGES_HDR}
+    ${PROTO_ENGINE_GCMESSAGES_SRC}
+    ${PROTO_ENGINE_GCMESSAGES_HDR}
     ${PROTO_CSTRIKE15_GCMESSAGES_SRC}
     ${PROTO_CSTRIKE15_GCMESSAGES_HDR}
     ${PROTO_STEAMMESSAGES_SRC}
