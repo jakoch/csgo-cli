@@ -301,9 +301,6 @@ bool requestRecentMatches(DataObject &data, bool &verbose)
 					parsedMatch.server_ip = match.watchablematchinfo().server_ip();
 					parsedMatch.tv_port = match.watchablematchinfo().tv_port();
 
-					std::cout << match.DebugString();
-					std::cout << match.watchablematchinfo().DebugString();
-
 					// iterate roundstats				
 					CMsgGCCStrike15_v2_MatchmakingServerRoundStats roundStats;
 					for (int i = 0; i < match.roundstatsall().size(); ++i)
