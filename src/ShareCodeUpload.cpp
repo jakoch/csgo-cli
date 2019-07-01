@@ -6,11 +6,12 @@
 ShareCodeUpload::ShareCodeUpload(bool verboseMode)
 {
 	verbose    = verboseMode;
-	CURL *curl = initCurlConnection();
+	curl = initCurlConnection();
 }
 
 ShareCodeUpload::~ShareCodeUpload()
 {
+	curl_easy_cleanup(curl);
 }
 
 size_t CurlWrite_CallbackFunc_StdString(void *contents, size_t size, size_t nmemb, std::string *s)
@@ -160,11 +161,15 @@ int ShareCodeUpload::uploadShareCode(std::string shareCode, std::string& respons
 	curl_easy_setopt(curl, CURLOPT_POSTFIELDSIZE, (long)strlen(data));
 	curl_easy_setopt(curl, CURLOPT_POSTFIELDS, data);
 
+	// prepare user-agent identifier
+	char ua_ident[100];
+	sprintf(ua_ident, "User-Agent: Mozilla/5.0 (compatible; %s)", CSGO_CLI_USERAGENT_ID);
+
 	// 4. set headers
 	struct curl_slist *headers = NULL;
 	headers = curl_slist_append(headers, "Accept: */*"); // application/json?
 	headers = curl_slist_append(headers, "Accept-Language: en-US;q=0.8,en;q=0.7");
-	headers = curl_slist_append(headers, "User-Agent: Mozilla/5.0 (compatible; Rigor/1.0.0; http://rigor.com)");
+	headers = curl_slist_append(headers, ua_ident);
 	headers = curl_slist_append(headers, "X-Requested-With: XMLHttpRequest");
 	headers = curl_slist_append(headers, "Content-Type: application/x-www-form-urlencoded; charset=UTF-8");
 	curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
@@ -202,15 +207,13 @@ int ShareCodeUpload::uploadShareCode(std::string shareCode, std::string& respons
 			// show the more generic information from curl_easy_strerror instead
 			fprintf(stderr, "%s\n", curl_easy_strerror(res));
 		}
-	}
 
-	// cleanup
-	curl_easy_cleanup(curl);
-	// free the custom headers
-	curl_slist_free_all(headers);
+		// cleanup
+		curl_easy_cleanup(curl);
+		// free the custom headers
+		curl_slist_free_all(headers);
 
-	// when CURL is NOT OK, return false
-	if (res != CURLE_OK) {
+		// when CURL is NOT OK, return false
 		return 1;
 	}
 	   
@@ -219,6 +222,8 @@ int ShareCodeUpload::uploadShareCode(std::string shareCode, std::string& respons
 		std::cout << "\n\n[LOG] [UploadShareCode] [POST Request] ResponseContent:\n";
 		std::cout << "---\n" << responseContent << "\n---\n";
 	}
+
+	curl_easy_reset(curl);
 
 	// when CURL is OK, return 0
 	return 0;
