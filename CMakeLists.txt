@@ -122,6 +122,7 @@ find_package(CURL REQUIRED)
 # RapidJson
 #
 set(RAPIDJSON_USE_SSE42 ON)
+set(RAPIDJSON_DIR "${CMAKE_SOURCE_DIR}/dependencies/rapidjson/share/rapidjson")
 set(RAPIDJSON_INCLUDEDIR "${CMAKE_SOURCE_DIR}/dependencies/rapidjson/include")
 find_package(RAPIDJSON CONFIG REQUIRED)
 
