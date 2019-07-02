@@ -3,6 +3,12 @@
 This console tool enables you to output informations of your CS:GO user profile and latest matches.
 You can also use the tool to upload demo sharecodes to csgostats.gg.
 
+## Requirements
+
+- Windows
+- Steam application running
+- CS:GO application not running
+
 ## Usage
 
 Display commands:
