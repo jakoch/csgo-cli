@@ -9,11 +9,45 @@ Display commands:
 
     csgo_cli 
     
+Output:
+
+    csgo_cli v1.0.3, https://github.com/jakoch/csgo-cli
+    Copyright (c) 2018-2019 Jens A. Koch.
+
+     CS:GO Console shows your user account, stats and latest matches.
+     You can also use the tool to upload demo sharecodes to csgostats.gg.
+
+    Usage:
+      command [options] [arguments]
+
+    Available commands:
+      -user           Show your profile (SteamID, AccountID, MM-Rank, Likes, VAC-Status)
+      -matches        Show your past matches in table form
+      -upload         Upload your past matches to csgostats.gg
+      -s, sharecode   Upload a demo sharecode to csgostats.gg
+
+    Options:
+      -h, help        Display this help message
+      -v, verbose     Increase verbosity of messages
+      -V, Version     Display application version
+    
 Fetch matches and upload to csgostats (or just use `update.bat`):
     
     csgo_cli -matches -upload
     
-## Automatic Upload of Demo ShareCodes to http://csgostats.gg/
+If you encounter any issues, please use the verbose mode for debugging purposes:
+
+    csgo_cli -matches -upload -verbose
+   
+## How does this work internally?
+
+The tool connects to your running Steam as CS:GO game client (SteamApp 730).
+It communicates with the Steam API to request the serialized player and match infos.
+The structure of the serialized data is described by the csgo-protobufs.
+These infos are then deserialized using Protobuf and placed into 
+iteratable objects for further processing and output.
+
+#### Automatic Upload of Demo ShareCodes to http://csgostats.gg/
 
 The ShareCode is an URL, which you might pass around to your friends.
 
@@ -30,13 +64,24 @@ This avoids the manual posting of the sharecode via the csgostats webinterface
 or the posting to the csgostats steam group, where the bots pick it up.
 https://csgostats.gg/getting-the-sharecode
 
-## How does this work internally?
+##### Development Notes: ShareCode Uploading to csgostats.gg
 
-The tool connects to your running Steam as CS:GO game client (SteamApp 730).
-It communicates with the Steam API to request the serialized player and match infos.
-The structure of the serialized data is described by the csgo-protobufs.
-These infos are then deserialized using Protobuf and placed into 
-iteratable objects for further processing and output.
+The file containing the logic for uploading the ShareCode is ShareCodeUpload.cpp.
+
+uploadShareCode() uses cURL to POST the ShareCode.
+Posting data to csgostats.gg is difficult, because the server is Cloudflare protected.
+Even normal browsing behaviour can trigger a cloudflare redirect to a captcha page or a website ban.
+
+Before we can POST one or multiple sharecodes, a GET request to csgostats.gg is needed to get a cURL connection handle, including all relevant cookies.
+The cURL handle is then re-used for one or more POST requests (sending the cookies as header data and the sharecode(s) as post data).
+
+The reponse is then parsed by processJsonResponse().
+There are 4 response possibilites:
+There is a HTML response by Cloudflare, the HTML captcha page.
+There are 3 JSON response types by csgostats.gg: error, queued, complete. See testProcessJsonResponse()
+
+For testing purposes: Posting a ShareCode to csgostats.gg using cURL on the CLI
+ - `curl "https://csgostats.gg/match/upload/ajax" -H "accept-language: en" -H "content-type: application/x-www-form-urlencoded; charset=UTF-8" -H "accept: application/json, text/javascript, */*; q=0.01" -H "x-requested-with: XMLHttpRequest" --data "sharecode=CSGO-WSACM-qX5Gv-ikbi3-Z6uOW-TGwPB&index=0"`
 
 ## Dependencies
 
@@ -98,25 +143,3 @@ The package excludes the Steamworks SDK, whose source is non-redistributable.
 - [ ] store matches locally (json, cvs, sqlite) to avoid re-posting sharecodes
 - [ ] request additional steam profile data via web-api
 - [ ] colors on the CLI (LOSS red, WIN green)
-
-##### Development Notes
-
-###### ShareCode Uploading to csgostats.gg
-
-The file containing the logic for uploading the ShareCode is ShareCodeUpload.cpp.
-
-uploadShareCode() uses cURL to POST the ShareCode.
-Posting data to csgostats.gg is difficult, because the server is Cloudflare protected.
-Even normal browsing behaviour can trigger a cloudflare redirect to a captcha page or a website ban.
-
-Before we can POST one or multiple sharecodes, a GET request to csgostats.gg is needed to get a cURL connection handle, including all relevant cookies.
-The cURL handle is then re-used for one or more POST requests (sending the cookies as header data and the sharecode(s) as post data).
-
-The reponse is then parsed by processJsonResponse().
-There are 4 response possibilites:
-There is a HTML response by Cloudflare, the HTML captcha page.
-There are 3 JSON response types by csgostats.gg: error, queued, complete. See testProcessJsonResponse()
-
-For testing purposes: Posting a ShareCode to csgostats.gg using cURL on the CLI
- - `curl "https://csgostats.gg/match/upload/ajax" -H "accept-language: en" -H "content-type: application/x-www-form-urlencoded; charset=UTF-8" -H "accept: application/json, text/javascript, */*; q=0.01" -H "x-requested-with: XMLHttpRequest" --data "sharecode=CSGO-WSACM-qX5Gv-ikbi3-Z6uOW-TGwPB&index=0"`
-
