@@ -447,7 +447,7 @@ void printPlayersProfile(DataObject &data)
 	t << " ID64:"			<< data.steam_id				    << std::endl;	
 	t << " Player Level:"   << data.steam_player_level			<< std::endl;
 	t << " VAC Status:"		<< data.getVacStatus()              << std::endl;
-	t << " Profile URL:" << steam_profile_url << std::endl;
+	t << " Profile URL:"    << steam_profile_url << std::endl;
 	t << std::endl;
 	t << " [CS:GO]" << std::endl;
 	t << std::endl;
@@ -483,7 +483,7 @@ void printMatches(DataObject &data)
 
 	for (auto &match : data.matches)
 	{
-		sprintf(score, "%d : %d", match.score_ally, match.score_enemy);
+		sprintf(score, "%02d : %02d", match.score_ally, match.score_enemy);
 
 		t += {
 			std::to_string(i), 
@@ -531,13 +531,13 @@ void printScoreboard(DataObject &data)
 			//std::cout << match.matchtime_str,
 
 			if (player.account_id == data.account_id)
-			{
+			{				
 				//std::cout << "AcountID-API:" << data.account_id << std::endl;
 				//std::cout << "AcountID-Match:" << player.account_id << std::endl;
 
-				sprintf(match_finalscore, "%d : %d", match.score_ally, match.score_enemy);
+				sprintf(match_finalscore, "%02d : %02d", match.score_ally, match.score_enemy);
 
-				//sprintf(headshot_string, "%d (%d%)", headshot, headshot_percentage = (kills / 100 * headshots))
+				//sprintf(headshot_string, "%d (%d%)", headshot, headshot_percentage = ((headshots / kills) * 100))
 
 				t += {
 					match.matchtime_str,
