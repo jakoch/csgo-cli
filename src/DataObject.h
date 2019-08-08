@@ -67,7 +67,7 @@ private:
 		"Silver 3",
 		"Silver 4",
 		"Silver Elite",
-		"Silver Elite Master"
+		"Silver Elite Master",
 		"Gold Nova 1",
 		"Gold Nova 2",
 		"Gold Nova 3",
