@@ -10,10 +10,10 @@
 */
 
 
-CSGOMatchList::CSGOMatchList() 
-    :m_matchListHandler(this, &CSGOMatchList::OnMatchList)
+CSGOMatchList::CSGOMatchList()
+	:m_matchListHandler(this, &CSGOMatchList::OnMatchList)
 {
-    CSGOClient::GetInstance()->RegisterHandler(k_EMsgGCCStrike15_v2_MatchList, &m_matchListHandler);
+	CSGOClient::GetInstance()->RegisterHandler(k_EMsgGCCStrike15_v2_MatchList, &m_matchListHandler);
 }
 
 CSGOMatchList::~CSGOMatchList()

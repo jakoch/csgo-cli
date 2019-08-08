@@ -504,7 +504,7 @@ void printMatches(DataObject &data)
 		i++;
 	}
 
-	std::cout << t;
+	std::cout << t << std::endl;
 }
 
 void printScoreboard(DataObject &data)
@@ -555,7 +555,7 @@ void printScoreboard(DataObject &data)
 		}
 	}
 
-	std::cout << t;
+	std::cout << t << std::endl;
 }
 
 void uploadDemoShareCodes(DataObject &data, bool &verbose)
