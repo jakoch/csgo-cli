@@ -3,8 +3,16 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+## [1.0.4] - 2019-07-13
+
+- added missing comma in rank list
+- added padding with zeros on match results output, PR#4
+
+## [1.0.3] - 2019-07-01
+
 ### Bugfix
 - Posting demo sharecodes to csgostats.gg (implemented two step request ), #1
+- fixed curl multi-request and SSL issues
 
 ### Added
 - ConsoleTable for table printing on the console
@@ -15,7 +23,9 @@ All notable changes to this project will be documented in this file.
 - updated dependency: csgo-protobuf to #ab60446
 - refactoring
 
-## [1.0.2] - 2014-08-09
+## [1.0.2]
+
+- skipped release
 
 ## [1.0.1] - 2018-07-14
 ### Added
@@ -25,7 +35,8 @@ All notable changes to this project will be documented in this file.
 ### Added
 - Initial Release
 
-[Unreleased]: https://github.com/jakoch/csgo-cli/compare/v1.0.0...HEAD
-[1.0.2]: https://github.com/jakoch/csgo-cli/compare/v1.0.1...v1.0.2
+[Unreleased]: https://github.com/jakoch/csgo-cli/compare/v1.0.4...HEAD
+[1.0.4]: https://github.com/jakoch/csgo-cli/compare/v1.0.3...v1.0.4
+[1.0.3]: https://github.com/jakoch/csgo-cli/compare/v1.0.1...v1.0.3
 [1.0.1]: https://github.com/jakoch/csgo-cli/compare/v1.0.0...v1.0.1
 [1.0.0]: https://github.com/jakoch/csgo-cli/releases/tag/v1.0.0
