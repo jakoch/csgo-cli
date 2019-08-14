@@ -76,13 +76,13 @@ std::string toDemoShareCode(uint64_t matchid, uint64_t reservationid, uint32_t t
 	std::string dictionary = "ABCDEFGHJKLMNOPQRSTUVWXYZabcdefhijkmnopqrstuvwxyz23456789";
 
 	std::string code;
-	uint64_t matchid_reversed_u = _byteswap_uint64(matchid);
+	uint64_t matchid_reversed = _byteswap_uint64(matchid);
 	uint64_t reservationid_reversed = _byteswap_uint64(reservationid);
 	uint16_t tvport_reversed = _byteswap_ushort(*(uint16_t*)(&tvport));
 	uint16_t r = 0, dl = dictionary.length();
 
 	for (int i = 0; i < 25; ++i) {
-		quotientAndReminder(matchid_reversed_u, reservationid_reversed, tvport_reversed, dl, r);
+		quotientAndReminder(matchid_reversed, reservationid_reversed, tvport_reversed, dl, r);
 		code += dictionary[r];
 		//std::cout << "i " << i << " r " << r << " code " << code << std::endl;
 	}
