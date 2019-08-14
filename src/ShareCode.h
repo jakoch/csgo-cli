@@ -40,7 +40,7 @@ void quotientAndReminder(
 			} else if (i >= us_bitnum) {
 				q1 |= (1ull << (i - us_bitnum));
 			} else {
-				q2 |= (1 << i);
+				q2 |= (1u << i);
 			}
 		}
 	}
