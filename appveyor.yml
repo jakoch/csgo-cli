@@ -51,26 +51,21 @@ install:
   - cd C:\projects\csgo-cli\dependencies
   - ren protobuf-3.7.0 protobuf   
   - cd C:\projects\csgo-cli
-  # 5) MPIR
-  - vcpkg install mpir:x64-windows
-  - cd C:\Tools\vcpkg\packages
-  - ren mpir_x64-windows mpir
-  - move C:\Tools\vcpkg\packages\mpir C:\projects\csgo-cli\dependencies
-  # 6) cURL, including zlib
+  # 5) cURL, including zlib
   - vcpkg install curl:x64-windows
   - cd C:\Tools\vcpkg\packages
   - ren curl_x64-windows curl
   - ren zlib_x64-windows zlib  
   - move C:\Tools\vcpkg\packages\curl C:\projects\csgo-cli\dependencies
   - move C:\Tools\vcpkg\packages\zlib C:\projects\csgo-cli\dependencies
-  # 7) Cert for cURL (cacert.pem)
+  # 6) Cert for cURL (cacert.pem)
   - ps: Invoke-WebRequest "https://curl.haxx.se/ca/cacert.pem" -OutFile C:\projects\csgo-cli\dependencies\curl\bin\cacert.pem  
-  # 8) RapidJSON
+  # 7) RapidJSON
   - vcpkg install rapidjson:x64-windows
   - cd C:\Tools\vcpkg\packages
   - ren rapidjson_x64-windows rapidjson
   - move C:\Tools\vcpkg\packages\rapidjson C:\projects\csgo-cli\dependencies
-  # 9) CHECK: output content of folder, to see if everything is present
+  # 8) CHECK: output content of folder, to see if everything is present
   - dir C:\projects\csgo-cli\downloads\
   - dir C:\projects\csgo-cli\dependencies\
   - dir C:\projects\csgo-cli\dependencies\csgo-protobufs

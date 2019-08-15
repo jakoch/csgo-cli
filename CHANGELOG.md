@@ -3,6 +3,10 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+## [1.0.5] - 2019-07-15
+
+- Sharecode construction without MPIR dependency, PR#5
+
 ## [1.0.4] - 2019-07-13
 
 - added missing comma in rank list
@@ -35,7 +39,8 @@ All notable changes to this project will be documented in this file.
 ### Added
 - Initial Release
 
-[Unreleased]: https://github.com/jakoch/csgo-cli/compare/v1.0.4...HEAD
+[Unreleased]: https://github.com/jakoch/csgo-cli/compare/v1.0.5...HEAD
+[1.0.5]: https://github.com/jakoch/csgo-cli/compare/v1.0.4...v1.0.5
 [1.0.4]: https://github.com/jakoch/csgo-cli/compare/v1.0.3...v1.0.4
 [1.0.3]: https://github.com/jakoch/csgo-cli/compare/v1.0.1...v1.0.3
 [1.0.1]: https://github.com/jakoch/csgo-cli/compare/v1.0.0...v1.0.1

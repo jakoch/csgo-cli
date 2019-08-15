@@ -99,10 +99,6 @@ For testing purposes: Posting a ShareCode to csgostats.gg using cURL on the CLI
 - [CS:GO Protobufs](https://github.com/SteamDatabase/Protobufs/tree/master/csgo)
   - The csgo-protobufs are provided by the [steamdb.info](https://steamdb.info/) project.
   - The Protobuf Compiler (protoc) is used during the build process to compile the csgo-protobufs to C++ objects for data access.
-- [MPIR](http://mpir.org/)
-  - MPIR is a highly optimised library for bignum arithmetic forked from the GMP bignum library.
-  - MPIR is used to calculate the demo share-code. Because, it's a BigInt, before the Base-57 decoding is applied.
-  - Handling the BigInt with bitshifting might be possible. But i'm too lazy to figure it out.
 - [RapidJson](http://rapidjson.org/)
   - RapidJson is a fast JSON parser/generator for C++ with both SAX/DOM style API.
   - It is used to parse the JSON responses from the csgostats server (error, complete, queued).
@@ -120,6 +116,13 @@ For testing purposes: Posting a ShareCode to csgostats.gg using cURL on the CLI
 You might download the pre-compiled dependencies package from Appveyor. 
 The package excludes the Steamworks SDK, whose source is non-redistributable.
 
+##### Release Checklist
+
+Before releasing a new version:
+
+- [ ] Update Version number in VersionAndConstants.h
+- [ ] Update CHANGELOG.md
+
 # Todo
 
 - [x] CI setup: appveyor.yaml
@@ -132,7 +135,6 @@ The package excludes the Steamworks SDK, whose source is non-redistributable.
   - [x] protobuf
   - [x] cs:go protobufs
     - [x] patch cs:go protobuf syntax
-  - [x] mpir
   - [x] curl
   - [x] rapidjson
 - [x] package and deploy the application

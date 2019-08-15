@@ -57,11 +57,6 @@ endif()
 find_package(Steamworks REQUIRED)
 
 #
-# mpir extended precision integer library
-#
-find_package(mpir REQUIRED)
-
-#
 # Google Protobuf
 #
 set(PROTOBUF_INCLUDE_DIR        "${CMAKE_SOURCE_DIR}/dependencies/protobuf/src")
@@ -187,7 +182,6 @@ add_executable(csgo_cli
 include_directories(
     "${STEAMWORKS_INCLUDE_DIR}" 
     "${PROTOBUF_INCLUDE_DIR}"
-    "${MPIR_INCLUDE_DIR}"
     "${CURL_INCLUDE_DIRS}"
     "${RAPIDJSON_INCLUDE_DIRS}"
 )
@@ -195,7 +189,6 @@ include_directories(
 target_link_libraries(csgo_cli
     "${STEAMWORKS_LIBRARY}" 
     "${PROTOBUF_LIBRARY}"
-    "${MPIR_LIBRARIES}"
     "${CURL_LIBRARIES}"
 )
 
@@ -225,8 +218,6 @@ source_group("Protobuf Generated Files" FILES
 set(FILES_TO_DEPLOY
     # curl
     "${CMAKE_SOURCE_DIR}/dependencies/curl/bin/libcurl.dll"
-    # mpir
-    "${CMAKE_SOURCE_DIR}/dependencies/mpir/bin/mpir.dll"
     # zlib
     "${CMAKE_SOURCE_DIR}/dependencies/zlib/bin/zlib1.dll"
 )
