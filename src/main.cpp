@@ -14,7 +14,6 @@
 #endif
 #include <iostream>
 #include <sstream>
-#include <fstream>
 #include <iomanip>
 // Includes needed for _setmode() (+io.h)
 #include <fcntl.h>
