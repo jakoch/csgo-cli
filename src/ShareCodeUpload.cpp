@@ -229,9 +229,18 @@ int ShareCodeUpload::uploadShareCode(std::string shareCode, std::string& respons
 	return 0;
 }
 
+/**
+ * return codes:
+ * 0. ---
+ * 1. Error: we got an HTML response instead of JSON
+ * 2. Error: JSON parsing failed
+ * 3. Server-Side: Error
+ * 4. Server-Side: Match queued / processing demo file
+ * 5. Server-Side: complete
+ */
 int ShareCodeUpload::processJsonResponse(std::string& jsonResponse)
 {
-	// check for an HTML response
+	// Error: we got an HTML response instead of JSON
 	if (jsonResponse.rfind("<!doctype html>", 0) == 0) {
 		fprintf(stderr, "\nError: Response content is not JSON, but HTML.\n");
 		return 1;
@@ -242,14 +251,14 @@ int ShareCodeUpload::processJsonResponse(std::string& jsonResponse)
 	Document document;
 	document.Parse(jsonResponse.c_str());
 
-	// check for parse error
+	// Error: JSON parsing failed
 	if (document.HasParseError()) {
 		fprintf(stderr, "\nError(offset %u): %s\n%s\n",
 			(unsigned)document.GetErrorOffset(),
 			GetParseError_En(document.GetParseError()),
 			jsonResponse.substr(0, (int)document.GetErrorOffset() + 1).c_str()
 		);
-		return 1;
+		return 2;
 	}
 
 	Value::MemberIterator status = document.FindMember("status");
@@ -265,6 +274,8 @@ int ShareCodeUpload::processJsonResponse(std::string& jsonResponse)
 		Value::MemberIterator msg = data->value.FindMember("msg");
 
 		printf(" %s    | %s. \n", status->value.GetString(), msg->value.GetString());
+
+		return 3;
 	}
 
 	else if (strcmp("queued", status->value.GetString()) == 0) {
@@ -286,6 +297,8 @@ int ShareCodeUpload::processJsonResponse(std::string& jsonResponse)
 		Value::MemberIterator url = data->value.FindMember("url");
 
 		printf(" %s   | %i | %s | %s \n", status->value.GetString(), queue_id->value.GetInt(), url->value.GetString(), newMsg.c_str());
+
+		return 4;
 	}
 
 	else if (strcmp("complete", status->value.GetString()) == 0) {
@@ -293,6 +306,8 @@ int ShareCodeUpload::processJsonResponse(std::string& jsonResponse)
 		Value::MemberIterator url = data->value.FindMember("url");
 
 		printf(" %s | %i | %s \n", status->value.GetString(), queue_id->value.GetInt(), url->value.GetString());
+
+		return 5;
 	}
 
 	return 0;

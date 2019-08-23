@@ -22,7 +22,7 @@ if(MSVC)
   # MSVC warning suppressions
   add_definitions(-D_CRT_SECURE_NO_WARNINGS)
   add_definitions(-D_SCL_SECURE_NO_WARNINGS)
-  add_definitions(-DNOMINMAX)
+  add_definitions(-DNOMINMAX) 
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /bigobj")
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /wd4146") # Warning C4146: unary minus operator applied to unsigned type, result still unsigned
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /wd4244") # Warning C4244: 'initializing': conversion from 'double' to 'int', possible loss of data
@@ -30,6 +30,11 @@ if(MSVC)
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /wd4305") # Warning C4305: 'initializing': truncation from 'double' to 'float'
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /wd4800") # Warning C4800: 'uint32_t' : forcing value to bool 'true' or 'false' (performance warning)
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /wd4838") # Warning C4838: conversion from 'double' to 'float' requires a narrowing conversion
+  
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /std:c++latest")
+
+  message(STATUS "MSVC_VERSION: ${MSVC_VERSION}")
+  message(STATUS "MSVC_TOOLSET_VERSION: ${MSVC_TOOLSET_VERSION}")
 endif()
 
 set(VCPKG_LIBRARY_LINKAGE static)
@@ -163,7 +168,9 @@ add_executable(csgo_cli
         src/ShareCode.h
         src/ShareCodeUpload.h
         src/ShareCodeUpload.cpp
-        src/ConsoleTable.h
+		src/ShareCodeCache.h
+		src/ShareCodeCache.cpp
+		src/ConsoleTable.h
         src/ConsoleTable.cpp
 
     # Generated Protobuf Includes
@@ -191,6 +198,8 @@ target_link_libraries(csgo_cli
     "${PROTOBUF_LIBRARY}"
     "${CURL_LIBRARIES}"
 )
+
+target_compile_features(csgo_cli PUBLIC cxx_std_17)
 
 #
 # Create "source-group" folders for these files in Visual Studio

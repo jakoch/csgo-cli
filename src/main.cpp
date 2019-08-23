@@ -23,6 +23,7 @@
 #include "SteamId.h"
 #include "ShareCode.h"
 #include "ConsoleTable.h"
+#include "MatchDatabase.h"
 
 struct TableFormat {
 	int width;
@@ -71,10 +72,11 @@ void PrintHelp()
 		<< "  -s, sharecode " << "  Upload a demo sharecode to csgostats.gg\n"
 		//<< "  -scoreboard " << "  Show your past matches in scoreboard form\n"
 		<< "\n"
-		<< "Options:\n"
-		<< "  -h, help      " << "  Display this help message\n"
-		<< "  -v, verbose   " << "  Increase verbosity of messages\n"
 		<< "  -V, Version   " << "  Display application version\n"
+		<< "  -h, help      " << "  Display this help message\n"		
+		<< "\n"
+		<< "Options:\n"		
+		<< "  -v, verbose   " << "  Increase verbosity of messages\n"
 		<< "\n";
 }
 
@@ -504,7 +506,7 @@ void printMatches(DataObject &data)
 		i++;
 	}
 
-	std::cout << t << std::endl;
+	std::cout << t;
 }
 
 void printScoreboard(DataObject &data)
@@ -571,22 +573,40 @@ void uploadDemoShareCodes(DataObject &data, bool &verbose)
 		std::cout << "\n Uploading Demo ShareCodes to https://csgostats.gg/: \n" << std::endl;
 	}
 	   
+	ShareCodeCache *matchCache = new ShareCodeCache(verbose);
+
 	ShareCodeUpload *codeUpload = new ShareCodeUpload(verbose);
-	
+
 	for (auto &match : data.matches)
 	{
+		// skip sharecode uploading, if cached
+		if (matchCache->find(match.sharecode)) {
+			printf("  Skipped. The ShareCode \"%s\" was already uploaded.\n", match.sharecode.c_str());
+			continue;
+		}
+		
+		// upload ShareCode
+		
 		std::string jsonResponse;
+
+		std::cout << "  Uploading ShareCode: " << match.sharecode << "\n";
 
 		if (codeUpload->uploadShareCode(match.sharecode, jsonResponse) == 0)
 		{
-			if (codeUpload->processJsonResponse(jsonResponse) != 0)
+			int upload_status = codeUpload->processJsonResponse(jsonResponse);			
+
+			if (upload_status == 4 || upload_status == 5) { // in-progress || complete
+				matchCache->insert(match.sharecode);
+			}
+			else if (upload_status <= 3)
 			{
 				Error("\nError", "Could not parse the response (to the demo sharecode POST request).\n");
 			}
 		}
 		else {
-			Error("\nError", "Could not POST demo sharecode.\n");			
+			Error("\nError", "Could not POST demo sharecode.\n");
 		}
+		
 	}
 }
 
@@ -594,16 +614,31 @@ void uploadShareCode(std::string &sharecode, bool &verbose)
 {
 	std::cout << "\n Uploading Demo ShareCode to https://csgostats.gg/: \n" << std::endl;
 
+	ShareCodeCache *matchDb = new ShareCodeCache(verbose);
+
+	if (matchDb->find(sharecode)) {	
+		printf("  Skipped. The ShareCode \"%s\" was already uploaded.\n", sharecode.c_str());
+		exit(1);
+	}
+
 	std::string jsonResponse;
 
 	ShareCodeUpload *codeUpload = new ShareCodeUpload(verbose);
 
+	std::cout << "  Uploading ShareCode: " << sharecode << "\n";
+
 	if (codeUpload->uploadShareCode(sharecode, jsonResponse) == 0)
 	{
-		if (codeUpload->processJsonResponse(jsonResponse) != 0)
+		int upload_status = codeUpload->processJsonResponse(jsonResponse);
+		
+		if (upload_status == 4 || upload_status == 5) { // in-progress || complete
+			matchDb->insert(sharecode);
+		}
+		else if (upload_status <= 3)
 		{
 			Error("\nError", "Could not parse the response (to the demo sharecode POST request).\n");
 		}
+						
 	}
 	else {
 		Error("\nError", "Could not POST demo sharecode.\n");
@@ -676,6 +711,8 @@ int main(int argc, char** argv)
 		std::cerr << "Please check: '" << CSGO_CLI_BINARYNAME << " -help'" << std::endl;
 		return 1;
 	}
+
+	// HANDLE UPLOADING OF SINGLE SHARECODE (no need to connect to STEAM_API)
 
 	if (paramUploadShareCode) {
 		uploadShareCode(shareCode, paramVerbose);
