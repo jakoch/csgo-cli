@@ -19,11 +19,11 @@
 // Includes needed for _setmode() (+io.h)
 #include <fcntl.h>
 #include <steamtypes.h>
-#include "ShareCodeUpload.h"
+#include "ConsoleTable.h"
 #include "SteamId.h"
 #include "ShareCode.h"
-#include "ConsoleTable.h"
-#include "MatchDatabase.h"
+#include "ShareCodeUpload.h"
+#include "ShareCodeCache.h"
 
 struct TableFormat {
     int width;
