@@ -5,36 +5,36 @@
 #include <intrin.h>
 
 void quotientAndRemainder(
-	uint64_t& a0, uint64_t& a1, uint16_t& a2,
-	uint16_t m, uint16_t& r) {
-	uint64_t q0 = 0, q1 = 0;
-	uint16_t q2 = 0;
-	const unsigned int ull_bitnum = sizeof(uint64_t) * 8;
-	const unsigned int us_bitnum = sizeof(uint16_t) * 8;
-	r = 0;
-	for (int i = 2 * ull_bitnum + us_bitnum - 1; i >= 0; --i) {
-		r <<= 1;
-		bool a_ith_bit;
-		if (i >= ull_bitnum + us_bitnum) {
-			a_ith_bit = a0 & (1ull << (i - ull_bitnum - us_bitnum));
-		} else if (i >= us_bitnum) {
-			a_ith_bit = a1 & (1ull << (i - us_bitnum));
-		} else {
-			a_ith_bit = a2 & (1u << i);
-		}
-		r += a_ith_bit;
-		if (r >= m) {
-			r -= m;
-			if (i >= ull_bitnum + us_bitnum) {
-				q0 |= (1ull << (i - ull_bitnum - us_bitnum));
-			} else if (i >= us_bitnum) {
-				q1 |= (1ull << (i - us_bitnum));
-			} else {
-				q2 |= (1u << i);
-			}
-		}
-	}
-	a0 = q0; a1 = q1; a2 = q2;
+    uint64_t& a0, uint64_t& a1, uint16_t& a2,
+    uint16_t m, uint16_t& r) {
+    uint64_t q0 = 0, q1 = 0;
+    uint16_t q2 = 0;
+    const unsigned int ull_bitnum = sizeof(uint64_t) * 8;
+    const unsigned int us_bitnum = sizeof(uint16_t) * 8;
+    r = 0;
+    for (int i = 2 * ull_bitnum + us_bitnum - 1; i >= 0; --i) {
+        r <<= 1;
+        bool a_ith_bit;
+        if (i >= ull_bitnum + us_bitnum) {
+            a_ith_bit = a0 & (1ull << (i - ull_bitnum - us_bitnum));
+        } else if (i >= us_bitnum) {
+            a_ith_bit = a1 & (1ull << (i - us_bitnum));
+        } else {
+            a_ith_bit = a2 & (1u << i);
+        }
+        r += a_ith_bit;
+        if (r >= m) {
+            r -= m;
+            if (i >= ull_bitnum + us_bitnum) {
+                q0 |= (1ull << (i - ull_bitnum - us_bitnum));
+            } else if (i >= us_bitnum) {
+                q1 |= (1ull << (i - us_bitnum));
+            } else {
+                q2 |= (1u << i);
+            }
+        }
+    }
+    a0 = q0; a1 = q1; a2 = q2;
 }
 
 /**
@@ -61,33 +61,33 @@ void quotientAndRemainder(
 */
 std::string toDemoShareCode(uint64_t matchid, uint64_t reservationid, uint32_t tvport)
 {
-	// charset for base57
-	std::string dictionary = "ABCDEFGHJKLMNOPQRSTUVWXYZabcdefhijkmnopqrstuvwxyz23456789";
+    // charset for base57
+    std::string dictionary = "ABCDEFGHJKLMNOPQRSTUVWXYZabcdefhijkmnopqrstuvwxyz23456789";
 
-	std::string code;
-	uint64_t matchid_reversed = _byteswap_uint64(matchid);
-	uint64_t reservationid_reversed = _byteswap_uint64(reservationid);
-	uint16_t tvport_reversed = _byteswap_ushort(*(uint16_t*)(&tvport));
-	uint16_t r = 0, dl = dictionary.length();
+    std::string code;
+    uint64_t matchid_reversed = _byteswap_uint64(matchid);
+    uint64_t reservationid_reversed = _byteswap_uint64(reservationid);
+    uint16_t tvport_reversed = _byteswap_ushort(*(uint16_t*)(&tvport));
+    uint16_t r = 0, dl = dictionary.length();
 
-	for (int i = 0; i < 25; ++i) {
-		quotientAndRemainder(matchid_reversed, reservationid_reversed, tvport_reversed, dl, r);
-		code += dictionary[r];
-		//std::cout << "i " << i << " r " << r << " code " << code << std::endl;
-	}
+    for (int i = 0; i < 25; ++i) {
+        quotientAndRemainder(matchid_reversed, reservationid_reversed, tvport_reversed, dl, r);
+        code += dictionary[r];
+        //std::cout << "i " << i << " r " << r << " code " << code << std::endl;
+    }
 
-	char shareCode[35]; // Char buffer for ShareCode
+    char shareCode[35]; // Char buffer for ShareCode
 
-	// example: "CSGO-GADqf-jjyJ8-cSP2r-smZRo-TO2xK"
-	sprintf(shareCode, "CSGO-%s-%s-%s-%s-%s\0",
-		code.substr(0, 5).c_str(),
-		code.substr(5, 5).c_str(),
-		code.substr(10, 5).c_str(),
-		code.substr(15, 5).c_str(),
-		code.substr(20).c_str()
-	);
+    // example: "CSGO-GADqf-jjyJ8-cSP2r-smZRo-TO2xK"
+    sprintf(shareCode, "CSGO-%s-%s-%s-%s-%s\0",
+        code.substr(0, 5).c_str(),
+        code.substr(5, 5).c_str(),
+        code.substr(10, 5).c_str(),
+        code.substr(15, 5).c_str(),
+        code.substr(20).c_str()
+    );
 
-	return shareCode;
+    return shareCode;
 }
 
 /*

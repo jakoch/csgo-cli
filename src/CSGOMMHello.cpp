@@ -26,9 +26,9 @@ void CSGOMMHello::OnMMHello(const CMsgGCCStrike15_v2_MatchmakingGC2ClientHello& 
 void CSGOMMHello::Refresh()
 {
     CMsgGCCStrike15_v2_MatchmakingClient2GCHello request;
-	if (CSGOClient::GetInstance()->SendGCMessage(k_EMsgGCCStrike15_v2_MatchmakingClient2GCHello, &request) != k_EGCResultOK) {
-		throw ExceptionHandler("Failed to send EMsgGCCStrike15_v2_MatchmakingClient2GCHello");
-	}
+    if (CSGOClient::GetInstance()->SendGCMessage(k_EMsgGCCStrike15_v2_MatchmakingClient2GCHello, &request) != k_EGCResultOK) {
+        throw ExceptionHandler("Failed to send EMsgGCCStrike15_v2_MatchmakingClient2GCHello");
+    }
 }
 
 void CSGOMMHello::RefreshWait()
@@ -39,8 +39,8 @@ void CSGOMMHello::RefreshWait()
 
     m_updateCv.wait_for(lock, std::chrono::milliseconds(CSGO_CLI_STEAM_CMSG_TIMEOUT));
 
-	if (!m_updateComplete) {		
-		throw CSGO_CLI_TimeoutException();
-	}
+    if (!m_updateComplete) {        
+        throw CSGO_CLI_TimeoutException();
+    }
 }
 

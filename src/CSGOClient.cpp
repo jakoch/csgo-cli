@@ -134,15 +134,15 @@ void CSGOClient::WaitForGameClientConnect()
     }
 
     std::unique_lock<std::mutex> lock(m_connectedMutex);
-	// if this takes longer than 10 seconds we are already connected to the gc
+    // if this takes longer than 10 seconds we are already connected to the gc
     m_connectedCV.wait_for(lock, std::chrono::seconds(10));
     m_connectedToGameClient = true;
 }
 
 void CSGOClient::OnClientWelcome(const CMsgClientWelcome& msg)
 {
-	//printf("Received welcome CS:GO Game Coordinator version %s (Connected to %s).",		
-	//	std::to_string(msg.version()).c_str(), msg.location().country().c_str());
+    //printf("Received welcome CS:GO Game Coordinator version %s (Connected to %s).",       
+    //  std::to_string(msg.version()).c_str(), msg.location().country().c_str());
 
     m_connectedToGameClient = true;
     m_connectedCV.notify_all();

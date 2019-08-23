@@ -11,18 +11,18 @@
 class ShareCodeUpload
 {
 public:
-	ShareCodeUpload(bool verboseMode);
-	~ShareCodeUpload();
-		
-	int uploadShareCode(std::string shareCode, std::string &responseContent);
-	int processJsonResponse(std::string &jsonResponse);
+    ShareCodeUpload(bool verboseMode);
+    ~ShareCodeUpload();
+        
+    int uploadShareCode(std::string shareCode, std::string &responseContent);
+    int processJsonResponse(std::string &jsonResponse);
 
-	//int testProcessJsonResponse();
-	
+    //int testProcessJsonResponse();
+    
 private:
-	CURL *curl = nullptr;
-	bool verbose = false;
+    CURL *curl = nullptr;
+    bool verbose = false;
 
-	CURL* initCurlConnection();
+    CURL* initCurlConnection();
 };
 

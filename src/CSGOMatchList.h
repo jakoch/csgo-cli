@@ -27,7 +27,7 @@ public:
     CMsgGCCStrike15_v2_MatchList matchList;
 
 private:
-	void OnMatchList(const CMsgGCCStrike15_v2_MatchList& msg);
+    void OnMatchList(const CMsgGCCStrike15_v2_MatchList& msg);
     //void LoadOldMatchList();
     //void SaveMatchList();
 

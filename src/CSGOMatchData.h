@@ -26,13 +26,13 @@ struct CSGOMatchData
         std::string sharecode;
         std::string demolink;   /* roundstats.map */
 
-		std::string map;        /* watchablematchinfo.game_map */
-		std::string mapgroup;   /* watchablematchinfo.game_mapgroup */
-		uint32 gametype;   /* roundstatsall.reservation.game_type | watchablematchinfo.game_type */
+        std::string map;        /* watchablematchinfo.game_map */
+        std::string mapgroup;   /* watchablematchinfo.game_mapgroup */
+        uint32 gametype;   /* roundstatsall.reservation.game_type | watchablematchinfo.game_type */
 
         uint32 spectators;
 
-		std::vector<CSGOMatchPlayerScore> scoreboard;
+        std::vector<CSGOMatchPlayerScore> scoreboard;
 
         int result;
         std::string result_str;

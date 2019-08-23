@@ -168,9 +168,9 @@ add_executable(csgo_cli
         src/ShareCode.h
         src/ShareCodeUpload.h
         src/ShareCodeUpload.cpp
-		src/ShareCodeCache.h
-		src/ShareCodeCache.cpp
-		src/ConsoleTable.h
+        src/ShareCodeCache.h
+        src/ShareCodeCache.cpp
+        src/ConsoleTable.h
         src/ConsoleTable.cpp
 
     # Generated Protobuf Includes
