@@ -5,22 +5,22 @@ All notable changes to this project will be documented in this file.
 
 ## [1.1.0] - 2019-08-23
 
-- added ShareCodeCache to avoid re-posting sharecodes, #2
+- added ShareCodeCache to avoid re-posting sharecodes, [#2]
 - fixes: tabs 2 spaces, removed invalid includes
 
 ## [1.0.5] - 2019-07-15
 
-- Sharecode construction without MPIR dependency, PR#5
+- Sharecode construction without MPIR dependency, [PR#5]
 
 ## [1.0.4] - 2019-07-13
 
 - added missing comma in rank list
-- added padding with zeros on match results output, PR#4
+- added padding with zeros on match results output, [PR#4]
 
 ## [1.0.3] - 2019-07-01
 
 ### Bugfix
-- Posting demo sharecodes to csgostats.gg (implemented two step request ), #1
+- Posting demo sharecodes to csgostats.gg (implemented two step request ), [#1]
 - fixed curl multi-request and SSL issues
 
 ### Added
@@ -51,3 +51,8 @@ All notable changes to this project will be documented in this file.
 [1.0.3]: https://github.com/jakoch/csgo-cli/compare/v1.0.1...v1.0.3
 [1.0.1]: https://github.com/jakoch/csgo-cli/compare/v1.0.0...v1.0.1
 [1.0.0]: https://github.com/jakoch/csgo-cli/releases/tag/v1.0.0
+
+[#1]: https://github.com/jakoch/csgo-cli/issues/1
+[#2]: https://github.com/jakoch/csgo-cli/issues/2
+[PR#4]: https://github.com/jakoch/csgo-cli/pull/4
+[PR#5]: https://github.com/jakoch/csgo-cli/pull/5
