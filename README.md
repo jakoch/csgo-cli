@@ -148,6 +148,7 @@ Before releasing a new version:
 - [x] upload demo share-codes to csgostats.gg
   - [x] curl based share-code uploader
   - [x] rapid-json based response parser
-- [ ] store matches locally (json, cvs, sqlite) to avoid re-posting sharecodes
+- [x] to avoid re-posting sharecodes (ShareCodeCache)
+- [ ] store matches locally (json, cvs, sqlite) 
 - [ ] request additional steam profile data via web-api
 - [ ] colors on the CLI (LOSS red, WIN green)
