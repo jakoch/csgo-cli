@@ -3,6 +3,16 @@
 This console tool enables you to output informations of your CS:GO user profile and latest matches.
 You can also use the tool to upload demo sharecodes to csgostats.gg.
 
+## Installation 
+
+The installation is easy. It's just a zipped folder containing the application.
+
+Download the zip file, extract it to a location of your choice and then run the app.  
+
+- Download the lastest release of `csgo-cli-vX.Y.Z.zip` from Github: https://github.com/jakoch/csgo-cli/releases/latest
+- Extract the zip file. Switch to the "csgo_cli" folder. 
+- Then run `csgo_cli` on the command-line interface or just run `update.bat` to upload your recent matches.
+
 ## Requirements
 
 - Windows
