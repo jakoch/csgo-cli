@@ -8,6 +8,7 @@
 #include <iostream>
 #include <iterator>
 #include <vector>
+#include <string>
 
 class ShareCodeCache
 {
