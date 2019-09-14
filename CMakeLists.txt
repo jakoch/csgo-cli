@@ -16,15 +16,21 @@ if(CMAKE_COMPILER_IS_GNUCXX)
 endif()
 
 if(MSVC)
-  # Define C++ Standard to use
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /std:c++latest")
+  message(STATUS "\n-- Compiler and platform toolset:\n")
 
-  # Report platform toolset
+  # Report compiler and platform toolset
+  message(STATUS "USING COMPILER: ${CMAKE_CXX_COMPILER_ID}")
   message(STATUS "MSVC_VERSION: ${MSVC_VERSION}")
   message(STATUS "MSVC_TOOLSET_VERSION: ${MSVC_TOOLSET_VERSION}")
 
-  # Build with multiple processes
-  #add_definitions(/MP)
+  # Define C++ Standard to use
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /std:c++latest")
+  
+  # Be quiet
+  SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /nologo")
+
+  # Optimize
+  SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /O2")
 
   # MSVC warning suppressions
   add_definitions(-D_CRT_SECURE_NO_WARNINGS)
@@ -38,13 +44,14 @@ if(MSVC)
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /wd4800") # Warning C4800: 'uint32_t' : forcing value to bool 'true' or 'false' (performance warning)
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /wd4838") # Warning C4838: conversion from 'double' to 'float' requires a narrowing conversion
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /wd4996") # Warning C4996: Call to 'function' with parameters that may be unsafe
+  message(STATUS "USING THESE CMAKE_CXX_FLAGS: ${CMAKE_CXX_FLAGS}")
 endif()
-
-set(VCPKG_LIBRARY_LINKAGE static)
 
 #
 # Setup Dependencies
 #
+
+message(STATUS "\n-- Dependencies:\n")
 
 #
 # Steamworks SDK
