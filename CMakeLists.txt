@@ -9,6 +9,54 @@ set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/build")
 
+# ==================================================================================================
+# Options
+# ==================================================================================================
+
+option(ENABLE_LTO   "Enable link-time optimizations if supported by the compiler"   OFF)
+
+# ==================================================================================================
+# Link time optimizations (LTO)
+# ==================================================================================================
+if (ENABLE_LTO)
+    include(CheckIPOSupported)
+
+    check_ipo_supported(RESULT IPO_SUPPORT)
+
+    if (IPO_SUPPORT)
+        message(STATUS "LTO support is enabled")
+        set(CMAKE_INTERPROCEDURAL_OPTIMIZATION TRUE)
+    endif()
+endif()
+
+# ==================================================================================================
+# OS specific
+# ==================================================================================================
+
+if (WIN32)
+    # Link statically against c/c++ lib to avoid missing redistributables.
+    # Give users a choice to opt for the shared runtime if they want.
+    option(USE_STATIC_CRT   "Link against the static runtime libraries."    ON)
+
+    # Generate the .def in order to get the .lib required when linking against dlls. 
+    # cl.exe will not generate .lib without .def file (or without pragma
+    # __declspec(dllexport) in front of each functions).
+    set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
+
+    if (${USE_STATIC_CRT})
+        set(CRT_FLAGS_RELEASE "/MT")
+        set(CRT_FLAGS_DEBUG "/MTd")
+    else()
+        set(CRT_FLAGS_RELEASE "/MD")
+        set(CRT_FLAGS_DEBUG "/MDd")
+    endif()
+
+endif()
+
+# ==================================================================================================
+# Compiler flags
+# ==================================================================================================
+
 if(CMAKE_COMPILER_IS_GNUCXX)
     set(CMAKE_CXX_FLAGS "-std=c++14")
     set(CMAKE_EXE_LINKER_FLAGS "-l protobuf -pthread")
@@ -28,9 +76,11 @@ if(MSVC)
   
   # Be quiet
   SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /nologo")
-
+  
   # Optimize
-  SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /O2")
+  SET(CMAKE_CXX_FLAGS_RELWITHDEBINFO "-O2 -g")
+  SET(CMAKE_CXX_FLAGS_RELEASE "-O2")
+  SET(CMAKE_CXX_FLAGS_DEBUG  "-O0 -g")
 
   # MSVC warning suppressions
   add_definitions(-D_CRT_SECURE_NO_WARNINGS)
@@ -47,9 +97,18 @@ if(MSVC)
   message(STATUS "USING THESE CMAKE_CXX_FLAGS: ${CMAKE_CXX_FLAGS}")
 endif()
 
-#
+# ==================================================================================================
+# Linker flags
+# ==================================================================================================
+
+# Link static runtime libraries
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /MD")
+
+add_link_options("/nologo")
+
+# ==================================================================================================
 # Setup Dependencies
-#
+# ==================================================================================================
 
 message(STATUS "\n-- Dependencies:\n")
 
