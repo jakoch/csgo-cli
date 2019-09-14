@@ -2,13 +2,13 @@
 #include "CSGOClient.h"
 #include "ExceptionHandler.h"
 
-static const uint32 ProtobufFlag = (1 << 31);
+static const uint32_t ProtobufFlag = (1 << 31);
 CSGOClient* CSGOClient::m_instance = nullptr;
 
-CSGOClient::CSGOClient() :
+CSGOClient::CSGOClient() :       
+    m_welcomeHandler(this, &CSGOClient::OnClientWelcome),
     m_availableCb(this, &CSGOClient::OnMessageAvailable),
-    m_failedCb(this, &CSGOClient::OnMessageFailed),
-    m_welcomeHandler(this, &CSGOClient::OnClientWelcome)
+    m_failedCb(this, &CSGOClient::OnMessageFailed)
 {
     m_gameCoordinator = (ISteamGameCoordinator*) SteamClient()->
         GetISteamGenericInterface(
@@ -28,28 +28,28 @@ CSGOClient::CSGOClient() :
 
 }
 
-EGCResults CSGOClient::SendGCMessage(uint32 uMsgType, google::protobuf::Message* msg)
+EGCResults CSGOClient::SendGCMessage(uint32_t uMsgType, google::protobuf::Message* msg)
 {
     std::lock_guard<std::mutex> lock(m_sendMutex);
 
-    if (m_msgBuffer.size() < msg->ByteSize() + 2 * sizeof(uint32)) {
-        m_msgBuffer.resize(msg->ByteSize() + 2 * sizeof(uint32));
+    if (m_msgBuffer.size() < msg->ByteSize() + 2 * sizeof(uint32_t)) {
+        m_msgBuffer.resize(msg->ByteSize() + 2 * sizeof(uint32_t));
     }
 
     uMsgType |= ProtobufFlag;
 
-    ((uint32*)m_msgBuffer.data())[0] = uMsgType;
-    ((uint32*)m_msgBuffer.data())[1] = 0;
+    ((uint32_t*)m_msgBuffer.data())[0] = uMsgType;
+    ((uint32_t*)m_msgBuffer.data())[1] = 0;
 
     msg->SerializeToArray(
-        m_msgBuffer.data() + 2 * sizeof(uint32),
-        m_msgBuffer.size() - 2 * sizeof(uint32)
+        m_msgBuffer.data() + 2 * sizeof(uint32_t),
+        m_msgBuffer.size() - 2 * sizeof(uint32_t)
     );
 
     return m_gameCoordinator->SendMessage(
         uMsgType,
         m_msgBuffer.data(),
-        msg->ByteSize() + 2 * sizeof(uint32)
+        msg->ByteSize() + 2 * sizeof(uint32_t)
     );
 }
 
@@ -62,9 +62,10 @@ void CSGOClient::OnMessageAvailable(GCMessageAvailable_t* msg)
         m_recvBuffer.resize(msg->m_nMessageSize);
     }
 
-    uint32 msgType;
-    uint32 msgSize;
+    uint32_t msgType;
+    uint32_t msgSize;
 
+    // TODO res unsued?
     auto res = m_gameCoordinator->RetrieveMessage(
         &msgType,
         m_recvBuffer.data(),
@@ -78,8 +79,8 @@ void CSGOClient::OnMessageAvailable(GCMessageAvailable_t* msg)
 
         for (auto it = handler.first; it != handler.second; ++it) {
             it->second->Handle(
-                m_recvBuffer.data() + 2 * sizeof(uint32),
-                msgSize - 2 * sizeof(uint32)
+                m_recvBuffer.data() + 2 * sizeof(uint32_t),
+                msgSize - 2 * sizeof(uint32_t)
             );
         }
     }

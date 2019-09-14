@@ -1,5 +1,6 @@
-#include "src\VersionAndConstants.h"
-#include "src\ShareCodeUpload.h"
+#include "VersionAndConstants.h"
+#include "ShareCodeUpload.h"
+
 #include <thread>
 #include <iostream>
 
@@ -23,8 +24,8 @@ size_t CurlWrite_CallbackFunc_StdString(void *contents, size_t size, size_t nmem
         s->resize(oldLength + newLength);
     }
     catch (std::bad_alloc &e) {
-        // self-assign to avoid unused/unreferenzed variable e
-        e = e;
+        // cast to void (formerly self-assign) to avoid unused/unreferenced variable e
+        static_cast<void>(e);
         //handle memory problem
         return 0;
     }
@@ -83,12 +84,9 @@ CURL* ShareCodeUpload::initCurlConnection()
         curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
 
         // 5. start the cookie engine
-        std::string my_cookies;
+        struct curl_slist *my_cookies;
         curl_easy_setopt(curl, CURLOPT_COOKIEFILE, "");
-        if (!my_cookies.empty())
-        {
-            curl_easy_setopt(curl, CURLOPT_COOKIELIST, my_cookies);
-        }
+        curl_easy_setopt(curl, CURLOPT_COOKIELIST, &my_cookies);
 
         // perform the request
         res = curl_easy_perform(curl);

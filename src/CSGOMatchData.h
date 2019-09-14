@@ -1,11 +1,10 @@
 #ifndef CSGOMatchData_h__
 #define CSGOMatchData_h__
-#include <vector>
-#include <string>
-
-#include <steamtypes.h>
 
 #include "CSGOMatchPlayerScore.h"
+#include <steamtypes.h>
+#include <vector>
+#include <string>
 
 struct CSGOMatchData
 {

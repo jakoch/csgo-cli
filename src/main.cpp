@@ -1,28 +1,27 @@
 #include "VersionAndConstants.h"
 #include "ExceptionHandler.h"
-#include <thread>
-#include "CSGOMatchList.h"
 #include "CSGOMMHello.h"
-#include "CSGOMatchPlayerScore.h"
 #include "CSGOMatchData.h"
+#include "CSGOMatchList.h"
+#include "CSGOMatchPlayerScore.h"
+#include "ConsoleTable.h"
 #include "DataObject.h"
+#include "SteamId.h"
+#include "ShareCode.h"
+#include "ShareCodeUpload.h"
+#include "ShareCodeCache.h"
 #ifdef _WIN32
 #include <io.h>
-#endif
-#ifdef _WIN32
 #include <windows.h>
 #endif
+
+#include <thread>
 #include <iostream>
 #include <sstream>
 #include <iomanip>
 // Includes needed for _setmode() (+io.h)
 #include <fcntl.h>
 #include <steamtypes.h>
-#include "ConsoleTable.h"
-#include "SteamId.h"
-#include "ShareCode.h"
-#include "ShareCodeUpload.h"
-#include "ShareCodeCache.h"
 
 struct TableFormat {
     int width;
@@ -72,9 +71,9 @@ void PrintHelp()
         //<< "  -scoreboard " << "  Show your past matches in scoreboard form\n"
         << "\n"
         << "  -V, Version   " << "  Display application version\n"
-        << "  -h, help      " << "  Display this help message\n"        
+        << "  -h, help      " << "  Display this help message\n"
         << "\n"
-        << "Options:\n"     
+        << "Options:\n"
         << "  -v, verbose   " << "  Increase verbosity of messages\n"
         << "\n";
 }
@@ -187,7 +186,7 @@ void initGameClientConnection(DataObject &data, bool &verbose)
 bool requestPlayersProfile(DataObject &data, bool &verbose)
 {
     if (verbose) std::clog << "LOG:" << "[ Start ] [ Thread ] getUserInfo\n";
-    
+
     bool result = false;
 
     auto hellothread = std::thread([&data, verbose, &result]()
@@ -202,7 +201,7 @@ bool requestPlayersProfile(DataObject &data, bool &verbose)
             if (verbose) std::clog << "LOG:" << "          Got Hello\n";
 
             result = true;
-            
+
             //if (verbose) std::clog << "DEBUG:" << mmhello.data.ShortDebugString();
             //if (verbose) std::clog << "DEBUG:" << mmhello.data.DebugString();
 
@@ -221,16 +220,16 @@ bool requestPlayersProfile(DataObject &data, bool &verbose)
             data.penalty_reason     = mmhello.data.penalty_reason();
 
             // ranks
-            if (mmhello.data.has_ranking()) {   
+            if (mmhello.data.has_ranking()) {
                 data.rank_id        = mmhello.data.ranking().rank_id();
-                data.rank_wins      = mmhello.data.ranking().wins();                
-                data.rank_change    = mmhello.data.ranking().rank_change();                             
+                data.rank_wins      = mmhello.data.ranking().wins();
+                data.rank_change    = mmhello.data.ranking().rank_change();
             }
             // commendations
-            if (mmhello.data.has_commendation()) {              
+            if (mmhello.data.has_commendation()) {
                 data.cmd_friendly   = mmhello.data.commendation().cmd_friendly();
                 data.cmd_teaching   = mmhello.data.commendation().cmd_teaching();
-                data.cmd_leader     = mmhello.data.commendation().cmd_leader();         
+                data.cmd_leader     = mmhello.data.commendation().cmd_leader();
             }
         }
         catch (CSGO_CLI_TimeoutException)
@@ -257,30 +256,30 @@ bool requestRecentMatches(DataObject &data, bool &verbose)
     if (verbose) std::clog << "LOG:" << "[ Start ] [ Thread ] MatchList\n";
 
     bool result = false;
-    
+
     auto matchthread = std::thread([&data, verbose, &result]()
     {
         try
         {
             std::this_thread::sleep_for(std::chrono::milliseconds(CSGO_CLI_STEAM_MATCHLIST_DELAY));
-            
+
             // refresh match list
             CSGOMatchList matchList;
             if (verbose) std::clog << "LOG:" << "requesting MatchList\n";
             matchList.RefreshWait();
-            if (verbose) std::clog << "LOG:" << "got MatchList\n";          
+            if (verbose) std::clog << "LOG:" << "got MatchList\n";
             result = true;
-            
+
             if (verbose) std::clog << "LOG:" << "[ Start ] processing MatchList\n";
 
             // empty match history
             if (matchList.Matches().size() == 0) {
-                data.has_matches_played = false;                
+                data.has_matches_played = false;
             }
             else {
                 data.has_matches_played = true;
                 data.num_matches_played = matchList.Matches().size();
-                
+
                 for (auto &match : matchList.Matches())
                 {
                     if (verbose) std::clog << "LOG:" << "[ Start ] processing Match\n";
@@ -302,12 +301,12 @@ bool requestRecentMatches(DataObject &data, bool &verbose)
                     parsedMatch.server_ip = match.watchablematchinfo().server_ip();
                     parsedMatch.tv_port = match.watchablematchinfo().tv_port();
 
-                    // iterate roundstats               
+                    // iterate roundstats
                     CMsgGCCStrike15_v2_MatchmakingServerRoundStats roundStats;
                     for (int i = 0; i < match.roundstatsall().size(); ++i)
                     {
                         roundStats = match.roundstatsall(i);
-                        
+
                         // ROUNDSTATS per player
                         /*for (auto &account_id : roundStats.reservation().account_ids())
                         {
@@ -432,7 +431,7 @@ void printPlayersProfile(DataObject &data)
 
     /*
     char medals[50];
-    sprintf(likes, "%d x arms, %d x combat, %d x global, %d x team, %d x weapon", 
+    sprintf(likes, "%d x arms, %d x combat, %d x global, %d x team, %d x weapon",
         data.medals_arms, data.medals_combat, data.medals_global, data.medals_team, data.medals_weapon);
     */
 
@@ -443,9 +442,9 @@ void printPlayersProfile(DataObject &data)
     t << " [Steam]" << std::endl;
     t << std::endl;
     t << " Name:"           << name                             << std::endl;
-    t << " ID:"             << toSteamIDClassic(data.steam_id)  << std::endl;   
+    t << " ID:"             << toSteamIDClassic(data.steam_id)  << std::endl;
     t << " ID32:"           << toSteamID32(data.steam_id)       << std::endl;
-    t << " ID64:"           << data.steam_id                    << std::endl;   
+    t << " ID64:"           << data.steam_id                    << std::endl;
     t << " Player Level:"   << data.steam_player_level          << std::endl;
     t << " VAC Status:"     << data.getVacStatus()              << std::endl;
     t << " Profile URL:"    << steam_profile_url << std::endl;
@@ -456,7 +455,7 @@ void printPlayersProfile(DataObject &data)
     t << " MatchMaking Wins:"   << data.rank_wins               << std::endl;
     t << " Player Level:"       << level                        << std::endl;
     t << " Likes: "             << likes                        << std::endl;
-    //t << "Medals:"            << medals                       << std::endl;   
+    //t << "Medals:"            << medals                       << std::endl;
     t << " Penalty:"            << penalty                      << std::endl;
 }
 
@@ -468,13 +467,13 @@ void printMatches(DataObject &data)
         std::cout << " Your CS:GO match history is empty." << std::endl;
         return;
     }
-    
+
     if (data.num_matches_played == 1) {
         std::cout << " Here is your latest match:" << std::endl;
     } else {
         std::cout << " Here are your latest matches (" << data.num_matches_played << "):" << std::endl;
     }
-    
+
     ConsoleTable t{ "#", "Match Played", "Duration", "Map", "Result", "Score" };
     t.setPadding(1);
     t.setStyle(3);
@@ -487,12 +486,12 @@ void printMatches(DataObject &data)
         sprintf(score, "%02d : %02d", match.score_ally, match.score_enemy);
 
         t += {
-            std::to_string(i), 
+            std::to_string(i),
             //std::to_string(match.matchid),
-            match.matchtime_str, 
+            match.matchtime_str,
             match.match_duration_str,
             ((match.map).empty() ? "? " : match.map),
-            match.result_str, //match_result_string, 
+            match.result_str, //match_result_string,
             score,
             //"Demolink:" match.demolink,
             //"Match IP:"              << match.server_ip,
@@ -526,13 +525,13 @@ void printScoreboard(DataObject &data)
     char match_finalscore[7];
 
     for (auto &match : data.matches)
-    {       
+    {
         for (auto &player : match.scoreboard)
         {
             //std::cout << match.matchtime_str,
 
             if (player.account_id == data.account_id)
-            {               
+            {
                 //std::cout << "AcountID-API:" << data.account_id << std::endl;
                 //std::cout << "AcountID-Match:" << player.account_id << std::endl;
 
@@ -565,13 +564,13 @@ void uploadDemoShareCodes(DataObject &data, bool &verbose)
         std::cout << " No demo sharecodes to upload." << std::endl;
         return;
     }
-        
+
     if (data.num_matches_played == 1) {
         std::cout << "\n Uploading Demo ShareCode to https://csgostats.gg/: \n" << std::endl;
     } else {
         std::cout << "\n Uploading Demo ShareCodes to https://csgostats.gg/: \n" << std::endl;
     }
-       
+
     ShareCodeCache *matchCache = new ShareCodeCache(verbose);
 
     ShareCodeUpload *codeUpload = new ShareCodeUpload(verbose);
@@ -583,16 +582,16 @@ void uploadDemoShareCodes(DataObject &data, bool &verbose)
             printf("  Skipped. The ShareCode \"%s\" was already uploaded.\n", match.sharecode.c_str());
             continue;
         }
-        
+
         // upload ShareCode
-        
+
         std::string jsonResponse;
 
         std::cout << "  Uploading ShareCode: " << match.sharecode << "\n";
 
         if (codeUpload->uploadShareCode(match.sharecode, jsonResponse) == 0)
         {
-            int upload_status = codeUpload->processJsonResponse(jsonResponse);          
+            int upload_status = codeUpload->processJsonResponse(jsonResponse);
 
             if (upload_status == 4 || upload_status == 5) { // in-progress || complete
                 matchCache->insert(match.sharecode);
@@ -605,7 +604,7 @@ void uploadDemoShareCodes(DataObject &data, bool &verbose)
         else {
             Error("\nError", "Could not POST demo sharecode.\n");
         }
-        
+
     }
 }
 
@@ -615,7 +614,7 @@ void uploadShareCode(std::string &sharecode, bool &verbose)
 
     ShareCodeCache *matchDb = new ShareCodeCache(verbose);
 
-    if (matchDb->find(sharecode)) { 
+    if (matchDb->find(sharecode)) {
         printf("  Skipped. The ShareCode \"%s\" was already uploaded.\n", sharecode.c_str());
         exit(1);
     }
@@ -629,7 +628,7 @@ void uploadShareCode(std::string &sharecode, bool &verbose)
     if (codeUpload->uploadShareCode(sharecode, jsonResponse) == 0)
     {
         int upload_status = codeUpload->processJsonResponse(jsonResponse);
-        
+
         if (upload_status == 4 || upload_status == 5) { // in-progress || complete
             matchDb->insert(sharecode);
         }
@@ -637,7 +636,7 @@ void uploadShareCode(std::string &sharecode, bool &verbose)
         {
             Error("\nError", "Could not parse the response (to the demo sharecode POST request).\n");
         }
-                        
+
     }
     else {
         Error("\nError", "Could not POST demo sharecode.\n");
@@ -650,7 +649,7 @@ int main(int argc, char** argv)
     SetConsoleOutputCP(CP_UTF8);
 
     int result = 0;
-        
+
     bool paramVerbose = false;
     bool paramPrintUser = false;
     bool paramPrintMatches = false;
@@ -658,7 +657,7 @@ int main(int argc, char** argv)
     bool paramUploadShareCodes = false;
     bool paramUploadShareCode = false;
     std::string shareCode;
-    
+
     // default action
     if (argc <= 1)
     {
@@ -719,15 +718,15 @@ int main(int argc, char** argv)
     }
 
     // CONNECT TO STEAM_API
-    
+
     exitIfGameIsRunning();
-        
+
     initSteamAPI(paramVerbose);
-    
+
     bool running = true;
 
-    std::thread CallbackThread = createCallbackThread(running, paramVerbose);   
-    
+    std::thread CallbackThread = createCallbackThread(running, paramVerbose);
+
     DataObject data;
 
     initGameClientConnection(data, paramVerbose);
@@ -747,17 +746,17 @@ int main(int argc, char** argv)
             exit(1);
         }
     }
-            
+
     // OUTPUT
 
-    if (paramPrintUser) {       
+    if (paramPrintUser) {
         printPlayersProfile(data);
     }
 
     if (paramPrintMatches) {
         printMatches(data);
     }
-   
+
     if (paramPrintScoreboard) {
         printScoreboard(data);
     }
@@ -765,7 +764,7 @@ int main(int argc, char** argv)
     if (paramUploadShareCodes) {
         uploadDemoShareCodes(data, paramVerbose);
     }
-    
+
     // SHUTDOWN
 
     running = false;

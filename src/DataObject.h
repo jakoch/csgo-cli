@@ -1,10 +1,9 @@
 #ifndef DataObject_h__
 #define DataObject_h__
-#include <vector>
 
 #include <steamtypes.h>
-
 #include "CSGOMatchData.h"
+#include <vector>
 
 class DataObject
 {

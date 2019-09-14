@@ -1,7 +1,9 @@
 #ifndef CSGOMMHello_h__
 #define CSGOMMHello_h__
-#include <condition_variable>
+
 #include "CSGOClient.h"
+#include <condition_variable>
+
 
 class CSGOMMHello
 {

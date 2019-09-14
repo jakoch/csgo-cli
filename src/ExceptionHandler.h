@@ -1,5 +1,6 @@
 #ifndef ExceptionHandler_h__
 #define ExceptionHandler_h__
+
 #include <exception>
 #include <string>
 

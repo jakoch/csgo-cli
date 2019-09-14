@@ -1,8 +1,10 @@
 #pragma once
+
+#include <intrin.h>
 #include <regex>
 #include <ostream>
 #include <iostream>
-#include <intrin.h>
+
 
 void quotientAndRemainder(
     uint64_t& a0, uint64_t& a1, uint16_t& a2,
@@ -46,7 +48,7 @@ void quotientAndRemainder(
 *
 * Required data from the protobuf message are:
 * - uint64 match_id
-* - uint64 reservationid from the last repeated entry in roundstatsall, or if that doesn’t exist from roundstats_legacy
+* - uint64 reservationid from the last repeated entry in roundstatsall, or if that doesnï¿½t exist from roundstats_legacy
 * - uint16 low bits of uint32 tv_port
 *
 * 1. From these 3 items, we generate a big 144-bit number.

@@ -1,8 +1,10 @@
 #ifndef CSGOMatchList_h__
 #define CSGOMatchList_h__
 
-#include <condition_variable>
 #include "CSGOClient.h"
+
+#include <condition_variable>
+
 
 /**
  * utility class to store and update the match list
