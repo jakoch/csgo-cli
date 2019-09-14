@@ -16,8 +16,15 @@ if(CMAKE_COMPILER_IS_GNUCXX)
 endif()
 
 if(MSVC)
+  # Define C++ Standard to use
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /std:c++latest")
+
+  # Report platform toolset
+  message(STATUS "MSVC_VERSION: ${MSVC_VERSION}")
+  message(STATUS "MSVC_TOOLSET_VERSION: ${MSVC_TOOLSET_VERSION}")
+
   # Build with multiple processes
-  add_definitions(/MP)
+  #add_definitions(/MP)
 
   # MSVC warning suppressions
   add_definitions(-D_CRT_SECURE_NO_WARNINGS)
@@ -30,11 +37,7 @@ if(MSVC)
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /wd4305") # Warning C4305: 'initializing': truncation from 'double' to 'float'
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /wd4800") # Warning C4800: 'uint32_t' : forcing value to bool 'true' or 'false' (performance warning)
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /wd4838") # Warning C4838: conversion from 'double' to 'float' requires a narrowing conversion
-  
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /std:c++latest")
-
-  message(STATUS "MSVC_VERSION: ${MSVC_VERSION}")
-  message(STATUS "MSVC_TOOLSET_VERSION: ${MSVC_TOOLSET_VERSION}")
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /wd4996") # Warning C4996: Call to 'function' with parameters that may be unsafe
 endif()
 
 set(VCPKG_LIBRARY_LINKAGE static)
@@ -199,7 +202,7 @@ target_link_libraries(csgo_cli
     "${CURL_LIBRARIES}"
 )
 
-target_compile_features(csgo_cli PUBLIC cxx_std_17)
+target_compile_features(csgo_cli PUBLIC cxx_std_20)
 
 #
 # Create "source-group" folders for these files in Visual Studio
