@@ -15,6 +15,7 @@ environment:
   SW_SDK_SECRET:
     secure: Sb7dCLrPsVPEiu4QKrG8wQ==
 
+cache: c:\tools\vcpkg\installed\
 
 build:
   verbosity: minimal
