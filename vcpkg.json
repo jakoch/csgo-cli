@@ -12,7 +12,7 @@
     {
       "name": "curl",
       "features": [
-        "brotli", "http2", "openssl", "c-ares"
+        "brotli", "http2", "c-ares"
       ]
     },
     "protobuf"
