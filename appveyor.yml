@@ -40,12 +40,14 @@ install:
   - git submodule update --init --recursive
   # 2) update curl to v7.73.0
   #    -> C:\projects\csgo-cli\downloads\curl\curl.exe
-  - curl -L -o C:\projects\csgo-cli\downloads\curl-7.73.0-win64-mingw.zip https://dl.bintray.com/vszakats/generic/curl-7.73.0-win64-mingw.zip
+  - cd C:\projects\csgo-cli\downloads
+  - curl -L -o curl-7.73.0-win64-mingw.zip https://dl.bintray.com/vszakats/generic/curl-7.73.0-win64-mingw.zip
   - 7z x C:\projects\csgo-cli\downloads\curl-7.73.0-win64-mingw.zip -aoa -y -oC:\projects\csgo-cli\downloads
   - del /Q C:\projects\csgo-cli\downloads\curl-7.73.0-win64-mingw.zip
   - move C:\projects\csgo-cli\downloads\curl-7.73.0-win64-mingw\bin C:\projects\csgo-cli\downloads\curl
   - rmdir /S /Q C:\projects\csgo-cli\downloads\curl-7.73.0-win64-mingw
   - C:\projects\csgo-cli\downloads\curl\curl.exe --version
+  - cd C:\projects\csgo-cli
   # 2) Secure-File (needed to decrypt sw sdk)
   #    -> C:\projects\csgo-cli\downloads\secure-file\secure-file.exe
   - C:\projects\csgo-cli\downloads\curl\curl.exe -L --create-dirs -O --output-dir secure-file https://github.com/appveyor/secure-file/releases/download/1.0.1/secure-file.zip
