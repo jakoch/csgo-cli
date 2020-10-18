@@ -42,7 +42,7 @@ install:
   - nuget install secure-file -Version 1.0.31
   - ps: Test-Path C:\projects\csgo-cli\secure-file.1.0.31\tools\secure-file.exe
   # 3) SW SDK (prebuild libs + src)
-  - C:\projects\csgo-cli\secure-file.1.0.31\tools\secure-file.exe -decrypt C:\projects\csgo-cli\downloads\sw_sdk_150.zip.enc -secret %SW_SDK_SECRET% -salt %SW_SDK_SALT% -out C:\projects\csgo-cli\downloads\sw_sdk_150.zip
+  - C:\projects\csgo-cli\secure-file.1.0.31\tools\secure-file.exe -decrypt C:\projects\csgo-cli\downloads\sw_sdk_150.zip.enc -secret %SW_SDK_SECRET% -salt %SW_SDK_SALT%
   - 7z x C:\projects\csgo-cli\downloads\sw_sdk_150.zip -aoa -y -oC:\projects\csgo-cli\dependencies
   - cd C:\projects\csgo-cli\dependencies
   - ren sdk sw_sdk
