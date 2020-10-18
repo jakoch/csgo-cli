@@ -34,18 +34,23 @@ init:
       }
 
 install:
-  # 1) Get Git Submodules: csgo-protobufs
+  # 0) Get Git Submodules: csgo-protobufs
   - git submodule update --init --recursive
+  # 1) update vcpkg:
+  - cd C:\Tools\vcpkg
+  - git pull
+  - .\bootstrap-vcpkg.bat
+  - cd C:\projects\csgo-cli
   # 2) update curl to v7.73.0
   #    -> C:\projects\csgo-cli\downloads\curl\curl.exe
-  #- cd C:\projects\csgo-cli\downloads
-  #- curl -L -o curl-7.73.0-win64-mingw.zip https://dl.bintray.com/vszakats/generic/curl-7.73.0-win64-mingw.zip
-  #- 7z x C:\projects\csgo-cli\downloads\curl-7.73.0-win64-mingw.zip -aoa -y -oC:\projects\csgo-cli\downloads
-  #- del /Q C:\projects\csgo-cli\downloads\curl-7.73.0-win64-mingw.zip
-  #- move C:\projects\csgo-cli\downloads\curl-7.73.0-win64-mingw\bin C:\projects\csgo-cli\downloads\curl
-  #- rmdir /S /Q C:\projects\csgo-cli\downloads\curl-7.73.0-win64-mingw
-  #- C:\projects\csgo-cli\downloads\curl\curl.exe --version
-  #- cd C:\projects\csgo-cli
+  - cd C:\projects\csgo-cli\downloads
+  - curl -L -o curl-7.73.0-win64-mingw.zip https://dl.bintray.com/vszakats/generic/curl-7.73.0-win64-mingw.zip
+  - 7z x C:\projects\csgo-cli\downloads\curl-7.73.0-win64-mingw.zip -aoa -y -oC:\projects\csgo-cli\downloads
+  - del /Q C:\projects\csgo-cli\downloads\curl-7.73.0-win64-mingw.zip
+  - move C:\projects\csgo-cli\downloads\curl-7.73.0-win64-mingw\bin C:\projects\csgo-cli\downloads\curl
+  - rmdir /S /Q C:\projects\csgo-cli\downloads\curl-7.73.0-win64-mingw
+  - C:\projects\csgo-cli\downloads\curl\curl.exe --version
+  - cd C:\projects\csgo-cli
   # 3) SW SDK (prebuild libs + src)
   - 7z x C:\projects\csgo-cli\downloads\sw_sdk_150.zip -aoa -y -oC:\projects\csgo-cli\dependencies -p%SW_SDK_SECRET%
   - cd C:\projects\csgo-cli\dependencies
@@ -57,17 +62,18 @@ install:
   - cd C:\projects\csgo-cli\dependencies
   - ren protobuf-3.7.0 protobuf
   - cd C:\projects\csgo-cli
-  # 5) cURL, including zlib
-  - vcpkg install curl:x64-windows
+  # 5) VCPKG
+  - vcpkg install --feature-flags=manifests
+  - vcpkg integrate install
+  # 5) cURL, zlib, RapidJSON
   - cd C:\Tools\vcpkg\packages
   - ren curl_x64-windows curl
   - ren zlib_x64-windows zlib
   - move C:\Tools\vcpkg\packages\curl C:\projects\csgo-cli\dependencies
   - move C:\Tools\vcpkg\packages\zlib C:\projects\csgo-cli\dependencies
   # 6) Cert for cURL (cacert.pem)
-  - ps: Invoke-WebRequest "https://curl.haxx.se/ca/cacert.pem" -OutFile C:\projects\csgo-cli\dependencies\curl\bin\cacert.pem
-  # 7) RapidJSON
-  - vcpkg install rapidjson:x64-windows
+  - ps: Invoke-WebRequest "https://curl.haxx.se/ca/cacert.pem" -OutFile C:\projects\csgo-cli\dependencies\curl\cacert.pem
+  # 7) idjson:x64-windows
   - cd C:\Tools\vcpkg\packages
   - ren rapidjson_x64-windows rapidjson
   - move C:\Tools\vcpkg\packages\rapidjson C:\projects\csgo-cli\dependencies
