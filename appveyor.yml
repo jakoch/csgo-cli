@@ -74,7 +74,7 @@ install:
   #- move C:\Tools\vcpkg\packages\curl C:\projects\csgo-cli\dependencies
   #- move C:\Tools\vcpkg\packages\zlib C:\projects\csgo-cli\dependencies
   # 6) Cert for cURL (cacert.pem)
-  - ps: Invoke-WebRequest "https://curl.haxx.se/ca/cacert.pem" -OutFile C:\projects\csgo-cli\dependencies\curl\cacert.pem
+  #- ps: Invoke-WebRequest "https://curl.haxx.se/ca/cacert.pem" -OutFile C:\projects\csgo-cli\dependencies\curl\cacert.pem
   # 7) idjson:x64-windows
   #- cd C:\Tools\vcpkg\packages
   #- ren rapidjson_x64-windows rapidjson
@@ -98,7 +98,7 @@ before_build:
   - cd C:\projects\csgo-cli
 
 build_script:
-  - cmake -G "Visual Studio 15 2017" -A x64 -DCMAKE_TOOLCHAIN_FILE=c:/tools/vcpkg/scripts/buildsystems/vcpkg.cmake .
+  - cmake -G "Visual Studio 16 2019" -A x64 -DCMAKE_TOOLCHAIN_FILE=c:/tools/vcpkg/scripts/buildsystems/vcpkg.cmake .
   - msbuild C:\projects\csgo-cli\csgo_cli.sln /m /p:Configuration=Release /p:Platform=x64 /logger:"C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll"
 
 after_build:
