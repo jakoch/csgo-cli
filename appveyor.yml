@@ -12,7 +12,7 @@ configuration: Release
 environment:
   MSBUILD_FLAGS: /verbosity:minimal /maxcpucount
   SW_SDK_SECRET:
-    secure: qgCgBWgiHGn0ZsNdQEAQmw==
+    secure: tDbmOGsBCYc38zcIOTV8GEM8CAKjW4u7yIn+KhY0fG1sEgd5jHg=
 
 build:
   verbosity: minimal
@@ -38,10 +38,10 @@ install:
   - git submodule update --init --recursive
   # 2) Secure-File (needed to decrypt sw sdk)
   - nuget install secure-file -Version 1.0.31
-  - ps: Test-Path C:\projects\csgo-cli\secure-file.1.0.31\tools\secure-file.exe 
-  # 3) SW SDK (prebuild libs + src) 
-  - C:\projects\csgo-cli\secure-file.1.0.31\tools\secure-file.exe -decrypt C:\projects\csgo-cli\downloads\sw_sdk_144.zip.enc -secret %SW_SDK_SECRET% -out C:\projects\csgo-cli\downloads\sw_sdk_144.zip
-  - 7z x C:\projects\csgo-cli\downloads\sw_sdk_144.zip -aoa -y -oC:\projects\csgo-cli\dependencies
+  - ps: Test-Path C:\projects\csgo-cli\secure-file.1.0.31\tools\secure-file.exe
+  # 3) SW SDK (prebuild libs + src)
+  - C:\projects\csgo-cli\secure-file.1.0.31\tools\secure-file.exe -decrypt C:\projects\csgo-cli\downloads\sw_sdk_150.zip.enc -secret %SW_SDK_SECRET% -out C:\projects\csgo-cli\downloads\sw_sdk_150.zip
+  - 7z x C:\projects\csgo-cli\downloads\sw_sdk_150.zip -aoa -y -oC:\projects\csgo-cli\dependencies
   - cd C:\projects\csgo-cli\dependencies
   - ren sdk sw_sdk
   - cd C:\projects\csgo-cli
@@ -49,17 +49,17 @@ install:
   - ps: Invoke-WebRequest "https://github.com/google/protobuf/releases/download/v3.7.0/protobuf-cpp-3.7.0.zip" -OutFile C:\projects\csgo-cli\downloads\protobuf-cpp-3.7.0.zip
   - 7z x C:\projects\csgo-cli\downloads\protobuf-cpp-3.7.0.zip -aoa -y -oC:\projects\csgo-cli\dependencies
   - cd C:\projects\csgo-cli\dependencies
-  - ren protobuf-3.7.0 protobuf   
+  - ren protobuf-3.7.0 protobuf
   - cd C:\projects\csgo-cli
   # 5) cURL, including zlib
   - vcpkg install curl:x64-windows
   - cd C:\Tools\vcpkg\packages
   - ren curl_x64-windows curl
-  - ren zlib_x64-windows zlib  
+  - ren zlib_x64-windows zlib
   - move C:\Tools\vcpkg\packages\curl C:\projects\csgo-cli\dependencies
   - move C:\Tools\vcpkg\packages\zlib C:\projects\csgo-cli\dependencies
   # 6) Cert for cURL (cacert.pem)
-  - ps: Invoke-WebRequest "https://curl.haxx.se/ca/cacert.pem" -OutFile C:\projects\csgo-cli\dependencies\curl\bin\cacert.pem  
+  - ps: Invoke-WebRequest "https://curl.haxx.se/ca/cacert.pem" -OutFile C:\projects\csgo-cli\dependencies\curl\bin\cacert.pem
   # 7) RapidJSON
   - vcpkg install rapidjson:x64-windows
   - cd C:\Tools\vcpkg\packages
@@ -85,7 +85,7 @@ before_build:
 
 build_script:
   - cmake -G "Visual Studio 15 2017" -A x64 -DCMAKE_TOOLCHAIN_FILE=c:/tools/vcpkg/scripts/buildsystems/vcpkg.cmake .
-  - msbuild C:\projects\csgo-cli\csgo_cli.sln /m /p:Configuration=Release /p:Platform=x64 /logger:"C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll" 
+  - msbuild C:\projects\csgo-cli\csgo_cli.sln /m /p:Configuration=Release /p:Platform=x64 /logger:"C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll"
 
 after_build:
   # 1) prepare packaging for csgo-cli
@@ -106,7 +106,7 @@ after_build:
   # 3) test csgo-cli
   - C:\projects\csgo-cli\csgo-cli\csgo_cli.exe -V
   - C:\projects\csgo-cli\csgo-cli\csgo_cli.exe -help
-  # 4) package dependencies folder  
+  # 4) package dependencies folder
   # 4.1) delete unecrypted sw_sdk folder
   - cd C:\projects\csgo-cli\dependencies
   - rmdir /S /Q sw_sdk
@@ -114,7 +114,7 @@ after_build:
   # 4.2) copy securefile + enrypted sw_sdk
   - mkdir C:\projects\csgo-cli\dependencies\sw_sdk
   - copy C:\projects\csgo-cli\secure-file.1.0.31\tools\secure-file.exe C:\projects\csgo-cli\dependencies\sw_sdk
-  - copy C:\projects\csgo-cli\downloads\sw_sdk_144.zip.enc C:\projects\csgo-cli\dependencies\sw_sdk
+  - copy C:\projects\csgo-cli\downloads\sw_sdk_150.zip.enc C:\projects\csgo-cli\dependencies\sw_sdk
   # 4.3) package dependencies folder
   - dir C:\projects\csgo-cli\dependencies
   - cd C:\projects\csgo-cli

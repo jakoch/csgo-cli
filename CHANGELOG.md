@@ -3,6 +3,9 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+- updated sw_sdk to v150
+  - implicitly updated secure-file to v1.0.1
+
 ## [1.1.0] - 2019-08-23
 
 - added ShareCodeCache to avoid re-posting sharecodes, [#2]
