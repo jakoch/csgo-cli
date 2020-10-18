@@ -14,7 +14,7 @@ environment:
   SW_SDK_SECRET:
     secure: Z180lJeQFHX87OuSAq7EdA==
   SW_SDK_SALT:
-    secure: eQ/BwjNcvEayaiJiOpIltuAjaQWpgxBNpUPwSYQyg6yX9kKy7Lw=
+    secure: OfB6L2eg9hcvc6FJtrckyx+BM4Jq27bz9uOva9/luaOAPAxOP9o=
 
 build:
   verbosity: minimal
