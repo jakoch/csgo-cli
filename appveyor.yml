@@ -12,6 +12,8 @@ configuration: Release
 environment:
   MSBUILD_FLAGS: /verbosity:minimal /maxcpucount
   SW_SDK_SECRET:
+    secure: yn1WQNNaXNq5D5jSkLGtLw==
+  SW_SDK_SALT:
     secure: cGLe68Iz+JbJZOhOcvD0NUHGYcC2wKP9ysL5YODPVG6r6R5Mym8=
 
 build:
@@ -40,7 +42,7 @@ install:
   - nuget install secure-file -Version 1.0.31
   - ps: Test-Path C:\projects\csgo-cli\secure-file.1.0.31\tools\secure-file.exe
   # 3) SW SDK (prebuild libs + src)
-  - C:\projects\csgo-cli\secure-file.1.0.31\tools\secure-file.exe -decrypt C:\projects\csgo-cli\downloads\sw_sdk_150.zip.enc -secret %SW_SDK_SECRET% -out C:\projects\csgo-cli\downloads\sw_sdk_150.zip
+  - C:\projects\csgo-cli\secure-file.1.0.31\tools\secure-file.exe -decrypt C:\projects\csgo-cli\downloads\sw_sdk_150.zip.enc -secret %SW_SDK_SECRET% -salt %SW_SDK_SALT% -out C:\projects\csgo-cli\downloads\sw_sdk_150.zip
   - 7z x C:\projects\csgo-cli\downloads\sw_sdk_150.zip -aoa -y -oC:\projects\csgo-cli\dependencies
   - cd C:\projects\csgo-cli\dependencies
   - ren sdk sw_sdk
