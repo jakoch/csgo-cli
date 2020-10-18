@@ -50,7 +50,7 @@ install:
   - cd C:\projects\csgo-cli
   # 2) Secure-File (needed to decrypt sw sdk)
   #    -> C:\projects\csgo-cli\downloads\secure-file\secure-file.exe
-  - C:\projects\csgo-cli\downloads\curl\curl.exe -L --create-dirs -O --output-dir secure-file https://github.com/appveyor/secure-file/releases/download/1.0.1/secure-file.zip
+  - C:\projects\csgo-cli\downloads\curl\curl.exe -L --create-dirs -O --output-dir C:\projects\csgo-cli\downloads\secure-file https://github.com/appveyor/secure-file/releases/download/1.0.1/secure-file.zip
   - 7z x C:\projects\csgo-cli\downloads\secure-file\secure-file.zip -aoa -y -oC:\projects\csgo-cli\downloads\secure-file
   - del /Q C:\projects\csgo-cli\downloads\secure-file\secure-file.zip
   # 3) SW SDK (prebuild libs + src)
