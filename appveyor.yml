@@ -1,5 +1,5 @@
 # Build worker image (VM template)
-image: Visual Studio 2017
+image: Visual Studio 2019
 
 clone_depth: 5
 
@@ -10,9 +10,11 @@ platform: x64
 configuration: Release
 
 environment:
+  VCPKG_DEFAULT_TRIPLET: "%PLATFORM%-windows"
   MSBUILD_FLAGS: /verbosity:minimal /maxcpucount
   SW_SDK_SECRET:
     secure: Sb7dCLrPsVPEiu4QKrG8wQ==
+
 
 build:
   verbosity: minimal
@@ -57,26 +59,26 @@ install:
   - ren sdk sw_sdk
   - cd C:\projects\csgo-cli
   # 4) Google Protobuf (src)
-  - ps: Invoke-WebRequest "https://github.com/google/protobuf/releases/download/v3.7.0/protobuf-cpp-3.7.0.zip" -OutFile C:\projects\csgo-cli\downloads\protobuf-cpp-3.7.0.zip
-  - 7z x C:\projects\csgo-cli\downloads\protobuf-cpp-3.7.0.zip -aoa -y -oC:\projects\csgo-cli\dependencies
-  - cd C:\projects\csgo-cli\dependencies
-  - ren protobuf-3.7.0 protobuf
-  - cd C:\projects\csgo-cli
+  #- ps: Invoke-WebRequest "https://github.com/google/protobuf/releases/download/v3.7.0/protobuf-cpp-3.7.0.zip" -OutFile C:\projects\csgo-cli\downloads\protobuf-cpp-3.7.0.zip
+  #- 7z x C:\projects\csgo-cli\downloads\protobuf-cpp-3.7.0.zip -aoa -y -oC:\projects\csgo-cli\dependencies
+  #- cd C:\projects\csgo-cli\dependencies
+  #- ren protobuf-3.7.0 protobuf
+  #- cd C:\projects\csgo-cli
   # 5) VCPKG
   - vcpkg install --feature-flags=manifests
   - vcpkg integrate install
   # 5) cURL, zlib, RapidJSON
-  - cd C:\Tools\vcpkg\packages
-  - ren curl_x64-windows curl
-  - ren zlib_x64-windows zlib
-  - move C:\Tools\vcpkg\packages\curl C:\projects\csgo-cli\dependencies
-  - move C:\Tools\vcpkg\packages\zlib C:\projects\csgo-cli\dependencies
+  #- cd C:\Tools\vcpkg\packages
+  #- ren curl_x64-windows curl
+  #- ren zlib_x64-windows zlib
+  #- move C:\Tools\vcpkg\packages\curl C:\projects\csgo-cli\dependencies
+  #- move C:\Tools\vcpkg\packages\zlib C:\projects\csgo-cli\dependencies
   # 6) Cert for cURL (cacert.pem)
   - ps: Invoke-WebRequest "https://curl.haxx.se/ca/cacert.pem" -OutFile C:\projects\csgo-cli\dependencies\curl\cacert.pem
   # 7) idjson:x64-windows
-  - cd C:\Tools\vcpkg\packages
-  - ren rapidjson_x64-windows rapidjson
-  - move C:\Tools\vcpkg\packages\rapidjson C:\projects\csgo-cli\dependencies
+  #- cd C:\Tools\vcpkg\packages
+  #- ren rapidjson_x64-windows rapidjson
+  #- move C:\Tools\vcpkg\packages\rapidjson C:\projects\csgo-cli\dependencies
   # 8) CHECK: output content of folder, to see if everything is present
   - dir C:\projects\csgo-cli\downloads\
   - dir C:\projects\csgo-cli\dependencies\
@@ -85,11 +87,11 @@ install:
 before_build:
   # Build Dependencies
   # 1.1) Compile Protobuf
-  - cd C:\projects\csgo-cli\dependencies\protobuf\cmake
+  #- cd C:\projects\csgo-cli\dependencies\protobuf\cmake
   # 1.2) Configure Protobuf
-  - cmake -G "Visual Studio 15 2017" -A x64 -Dprotobuf_BUILD_TESTS=OFF -protobuf_BUILD_CONFORMANCE=OFF -Dprotobuf_BUILD_EXAMPLES=OFF -Dprotobuf_MSVC_STATIC_RUNTIME=OFF -DZLIB_LIBRARY=C:\projects\csgo-cli\dependencies\zlib\lib\zlib.lib -DZLIB_INCLUDE_DIR=C:\projects\csgo-cli\dependencies\zlib\include .
+  #- cmake -G "Visual Studio 15 2017" -A x64 -Dprotobuf_BUILD_TESTS=OFF -protobuf_BUILD_CONFORMANCE=OFF -Dprotobuf_BUILD_EXAMPLES=OFF -Dprotobuf_MSVC_STATIC_RUNTIME=OFF -DZLIB_LIBRARY=C:\projects\csgo-cli\dependencies\zlib\lib\zlib.lib -DZLIB_INCLUDE_DIR=C:\projects\csgo-cli\dependencies\zlib\include .
   # 1.3) Build Protobuf
-  - cmake --build . --config Release --target install
+  #- cmake --build . --config Release --target install
   # 2) Patch CSGO Protobufs
   - C:\projects\csgo-cli\dependencies\csgo-protobufs-patch\patch.bat
   # return
