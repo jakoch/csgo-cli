@@ -13,8 +13,6 @@ environment:
   MSBUILD_FLAGS: /verbosity:minimal /maxcpucount
   SW_SDK_SECRET:
     secure: Sb7dCLrPsVPEiu4QKrG8wQ==
-  SW_SDK_SALT:
-    secure: 98EtplAKWIddkE+ekSX07Qf8L8wWYXBM+1YuGERTKEG8+fea+B0=
 
 build:
   verbosity: minimal
@@ -40,22 +38,16 @@ install:
   - git submodule update --init --recursive
   # 2) update curl to v7.73.0
   #    -> C:\projects\csgo-cli\downloads\curl\curl.exe
-  - cd C:\projects\csgo-cli\downloads
-  - curl -L -o curl-7.73.0-win64-mingw.zip https://dl.bintray.com/vszakats/generic/curl-7.73.0-win64-mingw.zip
-  - 7z x C:\projects\csgo-cli\downloads\curl-7.73.0-win64-mingw.zip -aoa -y -oC:\projects\csgo-cli\downloads
-  - del /Q C:\projects\csgo-cli\downloads\curl-7.73.0-win64-mingw.zip
-  - move C:\projects\csgo-cli\downloads\curl-7.73.0-win64-mingw\bin C:\projects\csgo-cli\downloads\curl
-  - rmdir /S /Q C:\projects\csgo-cli\downloads\curl-7.73.0-win64-mingw
-  - C:\projects\csgo-cli\downloads\curl\curl.exe --version
-  - cd C:\projects\csgo-cli
-  # 2) Secure-File (needed to decrypt sw sdk)
-  #    -> C:\projects\csgo-cli\downloads\secure-file\secure-file.exe
-  - C:\projects\csgo-cli\downloads\curl\curl.exe -L --create-dirs -O --output-dir C:\projects\csgo-cli\downloads\secure-file https://github.com/appveyor/secure-file/releases/download/1.0.1/secure-file.zip
-  - 7z x C:\projects\csgo-cli\downloads\secure-file\secure-file.zip -aoa -y -oC:\projects\csgo-cli\downloads\secure-file
-  - del /Q C:\projects\csgo-cli\downloads\secure-file\secure-file.zip
+  #- cd C:\projects\csgo-cli\downloads
+  #- curl -L -o curl-7.73.0-win64-mingw.zip https://dl.bintray.com/vszakats/generic/curl-7.73.0-win64-mingw.zip
+  #- 7z x C:\projects\csgo-cli\downloads\curl-7.73.0-win64-mingw.zip -aoa -y -oC:\projects\csgo-cli\downloads
+  #- del /Q C:\projects\csgo-cli\downloads\curl-7.73.0-win64-mingw.zip
+  #- move C:\projects\csgo-cli\downloads\curl-7.73.0-win64-mingw\bin C:\projects\csgo-cli\downloads\curl
+  #- rmdir /S /Q C:\projects\csgo-cli\downloads\curl-7.73.0-win64-mingw
+  #- C:\projects\csgo-cli\downloads\curl\curl.exe --version
+  #- cd C:\projects\csgo-cli
   # 3) SW SDK (prebuild libs + src)
-  - C:\projects\csgo-cli\downloads\secure-file\secure-file.exe -decrypt C:\projects\csgo-cli\downloads\sw_sdk_150.zip.enc -secret %SW_SDK_SECRET% -salt %SW_SDK_SALT% -out C:\projects\csgo-cli\downloads\sw_sdk_150.zip
-  - 7z x C:\projects\csgo-cli\downloads\sw_sdk_150.zip -aoa -y -oC:\projects\csgo-cli\dependencies
+  - 7z x C:\projects\csgo-cli\downloads\sw_sdk_150.zip -aoa -y -oC:\projects\csgo-cli\dependencies -p%SW_SDK_SECRET%
   - cd C:\projects\csgo-cli\dependencies
   - ren sdk sw_sdk
   - cd C:\projects\csgo-cli
