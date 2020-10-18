@@ -12,7 +12,7 @@ configuration: Release
 environment:
   MSBUILD_FLAGS: /verbosity:minimal /maxcpucount
   SW_SDK_SECRET:
-    secure: tDbmOGsBCYc38zcIOTV8GEM8CAKjW4u7yIn+KhY0fG1sEgd5jHg=
+    secure: cGLe68Iz+JbJZOhOcvD0NUHGYcC2wKP9ysL5YODPVG6r6R5Mym8=
 
 build:
   verbosity: minimal
