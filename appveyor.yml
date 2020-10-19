@@ -65,14 +65,12 @@ install:
   # 5) VCPKG
   - vcpkg install --feature-flags=manifests
   - vcpkg integrate install
-  # 6) CHECK: output content of folder, to see if everything is present
+
+before_build:
+  # CHECK: output content of folder, to see if everything is present
   - dir C:\projects\csgo-cli\downloads\
   - dir C:\projects\csgo-cli\dependencies\
   - dir C:\projects\csgo-cli\dependencies\csgo-protobufs
-
-before_build:
-  # Patch CSGO Protobufs
-  - C:\projects\csgo-cli\dependencies\csgo-protobufs-patch\patch.bat
   # return
   - cd C:\projects\csgo-cli
 
