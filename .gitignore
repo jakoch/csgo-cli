@@ -1,2 +1,3 @@
 build/
+dependencies/sw_sdk/
 vcpkg_installed/
