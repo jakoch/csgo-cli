@@ -1,5 +1,5 @@
-#ifndef ExceptionHandler_h__
-#define ExceptionHandler_h__
+#ifndef ExceptionHandler_H
+#define ExceptionHandler_H
 
 #include <exception>
 #include <string>
@@ -14,4 +14,4 @@ private:
     std::string m_what;
 };
 
-#endif // ExceptionHandler_h__
+#endif

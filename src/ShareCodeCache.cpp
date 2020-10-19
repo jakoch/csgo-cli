@@ -1,7 +1,7 @@
-#include "ShareCodeCache.h" 
+#include "ShareCodeCache.h"
 
 ShareCodeCache::ShareCodeCache(bool verboseMode)
-{   
+{
     // create file, if not exists
     if (!std::filesystem::exists(csvFile)) {
         matchDbFile.open(csvFile, std::ios::out | std::ios::app);
@@ -14,7 +14,7 @@ ShareCodeCache::ShareCodeCache(bool verboseMode)
 
     if (verboseMode) {
         // debug print sharecode cache
-        printf(" Cached Sharecodes: %zd \n", sharecodeCache.size());        
+        printf(" Cached Sharecodes: %zd \n", sharecodeCache.size());
         for (auto const& sharecode : sharecodeCache) {
             printf(" \"%s\" \n", sharecode.c_str());
         }
@@ -22,7 +22,7 @@ ShareCodeCache::ShareCodeCache(bool verboseMode)
     }
 
     // clear cache
-    if (sharecodeCache.size() >= 50) {              
+    if (sharecodeCache.size() >= 50) {
         std::ofstream ofs(csvFile, std::ios::out | std::ios::trunc);
         ofs.close();
     }
@@ -53,10 +53,10 @@ bool ShareCodeCache::insert(std::string sharecode)
 std::vector<std::string> ShareCodeCache::read(std::istream& is)
 {
     std::vector<std::string> tokens;
-    std::string token;  
+    std::string token;
     while (std::getline(is, token) && !token.empty())
-    {           
-        tokens.push_back(token);        
+    {
+        tokens.push_back(token);
     }
     return tokens;
 }

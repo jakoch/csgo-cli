@@ -1,7 +1,7 @@
-#ifndef CSGOMatchPlayerScore_h__
-#define CSGOMatchPlayerScore_h__
+#ifndef CSGOMatchPlayerScore_H
+#define CSGOMatchPlayerScore_H
 
-#include <steamtypes.h>
+#include <steam/steamtypes.h>
 
 /**
  * This struct represents the PlayerScoreboard.
@@ -21,4 +21,4 @@ struct CSGOMatchPlayerScore
         int32 score=0;
 };
 
-#endif // CSGOMatchPlayerScore_h__
+#endif

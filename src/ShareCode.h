@@ -1,10 +1,10 @@
-#pragma once
+#ifndef ShareCode_H
+#define ShareCode_H
 
 #include <intrin.h>
 #include <regex>
 #include <ostream>
 #include <iostream>
-
 
 void quotientAndRemainder(
     uint64_t& a0, uint64_t& a1, uint16_t& a2,
@@ -103,8 +103,9 @@ std::string fromDemoShareCode(std::string sharecode)
     sharecode = std::regex_replace(sharecode, std::regex("CSGO|-"), "");
     sharecode = std::string(sharecode.rbegin(), sharecode.rend());
 
-    const std::string dictionary = "ABCDEFGHJKLMNOPQRSTUVWXYZabcdefhijkmnopqrstuvwxyz23456789";
-    std::array<uint8_t, 18> result = {};
+    const std::string dictionary =
+"ABCDEFGHJKLMNOPQRSTUVWXYZabcdefhijkmnopqrstuvwxyz23456789"; std::array<uint8_t,
+18> result = {};
 
     for (char cur_char : sharecode)
     {
@@ -150,3 +151,5 @@ std::string fromDemoShareCode(std::string sharecode)
     uint16_t tokenId = *reinterpret_cast<uint16_t*>(result.data() + 16);
 }
 */
+
+#endif

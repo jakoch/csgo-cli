@@ -52,7 +52,7 @@ CURL* ShareCodeUpload::initCurlConnection()
 
         // provide a buffer for storing errors
         curl_easy_setopt(curl, CURLOPT_ERRORBUFFER, errorBuffer);
-        
+
         // 1. URL that is about to receive our GET request
         curl_easy_setopt(curl, CURLOPT_URL, "https://csgostats.gg/");
 
@@ -66,7 +66,7 @@ CURL* ShareCodeUpload::initCurlConnection()
         // 4. SSL
         curl_easy_setopt(curl, CURLOPT_CAINFO, "cacert.pem");
         curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, 1L); //only for https
-               
+
         // 5. enable verbose mode
         if (verbose) {
             curl_easy_setopt(curl, CURLOPT_VERBOSE, 1L);
@@ -75,7 +75,7 @@ CURL* ShareCodeUpload::initCurlConnection()
         // prepare user-agent identifier
         char ua_ident[100];
         sprintf(ua_ident, "User-Agent: Mozilla/5.0 (compatible; %s)", CSGO_CLI_USERAGENT_ID);
-        
+
         // 4. set headers
         struct curl_slist *headers = NULL;
         headers = curl_slist_append(headers, "Accept: */*");
@@ -110,7 +110,7 @@ CURL* ShareCodeUpload::initCurlConnection()
             // free the custom headers
             curl_slist_free_all(headers);
 
-            // when CURL is NOT OK, exit        
+            // when CURL is NOT OK, exit
             exit(1);
         }
 
@@ -123,7 +123,7 @@ CURL* ShareCodeUpload::initCurlConnection()
 
         // WAIT 1sec
         std::this_thread::sleep_for(std::chrono::seconds(1));
-    }   
+    }
     else
     {   // something's gone wrong with curl at the beginning
         fprintf(stderr, "Curl init failed!\n");
@@ -145,7 +145,7 @@ int ShareCodeUpload::uploadShareCode(std::string shareCode, std::string& respons
     // set the error buffer as empty before performing a request
     errorBuffer[0] = 0;
 
-    // 1. URL that is about to receive our POST data      
+    // 1. URL that is about to receive our POST data
     curl_easy_setopt(curl, CURLOPT_URL, "https://csgostats.gg/match/upload/ajax");
 
     // 2. build data to POST
@@ -180,7 +180,7 @@ int ShareCodeUpload::uploadShareCode(std::string shareCode, std::string& respons
     curl_easy_setopt(curl, CURLOPT_CAINFO, "cacert.pem");
     curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, 1L); //only for https
 
-    // 7. setup method to handle the response data 
+    // 7. setup method to handle the response data
     curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, &CurlWrite_CallbackFunc_StdString);
     curl_easy_setopt(curl, CURLOPT_WRITEDATA, &responseContent);
 
@@ -214,7 +214,7 @@ int ShareCodeUpload::uploadShareCode(std::string shareCode, std::string& respons
         // when CURL is NOT OK, return false
         return 1;
     }
-       
+
     // output response
     if (verbose) {
         std::cout << "\n\n[LOG] [UploadShareCode] [POST Request] ResponseContent:\n";
@@ -243,7 +243,7 @@ int ShareCodeUpload::processJsonResponse(std::string& jsonResponse)
         fprintf(stderr, "\nError: Response content is not JSON, but HTML.\n");
         return 1;
     }
-    
+
     using namespace rapidjson;
 
     Document document;
@@ -279,7 +279,7 @@ int ShareCodeUpload::processJsonResponse(std::string& jsonResponse)
     else if (strcmp("queued", status->value.GetString()) == 0) {
         Value::MemberIterator msg = data->value.FindMember("msg");
 
-        // msg contains HTML crap, let's cut that out   
+        // msg contains HTML crap, let's cut that out
         std::string msgHtml = msg->value.GetString();
         std::string newMsg(" ");
 

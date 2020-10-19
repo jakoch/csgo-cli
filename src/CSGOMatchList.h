@@ -1,10 +1,9 @@
-#ifndef CSGOMatchList_h__
-#define CSGOMatchList_h__
+#ifndef CSGOMatchList_H
+#define CSGOMatchList_H
 
 #include "CSGOClient.h"
 
 #include <condition_variable>
-
 
 /**
  * utility class to store and update the match list
@@ -25,7 +24,7 @@ public:
     int getPlayerIndex(uint32 accid, const CMsgGCCStrike15_v2_MatchmakingServerRoundStats & roundStats);
     std::string getMatchResult(const CMsgGCCStrike15_v2_MatchmakingServerRoundStats & roundStats);
     int getMatchResultNum(const CMsgGCCStrike15_v2_MatchmakingServerRoundStats & roundStats);
-    
+
     CMsgGCCStrike15_v2_MatchList matchList;
 
 private:
@@ -41,4 +40,4 @@ private:
     GCMsgHandler<CMsgGCCStrike15_v2_MatchList> m_matchListHandler;
 };
 
-#endif // CSGOMatchList_h__
+#endif

@@ -1,8 +1,8 @@
-#ifndef CSGOMatchData_h__
-#define CSGOMatchData_h__
+#ifndef CSGOMatchData_H
+#define CSGOMatchData_H
 
 #include "CSGOMatchPlayerScore.h"
-#include <steamtypes.h>
+#include <steam/steamtypes.h>
 #include <vector>
 #include <string>
 
@@ -40,5 +40,4 @@ struct CSGOMatchData
         int score_enemy;
 };
 
-
-#endif // CSGOMatchData_h__
+#endif

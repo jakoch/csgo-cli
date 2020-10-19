@@ -1,9 +1,9 @@
-#ifndef CSGOMMHello_h__
-#define CSGOMMHello_h__
+#ifndef CSGOMMHello_H
+#define CSGOMMHello_H
 
 #include "CSGOClient.h"
-#include <condition_variable>
 
+#include <condition_variable>
 
 class CSGOMMHello
 {
@@ -27,4 +27,4 @@ private:
     GCMsgHandler<CMsgGCCStrike15_v2_MatchmakingGC2ClientHello> m_mmhelloHandler;
 };
 
-#endif // CSGOMMHello_h__
+#endif

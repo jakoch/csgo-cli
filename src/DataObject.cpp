@@ -10,7 +10,7 @@ std::string DataObject::getPlayerRank()
 std::string DataObject::getPlayerLevel()
 {
     int level = (player_level < 0) ? player_level - 1 : player_level;
-    
+
     return getLevelName(level);
 }
 

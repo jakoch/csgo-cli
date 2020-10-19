@@ -1,4 +1,5 @@
-#pragma once
+#ifndef SteamID_H
+#define SteamID_H
 
 // 76561197960493477 -> 113874
 uint32 calcSteamID32(uint64 steamID64)
@@ -30,3 +31,5 @@ std::string toSteamIDClassic(uint64 steamID64)
     ss << "STEAM_0:" << a << ":" << b;
     return ss.str();
 }
+
+#endif
