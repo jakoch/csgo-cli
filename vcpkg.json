@@ -7,13 +7,11 @@
   "dependencies": [
     "rapidjson",
     "fmt",
-    "zlib",
     "spdlog",
+    "zlib",
     {
       "name": "curl",
-      "features": [
-        "brotli", "http2", "c-ares"
-      ]
+      "features": ["http2"]
     },
     "protobuf"
   ]

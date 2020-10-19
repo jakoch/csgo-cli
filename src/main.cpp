@@ -1,3 +1,5 @@
+#include <steam/steamtypes.h>
+
 #include "VersionAndConstants.h"
 #include "ExceptionHandler.h"
 #include "CSGOMMHello.h"
@@ -10,6 +12,7 @@
 #include "ShareCode.h"
 #include "ShareCodeUpload.h"
 #include "ShareCodeCache.h"
+
 #ifdef _WIN32
 #include <io.h>
 #include <windows.h>
@@ -21,7 +24,6 @@
 #include <iomanip>
 // Includes needed for _setmode() (+io.h)
 #include <fcntl.h>
-#include <steamtypes.h>
 
 struct TableFormat {
     int width;
@@ -139,7 +141,7 @@ std::thread createCallbackThread(bool &running, bool &verbose)
             try
             {
                 std::this_thread::sleep_for(std::chrono::milliseconds(CSGO_CLI_STEAM_CALLBACK_INTERVAL));
-                Steam_RunCallbacks(GetHSteamPipe(), false);
+                SteamAPI_RunCallbacks();
             }
             catch (ExceptionHandler& e)
             {

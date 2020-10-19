@@ -1,5 +1,6 @@
-#ifndef GCMsgHandler_h__
-#define GCMsgHandler_h__
+#ifndef GCMsgHandler_H
+#define GCMsgHandler_H
+
 #include <functional>
 
 struct IGCMsgHandler
@@ -47,4 +48,4 @@ private:
     CallbackThread m_handler;
 };
 
-#endif // GCMsgHandler_h__
+#endif

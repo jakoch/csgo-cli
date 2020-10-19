@@ -58,7 +58,7 @@ void CSGOMatchList::Refresh()
 {
     uint32 accountId = SteamUser()->GetSteamID().GetAccountID();
 
-    CMsgGCCStrike15_v2_MatchListRequestRecentUserGames request; 
+    CMsgGCCStrike15_v2_MatchListRequestRecentUserGames request;
     request.set_accountid(accountId);
 
     if (CSGOClient::GetInstance()->SendGCMessage(k_EMsgGCCStrike15_v2_MatchListRequestRecentUserGames, &request) != k_EGCResultOK)
@@ -88,12 +88,12 @@ const std::vector<CDataGCCStrike15_v2_MatchInfo>& CSGOMatchList::Matches() const
 int CSGOMatchList::getOwnIndex(const CMsgGCCStrike15_v2_MatchmakingServerRoundStats& roundStats)
 {
     uint32 accountId = SteamUser()->GetSteamID().GetAccountID();
-        
+
     for (int i = 0; i < roundStats.reservation().account_ids().size(); ++i) {
         if (roundStats.reservation().account_ids(i) == accountId) {
             return i;
         }
-    }        
+    }
 
     throw "unable to find own AccountID in matchinfo";
 }
@@ -114,7 +114,7 @@ std::string CSGOMatchList::getMatchResult(const CMsgGCCStrike15_v2_MatchmakingSe
     int num = getMatchResultNum(roundStats);
     if (num == 0) return "TIE";
     if (num == 1) return "WIN";
-    return "LOSS";  
+    return "LOSS";
 }
 
 int CSGOMatchList::getMatchResultNum(const CMsgGCCStrike15_v2_MatchmakingServerRoundStats& roundStats)

@@ -3,7 +3,7 @@
 #include "ExceptionHandler.h"
 #include <iostream>
 
-CSGOMMHello::CSGOMMHello() 
+CSGOMMHello::CSGOMMHello()
     :m_mmhelloHandler(this, &CSGOMMHello::OnMMHello)
 {
     CSGOClient::GetInstance()->RegisterHandler(k_EMsgGCCStrike15_v2_MatchmakingGC2ClientHello, &m_mmhelloHandler);
@@ -39,7 +39,7 @@ void CSGOMMHello::RefreshWait()
 
     m_updateCv.wait_for(lock, std::chrono::milliseconds(CSGO_CLI_STEAM_CMSG_TIMEOUT));
 
-    if (!m_updateComplete) {        
+    if (!m_updateComplete) {
         throw CSGO_CLI_TimeoutException();
     }
 }

@@ -5,17 +5,15 @@
 static const uint32_t ProtobufFlag = (1 << 31);
 CSGOClient* CSGOClient::m_instance = nullptr;
 
-CSGOClient::CSGOClient() :       
+CSGOClient::CSGOClient() :
     m_welcomeHandler(this, &CSGOClient::OnClientWelcome),
     m_availableCb(this, &CSGOClient::OnMessageAvailable),
     m_failedCb(this, &CSGOClient::OnMessageFailed)
 {
-    m_gameCoordinator = (ISteamGameCoordinator*) SteamClient()->
-        GetISteamGenericInterface(
-            GetHSteamUser(),
-            GetHSteamPipe(),
-            STEAMGAMECOORDINATOR_INTERFACE_VERSION
-        );
+    m_gameCoordinator =
+      (ISteamGameCoordinator *)SteamClient()->GetISteamGenericInterface(
+          SteamAPI_GetHSteamUser(), SteamAPI_GetHSteamPipe(),
+          STEAMGAMECOORDINATOR_INTERFACE_VERSION);
 
     RegisterHandler(k_EMsgGCClientWelcome, &m_welcomeHandler);
 
@@ -142,7 +140,7 @@ void CSGOClient::WaitForGameClientConnect()
 
 void CSGOClient::OnClientWelcome(const CMsgClientWelcome& msg)
 {
-    //printf("Received welcome CS:GO Game Coordinator version %s (Connected to %s).",       
+    //printf("Received welcome CS:GO Game Coordinator version %s (Connected to %s).",
     //  std::to_string(msg.version()).c_str(), msg.location().country().c_str());
 
     m_connectedToGameClient = true;

@@ -1,15 +1,9 @@
-#ifndef CSGOClient_h__
-#define CSGOClient_h__
-
-#include <vector>
-#include <map>
-#include <mutex>
-#include <memory>
-#include <condition_variable>
+#ifndef CSGOClient_H
+#define CSGOClient_H
 
 // Steamworks SDK
-#include <steam_api.h>
-#include <isteamgamecoordinator.h>
+#include <steam/steam_api.h>
+#include <steam/isteamgamecoordinator.h>
 
 // CSGO Protobufs
 #include "cstrike15_gcmessages.pb.h"
@@ -17,6 +11,13 @@
 #include "gcsystemmsgs.pb.h"
 
 #include "GCMsgHandler.h"
+
+#include <vector>
+#include <map>
+#include <mutex>
+#include <memory>
+#include <condition_variable>
+
 
 /**
  * A minimal CS:GO Game Client
@@ -96,4 +97,4 @@ private:
     std::multimap<uint32, IGCMsgHandler*> m_msgHandler;
 };
 
-#endif // CSGOClient_h__
+#endif

@@ -1,5 +1,5 @@
-#ifndef VersionAndConstants_h__
-#define VersionAndConstants_h__
+#ifndef VersionAndConstants_H
+#define VersionAndConstants_H
 
 // Application Name
 #define CSGO_CLI_BINARYNAME "csgo_cli"
@@ -10,7 +10,7 @@
 #define CSGO_CLI_VERSION_REVISION "0"
 #define CSGO_CLI_VERSION CSGO_CLI_VERSION_MAJOR "." CSGO_CLI_VERSION_MINOR "." CSGO_CLI_VERSION_REVISION
 
-// CURL user-agent identifier 
+// CURL user-agent identifier
 #define CSGO_CLI_WEBSITE "https://github.com/jakoch/csgo-cli"
 #define CSGO_CLI_USERAGENT_ID CSGO_CLI_BINARYNAME "/" CSGO_CLI_VERSION "; " CSGO_CLI_WEBSITE
 
@@ -22,4 +22,4 @@
 
 struct CSGO_CLI_TimeoutException { };
 
-#endif // VersionAndConstants_h__
+#endif

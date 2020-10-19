@@ -9,6 +9,20 @@ set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/build")
 
+#-------------------------------------------------------------------
+# Setup Dependency Manager: VCPKG
+#-------------------------------------------------------------------
+
+set(VCPKG_TARGET_TRIPLET        x64-windows-static)
+
+if (WIN32)
+    set(VCPKG_TARGET_ARCHITECTURE   x64)
+    set(VCPKG_CRT_LINKAGE           static)
+    set(VCPKG_LIBRARY_LINKAGE       static)
+endif (WIN32)
+
+include(setup-vcpkg)
+
 # ==================================================================================================
 # Options
 # ==================================================================================================
@@ -34,11 +48,14 @@ endif()
 # ==================================================================================================
 
 if (WIN32)
+
+    set(BUILD_SHARED_LIBS OFF)
+
     # Link statically against c/c++ lib to avoid missing redistributables.
     # Give users a choice to opt for the shared runtime if they want.
     option(USE_STATIC_CRT   "Link against the static runtime libraries."    ON)
 
-    # Generate the .def in order to get the .lib required when linking against dlls. 
+    # Generate the .def in order to get the .lib required when linking against dlls.
     # cl.exe will not generate .lib without .def file (or without pragma
     # __declspec(dllexport) in front of each functions).
     set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
@@ -51,6 +68,8 @@ if (WIN32)
         set(CRT_FLAGS_DEBUG "/MDd")
     endif()
 
+    set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
+
 endif()
 
 # ==================================================================================================
@@ -61,6 +80,11 @@ if(CMAKE_COMPILER_IS_GNUCXX)
     set(CMAKE_CXX_FLAGS "-std=c++14")
     set(CMAKE_EXE_LINKER_FLAGS "-l protobuf -pthread")
     set(CMAKE_SHARED_LINKER_FLAGS "-Wl,--no-undefined")
+
+    # Optimize
+    SET(CMAKE_CXX_FLAGS_RELWITHDEBINFO "-O2 -g")
+    SET(CMAKE_CXX_FLAGS_RELEASE "-O2")
+    SET(CMAKE_CXX_FLAGS_DEBUG  "-O0 -g")
 endif()
 
 if(MSVC)
@@ -70,22 +94,18 @@ if(MSVC)
   message(STATUS "USING COMPILER: ${CMAKE_CXX_COMPILER_ID}")
   message(STATUS "MSVC_VERSION: ${MSVC_VERSION}")
   message(STATUS "MSVC_TOOLSET_VERSION: ${MSVC_TOOLSET_VERSION}")
+  message(STATUS "CMAKE_MSVC_RUNTIME_LIBRARY: ${CMAKE_MSVC_RUNTIME_LIBRARY}")
 
   # Define C++ Standard to use
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /std:c++latest")
-  
+
   # Be quiet
   SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /nologo")
-  
-  # Optimize
-  SET(CMAKE_CXX_FLAGS_RELWITHDEBINFO "-O2 -g")
-  SET(CMAKE_CXX_FLAGS_RELEASE "-O2")
-  SET(CMAKE_CXX_FLAGS_DEBUG  "-O0 -g")
 
   # MSVC warning suppressions
   add_definitions(-D_CRT_SECURE_NO_WARNINGS)
   add_definitions(-D_SCL_SECURE_NO_WARNINGS)
-  add_definitions(-DNOMINMAX) 
+  add_definitions(-DNOMINMAX)
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /bigobj")
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /wd4146") # Warning C4146: unary minus operator applied to unsigned type, result still unsigned
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /wd4244") # Warning C4244: 'initializing': conversion from 'double' to 'int', possible loss of data
@@ -94,6 +114,9 @@ if(MSVC)
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /wd4800") # Warning C4800: 'uint32_t' : forcing value to bool 'true' or 'false' (performance warning)
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /wd4838") # Warning C4838: conversion from 'double' to 'float' requires a narrowing conversion
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /wd4996") # Warning C4996: Call to 'function' with parameters that may be unsafe
+  # You don't want to know why.
+  # https://github.com/protocolbuffers/protobuf/blob/master/cmake/README.md#notes-on-compiler-warnings
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /wd4251") # Warning C4251:
   message(STATUS "USING THESE CMAKE_CXX_FLAGS: ${CMAKE_CXX_FLAGS}")
 endif()
 
@@ -102,9 +125,10 @@ endif()
 # ==================================================================================================
 
 # Link static runtime libraries
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /MD")
+#set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}") # /MD
 
 add_link_options("/nologo")
+add_link_options("/VERBOSE:LIB")
 
 # ==================================================================================================
 # Setup Dependencies
@@ -115,7 +139,7 @@ message(STATUS "\n-- Dependencies:\n")
 #
 # Steamworks SDK
 #
-set(STEAMWORKS_INCLUDE_DIR "${CMAKE_SOURCE_DIR}/dependencies/sw_sdk/public/steam")
+set(STEAMWORKS_INCLUDE_DIR "${CMAKE_SOURCE_DIR}/dependencies/sw_sdk/public")
 set(STEAMWORKS_REDISTBIN_DIR "${CMAKE_SOURCE_DIR}/dependencies/sw_sdk/redistributable_bin")
 
 configure_file("${CMAKE_SOURCE_DIR}/res/steam_appid.txt" "build/steam_appid.txt" COPYONLY)
@@ -133,17 +157,38 @@ find_package(Steamworks REQUIRED)
 #
 # Google Protobuf
 #
-set(PROTOBUF_INCLUDE_DIR        "${CMAKE_SOURCE_DIR}/dependencies/protobuf/src")
-set(PROTOBUF_IMPORT_DIRS        "${CMAKE_SOURCE_DIR}/dependencies/protobuf/src")
-set(PROTOBUF_LIBRARY            "${CMAKE_SOURCE_DIR}/dependencies/protobuf/cmake/release/libprotobuf.lib") 
+set(protobuf_MSVC_STATIC_RUNTIME on)
 
-if(WIN32)  
-    set(PROTOBUF_PROTOC_EXECUTABLE  "${CMAKE_SOURCE_DIR}/dependencies/protobuf/cmake/release/protoc.exe")
-else()
-    set(PROTOBUF_PROTOC_EXECUTABLE  "${CMAKE_SOURCE_DIR}/dependencies/protobuf/cmake/release/protoc")
+if(MSVC AND protobuf_MSVC_STATIC_RUNTIME)
+    set(CompilerFlags
+            CMAKE_CXX_FLAGS
+            CMAKE_CXX_FLAGS_DEBUG
+            CMAKE_CXX_FLAGS_RELEASE
+            CMAKE_CXX_FLAGS_MINSIZEREL
+            CMAKE_CXX_FLAGS_RELWITHDEBINFO
+            CMAKE_C_FLAGS
+            CMAKE_C_FLAGS_DEBUG
+            CMAKE_C_FLAGS_RELEASE
+            CMAKE_C_FLAGS_MINSIZEREL
+            CMAKE_C_FLAGS_RELWITHDEBINFO
+            )
+    foreach(CompilerFlag ${CompilerFlags})
+        string(REPLACE "/MD" "/MT" ${CompilerFlag} "${${CompilerFlag}}")
+        set(${CompilerFlag} "${${CompilerFlag}}" CACHE STRING "msvc compiler flags" FORCE)
+        message("MSVC flags: ${CompilerFlag}:${${CompilerFlag}}")
+    endforeach()
 endif()
 
-find_package(Protobuf REQUIRED)
+set(Protobuf_INCLUDE_DIR         "${VCPKG_DIR}/include")
+set(Protobuf_IMPORT_DIRS         "${VCPKG_DIR}/include") # additional proto files from include folder
+set(Protobuf_LIBRARY             "${VCPKG_DIR}/lib/libprotobuf.lib")
+
+set(Protobuf_USE_STATIC_LIBS ON)
+set(Protobuf_PROTOC_EXECUTABLE   "${VCPKG_DIR}/tools/protobuf/protoc") # protoc.exe
+
+set(Protobuf_DIR "${VCPKG_DIR}/share/protobuf")
+set(protobuf_MODULE_COMPATIBLE ON CACHE BOOL "")
+find_package(Protobuf CONFIG REQUIRED)
 
 #
 # Process CS:GO Protobufs
@@ -154,46 +199,40 @@ find_package(Protobuf REQUIRED)
 # dependencies/csgo-protobufs/csgo/gcsdk_gcmessages.proto
 # dependencies/csgo-protobufs/csgo/gcsystemmsgs.proto
 
-PROTOBUF_GENERATE_CPP(
-    PROTO_ENGINE_GCMESSAGES_SRC
-    PROTO_ENGINE_GCMESSAGES_HDR
+protobuf_generate_cpp(PROTO_ENGINE_GCMESSAGES_SRC PROTO_ENGINE_GCMESSAGES_HDR
     ${CMAKE_CURRENT_SOURCE_DIR}/dependencies/csgo-protobufs/csgo/engine_gcmessages.proto
 )
-PROTOBUF_GENERATE_CPP(
-    PROTO_CSTRIKE15_GCMESSAGES_SRC
-    PROTO_CSTRIKE15_GCMESSAGES_HDR
+protobuf_generate_cpp(PROTO_CSTRIKE15_GCMESSAGES_SRC PROTO_CSTRIKE15_GCMESSAGES_HDR
     ${CMAKE_CURRENT_SOURCE_DIR}/dependencies/csgo-protobufs/csgo/cstrike15_gcmessages.proto
 )
-PROTOBUF_GENERATE_CPP(
-    PROTO_STEAMMESSAGES_SRC
-    PROTO_STEAMMESSAGES_HDR
+protobuf_generate_cpp(PROTO_STEAMMESSAGES_SRC PROTO_STEAMMESSAGES_HDR
     ${CMAKE_CURRENT_SOURCE_DIR}/dependencies/csgo-protobufs/csgo/steammessages.proto
 )
-PROTOBUF_GENERATE_CPP(
-    PROTO_GCSDK_GCMESSAGES_SRC
-    PROTO_GCSDK_GCMESSAGES_HDR
+protobuf_generate_cpp(PROTO_GCSDK_GCMESSAGES_SRC PROTO_GCSDK_GCMESSAGES_HDR
     ${CMAKE_CURRENT_SOURCE_DIR}/dependencies/csgo-protobufs/csgo/gcsdk_gcmessages.proto
 )
-PROTOBUF_GENERATE_CPP(
-    PROTO_GCSYSTEMMSGS_SRC
-    PROTO_GCSYSTEMMSGS_HDR
+protobuf_generate_cpp(PROTO_GCSYSTEMMSGS_SRC PROTO_GCSYSTEMMSGS_HDR
     ${CMAKE_CURRENT_SOURCE_DIR}/dependencies/csgo-protobufs/csgo/gcsystemmsgs.proto
 )
 
-# 
+#
+# zlib
+#
+set(ZLIB_LIBRARY      "${VCPKG_DIR}/lib/zlib.lib")
+set(ZLIB_INCLUDE_DIR  "${VCPKG_DIR}/include")
+find_package(ZLIB REQUIRED)
+
+#
 # Curl
 #
-set(CURL_INCLUDE_DIR "${CMAKE_SOURCE_DIR}/dependencies/curl/include")
-set(CURL_LIBRARY "${CMAKE_SOURCE_DIR}/dependencies/curl/lib/libcurl.lib")
-find_package(CURL REQUIRED)
+set(CURL_DIR "${VCPKG_DIR}/share/curl")
+find_package(CURL CONFIG REQUIRED)
 
 #
 # RapidJson
 #
-set(RAPIDJSON_USE_SSE42 ON)
-set(RAPIDJSON_DIR "${CMAKE_SOURCE_DIR}/dependencies/rapidjson/share/rapidjson")
-set(RAPIDJSON_INCLUDEDIR "${CMAKE_SOURCE_DIR}/dependencies/rapidjson/include")
-find_package(RAPIDJSON CONFIG REQUIRED)
+set(RapidJSON_DIR "${VCPKG_DIR}/share/rapidjson")
+find_package(RapidJSON CONFIG REQUIRED)
 
 #
 # Copy Additional Files
@@ -201,7 +240,7 @@ find_package(RAPIDJSON CONFIG REQUIRED)
 configure_file("${CMAKE_CURRENT_SOURCE_DIR}/README.md"                "build/readme.txt"    COPYONLY)
 configure_file("${CMAKE_CURRENT_SOURCE_DIR}/LICENSE"                  "build/license.txt"   COPYONLY)
 configure_file("${CMAKE_CURRENT_SOURCE_DIR}/update.bat"               "build/update.bat"    COPYONLY)
-configure_file("${CMAKE_SOURCE_DIR}/dependencies/curl/bin/cacert.pem" "build/cacert.pem"    COPYONLY)
+#configure_file("${CMAKE_SOURCE_DIR}/dependencies/curl/bin/cacert.pem" "build/cacert.pem"    COPYONLY)
 
 #
 # Add Exe Resources
@@ -225,7 +264,7 @@ add_executable(csgo_cli
         src/CSGOMMHello.h
         src/CSGOMMHello.cpp
         src/CSGOMatchList.h
-        src/CSGOMatchList.cpp 
+        src/CSGOMatchList.cpp
         src/CSGOMatchData.h
         src/CSGOMatchPlayerScore.h
         src/CSGOMatchPlayerScore.cpp
@@ -256,16 +295,16 @@ add_executable(csgo_cli
 )
 
 include_directories(
-    "${STEAMWORKS_INCLUDE_DIR}" 
-    "${PROTOBUF_INCLUDE_DIR}"
-    "${CURL_INCLUDE_DIRS}"
-    "${RAPIDJSON_INCLUDE_DIRS}"
+    ${STEAMWORKS_INCLUDE_DIR}
+    ${PROTOBUF_INCLUDE_DIR}
 )
 
 target_link_libraries(csgo_cli
-    "${STEAMWORKS_LIBRARY}" 
-    "${PROTOBUF_LIBRARY}"
-    "${CURL_LIBRARIES}"
+    PRIVATE
+        ${STEAMWORKS_LIBRARY}
+        CURL::libcurl
+        ZLIB::ZLIB
+        protobuf::libprotobuf
 )
 
 target_compile_features(csgo_cli PUBLIC cxx_std_20)
@@ -295,7 +334,7 @@ source_group("Protobuf Generated Files" FILES
 
 set(FILES_TO_DEPLOY
     # curl
-    "${CMAKE_SOURCE_DIR}/dependencies/curl/bin/libcurl.dll"
+    "${VCPKG_DIR}/dependencies/curl/bin/libcurl.dll"
     # zlib
     "${CMAKE_SOURCE_DIR}/dependencies/zlib/bin/zlib1.dll"
 )

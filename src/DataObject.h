@@ -1,7 +1,7 @@
-#ifndef DataObject_h__
-#define DataObject_h__
+#ifndef DataObject_H
+#define DataObject_H
 
-#include <steamtypes.h>
+#include <steam/steamtypes.h>
 #include "CSGOMatchData.h"
 #include <vector>
 
@@ -58,7 +58,7 @@ public:
     int num_matches_played = 0;
     std::vector<CSGOMatchData> matches;
 
-private:    
+private:
     const std::vector<std::string> ranks = {
         "-unranked-",
         "Silver 1",
@@ -127,4 +127,4 @@ private:
     };
 };
 
-#endif // DataObject_h__
+#endif
