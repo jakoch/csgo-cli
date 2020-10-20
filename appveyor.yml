@@ -11,6 +11,8 @@ configuration: Release
 
 environment:
   VCPKG_DEFAULT_TRIPLET: "%PLATFORM%-windows-static"
+  #VCPKG_FORCE_SYSTEM_BINARIES: true
+  VCPKG_ROOT: "C:\\Tools\\vcpkg"
   MSBUILD_FLAGS: /verbosity:minimal /maxcpucount /p:VcpkgEnableManifest=true
   SW_SDK_SECRET:
     secure: Sb7dCLrPsVPEiu4QKrG8wQ==
