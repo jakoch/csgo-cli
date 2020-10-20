@@ -223,7 +223,7 @@ find_package(RapidJSON CONFIG REQUIRED)
 configure_file("${CMAKE_CURRENT_SOURCE_DIR}/README.md"                "build/readme.txt"    COPYONLY)
 configure_file("${CMAKE_CURRENT_SOURCE_DIR}/LICENSE"                  "build/license.txt"   COPYONLY)
 configure_file("${CMAKE_CURRENT_SOURCE_DIR}/update.bat"               "build/update.bat"    COPYONLY)
-#configure_file("${CMAKE_SOURCE_DIR}/dependencies/curl/bin/cacert.pem" "build/cacert.pem"    COPYONLY)
+configure_file("${CMAKE_SOURCE_DIR}/dependencies/curl/cacert.pem"     "build/cacert.pem"    COPYONLY)
 
 #
 # Add Exe Resources
@@ -314,11 +314,3 @@ source_group("Protobuf Generated Files" FILES
     ${PROTO_GCSYSTEMMSGS_SRC}
     ${PROTO_GCSYSTEMMSGS_HDR}
 )
-
-set(FILES_TO_DEPLOY
-    # curl
-    "${VCPKG_DIR}/dependencies/curl/bin/libcurl.dll"
-    # zlib
-    "${CMAKE_SOURCE_DIR}/dependencies/zlib/bin/zlib1.dll"
-)
-INSTALL(FILES ${FILES_TO_DEPLOY} DESTINATION "${CMAKE_SOURCE_DIR}/build")
