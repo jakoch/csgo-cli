@@ -44,7 +44,7 @@ install:
   # 1) update vcpkg:
   - cd C:\Tools\vcpkg
   - git pull
-  - .\bootstrap-vcpkg.bat -disableMetrics -useSystemBinaries
+  - .\bootstrap-vcpkg.bat -disableMetrics
   - cd C:\projects\csgo-cli
   # 2) update curl to v7.73.0
   #    -> C:\projects\csgo-cli\downloads\curl\curl.exe
