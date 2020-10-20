@@ -167,7 +167,7 @@ set(Protobuf_LIBRARY             "${VCPKG_DIR}/lib/libprotobuf.lib")
 set(Protobuf_USE_STATIC_LIBS ON)
 set(Protobuf_PROTOC_EXECUTABLE   "${VCPKG_DIR}/tools/protobuf/protoc") # protoc.exe
 
-#set(Protobuf_DIR "${VCPKG_DIR}/share/protobuf")
+set(Protobuf_DIR "${VCPKG_DIR}/share/protobuf")
 set(protobuf_MODULE_COMPATIBLE ON CACHE BOOL "")
 find_package(Protobuf CONFIG REQUIRED)
 

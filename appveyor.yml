@@ -81,7 +81,7 @@ build_script:
   # generate build files
   - cmake -G "Visual Studio 16 2019" -A x64 .
   # set msbuild cli flags
-  - set MSBUILD_VCPKG="/p:VcpkgEnable=true /p:VcpkgEnableManifest=true"
+  - set MSBUILD_VCPKG="/p:VcpkgEnable=true /p:VcpkgEnableManifest=true /p:VcpkgTriplet=%VCPKG_TARGET_TRIPLET%"
   - set MSBUILD_LOGGER="C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll"
   - set MSBUILD_FLAGS=/verbosity:minimal /maxcpucount /p:BuildInParallel=true %MSBUILD_VCPKG% /logger:%MSBUILD_LOGGER%
   # build
