@@ -25,6 +25,8 @@ public:
   private:
     CURL *curl = nullptr;
     bool verbose = false;
+    
+    struct curl_slist *host = NULL;
 
     CURL* initCurlConnection();
 };

@@ -8,10 +8,15 @@ ShareCodeUpload::ShareCodeUpload(bool verboseMode)
 {
     verbose    = verboseMode;
     curl = initCurlConnection();
+
+    host = curl_slist_append(NULL, "csgostats.gg:80:104.18.76.107");
+    host = curl_slist_append(host, "csgostats.gg:443:104.18.76.107");
 }
 
 ShareCodeUpload::~ShareCodeUpload()
 {
+    curl_slist_free_all(host);
+
     curl_easy_cleanup(curl);
 }
 
@@ -52,6 +57,8 @@ CURL* ShareCodeUpload::initCurlConnection()
 
         // provide a buffer for storing errors
         curl_easy_setopt(curl, CURLOPT_ERRORBUFFER, errorBuffer);
+
+        curl_easy_setopt(curl, CURLOPT_RESOLVE, host);
 
         // 1. URL that is about to receive our GET request
         curl_easy_setopt(curl, CURLOPT_URL, "https://csgostats.gg/");
@@ -144,6 +151,8 @@ int ShareCodeUpload::uploadShareCode(std::string shareCode, std::string& respons
 
     // set the error buffer as empty before performing a request
     errorBuffer[0] = 0;
+
+    curl_easy_setopt(curl, CURLOPT_RESOLVE, host);
 
     // 1. URL that is about to receive our POST data
     curl_easy_setopt(curl, CURLOPT_URL, "https://csgostats.gg/match/upload/ajax");
