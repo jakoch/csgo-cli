@@ -4,6 +4,10 @@ if(DEFINED ENV{VCPKG_ROOT} AND NOT DEFINED CMAKE_TOOLCHAIN_FILE)
     set(CMAKE_TOOLCHAIN_FILE "$ENV{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake" CACHE STRING "")
 endif()
 
+if(NOT DEFINED ENV{VCPKG_FEATURE_FLAGS})
+    set(ENV{VCPKG_FEATURE_FLAGS} "manifests,binarycaching")
+endif()
+
 # The VCPKG_DEFAULT_TRIPLET is automatically set by vcpkg.cmake.
 # If you want to build for other platforms, e.g. build for Android on Windows-x64 (canadian-cross builds),
 # please set VCPKG_TARGET_TRIPLET as env var: export VCPKG_TARGET_TRIPLET=x64-linux
