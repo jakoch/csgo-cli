@@ -65,6 +65,8 @@ install:
   - 7z x C:\projects\csgo-cli\downloads\sw_sdk_150.zip -aoa -y -oC:\projects\csgo-cli\dependencies -p%SW_SDK_SECRET%
   - cd C:\projects\csgo-cli\dependencies
   - ren sdk sw_sdk
+  # 6) VCPKG
+  - vcpkg install --triplet=%VCPKG_TARGET_TRIPLET% --feature-flags=manifests
 
 before_build:
   # CHECK: output content of folder, to see if everything is present
