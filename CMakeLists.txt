@@ -68,7 +68,10 @@ if (WIN32)
         set(CRT_FLAGS_DEBUG "/MDd")
     endif()
 
-    set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
+    cmake_policy(SET CMP0091 NEW) # https://cmake.org/cmake/help/v3.15/variable/CMAKE_MSVC_RUNTIME_LIBRARY.html
+    if (NOT DEFINED CMAKE_MSVC_RUNTIME_LIBRARY)
+      set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
+    endif()
 
 endif()
 
@@ -218,9 +221,11 @@ protobuf_generate_cpp(PROTO_GCSYSTEMMSGS_SRC PROTO_GCSYSTEMMSGS_HDR
 #
 # zlib
 #
-set(ZLIB_LIBRARY      "${VCPKG_DIR}/lib/zlib.lib")
-set(ZLIB_INCLUDE_DIR  "${VCPKG_DIR}/include")
-find_package(ZLIB REQUIRED)
+if(POLICY CMP0074)
+  cmake_policy(SET CMP0074 NEW) #3.12.0 `find_package()`` uses ``<PackageName>_ROOT`` variables.
+endif()
+set(ZLIB_ROOT "${VCPKG_DIR}")
+find_package(ZLIB)#REQUIRED)
 
 #
 # Curl
