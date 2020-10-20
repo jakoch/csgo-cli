@@ -17,7 +17,7 @@ environment:
   SW_SDK_SECRET:
     secure: Sb7dCLrPsVPEiu4QKrG8wQ==
   APPVEYOR_RDP_PASSWORD:
-      secure: lZ2yeOqAjdBliEe6qFKeHQ==
+      secure: g2Dly7Gom/V2IjvtKS1nUtdoI6mdSrrYZ15uY1Mo51I=
 
 cache: c:\tools\vcpkg\installed\
 
