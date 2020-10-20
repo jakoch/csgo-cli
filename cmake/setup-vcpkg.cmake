@@ -12,6 +12,11 @@ if(DEFINED ENV{VCPKG_TARGET_TRIPLET} AND NOT DEFINED VCPKG_TARGET_TRIPLET)
     set(VCPKG_TARGET_TRIPLET "$ENV{VCPKG_TARGET_TRIPLET}" CACHE STRING "")
 endif()
 
+# VCPKG_DIR is the root folder for all compiled packages, e.g. /project/vcpkg_installed/x64-linux
+# If may use this to set "Find" locations,
+#   set(LibXY_INCLUDE_DIR "${VCPKG_DIR}/include")
+#   set(LibXY_LIBRARY     "${VCPKG_DIR}/lib/libxy.lib")
+#   set(CURL_DIR          "${VCPKG_DIR}/share/curl")
 if(NOT DEFINED VCPKG_DIR)
     set(VCPKG_DIR "${CMAKE_SOURCE_DIR}/vcpkg_installed/${VCPKG_TARGET_TRIPLET}")
 endif()

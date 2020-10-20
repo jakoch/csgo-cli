@@ -75,7 +75,7 @@ before_build:
   - cd C:\projects\csgo-cli
 
 build_script:
-  - cmake -G "Visual Studio 16 2019" -A x64 -DCMAKE_TOOLCHAIN_FILE=c:/tools/vcpkg/scripts/buildsystems/vcpkg.cmake .
+  - cmake -G "Visual Studio 16 2019" -A x64 -DCMAKE_TOOLCHAIN_FILE=C:/Tools/vcpkg/scripts/buildsystems/vcpkg.cmake .
   - msbuild C:\projects\csgo-cli\csgo_cli.sln /m /p:Configuration=Release /p:Platform=x64 /logger:"C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll"
 
 after_build:
@@ -98,11 +98,10 @@ after_build:
   - C:\projects\csgo-cli\csgo-cli\csgo_cli.exe -V
   - C:\projects\csgo-cli\csgo-cli\csgo_cli.exe -help
   # 4) package dependencies folder
-  # 4.1) delete unecrypted sw_sdk folder
   - cd C:\projects\csgo-cli\dependencies
+  # 4.1) delete unecrypted sw_sdk folder
   - rmdir /S /Q sw_sdk
-  - rmdir /S /Q csgo-protobufs-patch
-  # 4.2) copy securefile + pw protected sw_sdk
+  # 4.2) copy password protected sw_sdk_{version}.zip
   - mkdir C:\projects\csgo-cli\dependencies\sw_sdk
   - copy C:\projects\csgo-cli\downloads\sw_sdk_150.zip C:\projects\csgo-cli\dependencies\sw_sdk
   # 4.3) package dependencies folder
