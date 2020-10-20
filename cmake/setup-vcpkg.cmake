@@ -1,19 +1,32 @@
+#
+# VCPKG - using an environment variable instead of a command line option
+#
+# https://github.com/microsoft/vcpkg/blob/master/docs/users/integration.md#using-an-environment-variable-instead-of-a-command-line-option
+#
 
 # Please set VCPKG_ROOT: export VCPKG_ROOT=/opt/vcpkg/bin
 if(DEFINED ENV{VCPKG_ROOT} AND NOT DEFINED CMAKE_TOOLCHAIN_FILE)
     set(CMAKE_TOOLCHAIN_FILE "$ENV{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake" CACHE STRING "")
 endif()
 
+# === VCPKG_FEATURE_FLAGS
 if(NOT DEFINED ENV{VCPKG_FEATURE_FLAGS})
     set(ENV{VCPKG_FEATURE_FLAGS} "manifests,binarycaching")
 endif()
 
-# The VCPKG_DEFAULT_TRIPLET is automatically set by vcpkg.cmake.
+
+# === VCPKG_TARGET_TRIPLET
+# The VCPKG_DEFAULT_TRIPLET is automatically set by vcpkg.cmake. RLY?
 # If you want to build for other platforms, e.g. build for Android on Windows-x64 (canadian-cross builds),
 # please set VCPKG_TARGET_TRIPLET as env var: export VCPKG_TARGET_TRIPLET=x64-linux
 #
 if(DEFINED ENV{VCPKG_TARGET_TRIPLET} AND NOT DEFINED VCPKG_TARGET_TRIPLET)
     set(VCPKG_TARGET_TRIPLET "$ENV{VCPKG_TARGET_TRIPLET}" CACHE STRING "")
+endif()
+
+# === VCPKG_DEFAULT_TRIPLET
+if(DEFINED ENV{VCPKG_DEFAULT_TRIPLET} AND NOT DEFINED VCPKG_TARGET_TRIPLET)
+  set(VCPKG_TARGET_TRIPLET "$ENV{VCPKG_DEFAULT_TRIPLET}" CACHE STRING "")
 endif()
 
 # VCPKG_DIR is the root folder for all compiled packages, e.g. /project/vcpkg_installed/x64-linux
