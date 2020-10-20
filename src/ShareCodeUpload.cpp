@@ -9,7 +9,6 @@ ShareCodeUpload::ShareCodeUpload(bool verboseMode)
     verbose    = verboseMode;
     curl = initCurlConnection();
 
-    struct curl_slist *host = NULL;
     host = curl_slist_append(NULL, "csgostats.gg:80:104.18.76.107");
     host = curl_slist_append(host, "csgostats.gg:443:104.18.76.107");
 }
