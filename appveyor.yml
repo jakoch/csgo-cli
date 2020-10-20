@@ -11,6 +11,7 @@ configuration: Release
 
 environment:
   VCPKG_DEFAULT_TRIPLET: "%PLATFORM%-windows-static"
+  VCPKG_FEATURE_FLAGS: "manifests"
   #VCPKG_FORCE_SYSTEM_BINARIES: true
   VCPKG_ROOT: "C:\\Tools\\vcpkg"
   MSBUILD_FLAGS: /verbosity:minimal /maxcpucount /p:VcpkgEnableManifest=true
@@ -65,8 +66,8 @@ install:
   - ren sdk sw_sdk
   - cd C:\projects\csgo-cli
   # 5) VCPKG
-  - vcpkg install --feature-flags=manifests
-  - vcpkg integrate install
+  #- vcpkg install --feature-flags=manifests
+  #- vcpkg integrate install
 
 before_build:
   # CHECK: output content of folder, to see if everything is present
