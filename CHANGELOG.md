@@ -3,8 +3,15 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+- added dns cache prepopulation to request handling
+- refactored uploadShareCode function
+- changed compilation triplet from "x64-windows-dynamic" to "x64-windows-static"
+  - all 3th-party dependencies are now baked-in
+  - except redistributable steam64.dll
+- switched to automatic c++ dependency management using vcpkg
+  - rapidjson, zlib, curl, protobuf
 - updated sw_sdk to v150
-  - implicitly updated secure-file to v1.0.1
+  - switched from secure-file to password protected zip for sw_sdk
 
 ## [1.1.0] - 2019-08-23
 
