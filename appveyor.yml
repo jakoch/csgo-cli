@@ -16,8 +16,7 @@ environment:
   MSBUILD_FLAGS: /verbosity:minimal /maxcpucount /p:VcpkgEnableManifest=true
   SW_SDK_SECRET:
     secure: Sb7dCLrPsVPEiu4QKrG8wQ==
-  APPVEYOR_RDP_PASSWORD:
-      secure: g2Dly7Gom/V2IjvtKS1nUtdoI6mdSrrYZ15uY1Mo51I=
+  APPVEYOR_RDP_PASSWORD: somePassword#123
 
 cache: c:\tools\vcpkg\installed\
 
