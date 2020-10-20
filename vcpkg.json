@@ -1,13 +1,11 @@
 {
   "name": "csgo-cli",
-  "version-string": "1.0.0",
+  "version-string": "1.1.0",
   "port-version": 6,
   "homepage": "https://github.com/jakoch/csgo-cli",
   "description": "csgo-cli",
   "dependencies": [
     "rapidjson",
-    "fmt",
-    "spdlog",
     "zlib",
     {
       "name": "curl",
