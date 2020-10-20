@@ -10,15 +10,16 @@ platform: x64
 configuration: Release
 
 environment:
-  VCPKG_DEFAULT_TRIPLET: "%PLATFORM%-windows-static"
+  VCPKG_TARGET_TRIPLET: "%PLATFORM%-windows-static"
   VCPKG_FEATURE_FLAGS: manifests,binarycaching
   VCPKG_ROOT: "C:\\Tools\\vcpkg"
-  MSBUILD_FLAGS: /verbosity:minimal /maxcpucount /p:VcpkgEnableManifest=true
   SW_SDK_SECRET:
     secure: Sb7dCLrPsVPEiu4QKrG8wQ==
   APPVEYOR_RDP_PASSWORD: somePassword#123
 
-cache: c:\tools\vcpkg\installed\
+#cache:
+#  - C:\Tools\vcpkg\installed\ -> appveyor.yml # preserve any vcpkg installed stuff
+#  - C:\Tools\vcpkg\downloads\ -> appveyor.yml # preserve any vcpkg installed stuff
 
 build:
   verbosity: minimal
@@ -40,14 +41,14 @@ init:
       }
 
 install:
-  # 0) Get Git Submodules: csgo-protobufs
+  # 1) Get Git Submodules
   - git submodule update --init --recursive
-  # 1) update vcpkg:
+  # 2) update vcpkg:
   - cd C:\Tools\vcpkg
   - git pull
   - .\bootstrap-vcpkg.bat -disableMetrics
   - cd C:\projects\csgo-cli
-  # 2) update curl to v7.73.0
+  # 3) update curl to v7.73.0
   #    -> C:\projects\csgo-cli\downloads\curl\curl.exe
   - cd C:\projects\csgo-cli\downloads
   - curl -L -o curl-7.73.0-win64-mingw.zip https://dl.bintray.com/vszakats/generic/curl-7.73.0-win64-mingw.zip
@@ -57,20 +58,19 @@ install:
   - rmdir /S /Q C:\projects\csgo-cli\downloads\curl-7.73.0-win64-mingw
   - C:\projects\csgo-cli\downloads\curl\curl.exe --version
   - cd C:\projects\csgo-cli
-  # 3) Cert for cURL (cacert.pem - "https://curl.haxx.se/ca/cacert.pem")
+  # 4) copy Cert for cURL
   - mkdir dependencies\curl
   - copy C:\projects\csgo-cli\downloads\curl\curl-ca-bundle.crt C:\projects\csgo-cli\dependencies\curl\cacert.pem
-  # 4) SW SDK (prebuild libs + src)
+  # 5) extract SW_SDK
   - 7z x C:\projects\csgo-cli\downloads\sw_sdk_150.zip -aoa -y -oC:\projects\csgo-cli\dependencies -p%SW_SDK_SECRET%
   - cd C:\projects\csgo-cli\dependencies
   - ren sdk sw_sdk
-  - cd C:\projects\csgo-cli
-  # 5) VCPKG
-  #- vcpkg install --feature-flags=manifests
-  #- vcpkg integrate install
+  # 6) VCPKG
+  - vcpkg install --triplet=%VCPKG_TARGET_TRIPLET% --feature-flags=manifests
 
 before_build:
   # CHECK: output content of folder, to see if everything is present
+  - dir C:\projects\csgo-cli
   - dir C:\projects\csgo-cli\downloads\
   - dir C:\projects\csgo-cli\dependencies\
   - dir C:\projects\csgo-cli\dependencies\csgo-protobufs
@@ -78,8 +78,14 @@ before_build:
   - cd C:\projects\csgo-cli
 
 build_script:
-  - cmake -G "Visual Studio 16 2019" -A x64 -DCMAKE_TOOLCHAIN_FILE=C:/Tools/vcpkg/scripts/buildsystems/vcpkg.cmake .
-  - msbuild C:\projects\csgo-cli\csgo_cli.sln /m /p:Configuration=Release /p:Platform=x64 /logger:"C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll"
+  # generate build files
+  - cmake -G "Visual Studio 16 2019" -A x64 .
+  # set msbuild cli flags
+  - set MSBUILD_VCPKG="/p:VcpkgEnable=true /p:VcpkgEnableManifest=true"
+  - set MSBUILD_LOGGER="C:\Program Files\AppVeyor\BuildAgent\Appveyor.MSBuildLogger.dll"
+  - set MSBUILD_FLAGS=/verbosity:minimal /maxcpucount /p:BuildInParallel=true %MSBUILD_VCPKG% /logger:%MSBUILD_LOGGER%
+  # build
+  - msbuild C:\projects\csgo-cli\csgo_cli.sln /p:Configuration=%configuration% /p:Platform=%platform% %MSBUILD_FLAGS%
 
 after_build:
   # 1) prepare packaging for csgo-cli
@@ -104,7 +110,7 @@ after_build:
   - cd C:\projects\csgo-cli\dependencies
   # 4.1) delete unecrypted sw_sdk folder
   - rmdir /S /Q sw_sdk
-  # 4.2) copy password protected sw_sdk_{version}.zip
+  # 4.2) re-create sw_sdk folder and copy password protected sw_sdk_{version}.zip into it
   - mkdir C:\projects\csgo-cli\dependencies\sw_sdk
   - copy C:\projects\csgo-cli\downloads\sw_sdk_150.zip C:\projects\csgo-cli\dependencies\sw_sdk
   # 4.3) package dependencies folder

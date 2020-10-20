@@ -15,11 +15,17 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/build")
 
 set(VCPKG_TARGET_TRIPLET        x64-windows-static)
 
-if (WIN32)
-    set(VCPKG_TARGET_ARCHITECTURE   x64)
-    set(VCPKG_CRT_LINKAGE           static)
-    set(VCPKG_LIBRARY_LINKAGE       static)
-endif (WIN32)
+#if (WIN32)
+    # x64-windows-static
+    #set(VCPKG_TARGET_ARCHITECTURE   x64)
+    #set(VCPKG_CRT_LINKAGE           static)
+    #set(VCPKG_LIBRARY_LINKAGE       static)
+
+    # x64-dynamic-static
+    #set(VCPKG_TARGET_ARCHITECTURE   x64)
+    #set(VCPKG_CRT_LINKAGE           dynamic)
+    #set(VCPKG_LIBRARY_LINKAGE       static)
+#endif (WIN32)
 
 include(setup-vcpkg)
 
@@ -51,23 +57,6 @@ if (WIN32)
 
     set(BUILD_SHARED_LIBS OFF)
 
-    # Link statically against c/c++ lib to avoid missing redistributables.
-    # Give users a choice to opt for the shared runtime if they want.
-    option(USE_STATIC_CRT   "Link against the static runtime libraries."    ON)
-
-    # Generate the .def in order to get the .lib required when linking against dlls.
-    # cl.exe will not generate .lib without .def file (or without pragma
-    # __declspec(dllexport) in front of each functions).
-    set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
-
-    if (${USE_STATIC_CRT})
-        set(CRT_FLAGS_RELEASE "/MT")
-        set(CRT_FLAGS_DEBUG "/MTd")
-    else()
-        set(CRT_FLAGS_RELEASE "/MD")
-        set(CRT_FLAGS_DEBUG "/MDd")
-    endif()
-
     cmake_policy(SET CMP0091 NEW) # https://cmake.org/cmake/help/v3.15/variable/CMAKE_MSVC_RUNTIME_LIBRARY.html
     if (NOT DEFINED CMAKE_MSVC_RUNTIME_LIBRARY)
       set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
@@ -78,17 +67,6 @@ endif()
 # ==================================================================================================
 # Compiler flags
 # ==================================================================================================
-
-if(CMAKE_COMPILER_IS_GNUCXX)
-    set(CMAKE_CXX_FLAGS "-std=c++14")
-    set(CMAKE_EXE_LINKER_FLAGS "-l protobuf -pthread")
-    set(CMAKE_SHARED_LINKER_FLAGS "-Wl,--no-undefined")
-
-    # Optimize
-    SET(CMAKE_CXX_FLAGS_RELWITHDEBINFO "-O2 -g")
-    SET(CMAKE_CXX_FLAGS_RELEASE "-O2")
-    SET(CMAKE_CXX_FLAGS_DEBUG  "-O0 -g")
-endif()
 
 if(MSVC)
   message(STATUS "\n-- Compiler and platform toolset:\n")
@@ -189,7 +167,7 @@ set(Protobuf_LIBRARY             "${VCPKG_DIR}/lib/libprotobuf.lib")
 set(Protobuf_USE_STATIC_LIBS ON)
 set(Protobuf_PROTOC_EXECUTABLE   "${VCPKG_DIR}/tools/protobuf/protoc") # protoc.exe
 
-set(Protobuf_DIR "${VCPKG_DIR}/share/protobuf")
+#set(Protobuf_DIR "${VCPKG_DIR}/share/protobuf")
 set(protobuf_MODULE_COMPATIBLE ON CACHE BOOL "")
 find_package(Protobuf CONFIG REQUIRED)
 
