@@ -560,6 +560,35 @@ void printScoreboard(DataObject &data)
     std::cout << t << std::endl;
 }
 
+static inline void uploadShareCode(std::string &sharecode, ShareCodeCache *matchCache, ShareCodeUpload *codeUpload)
+{
+    if (matchCache->find(sharecode)) {
+        printf("  Skipped. The ShareCode \"%s\" was already uploaded.\n", sharecode.c_str());
+        exit(1);
+    }
+
+    std::string jsonResponse;
+
+    std::cout << "  Uploading ShareCode: " << sharecode << "\n";
+
+    if (codeUpload->uploadShareCode(sharecode, jsonResponse) == 0)
+    {
+        int upload_status = codeUpload->processJsonResponse(jsonResponse);
+
+        if (upload_status == 4 || upload_status == 5) { // in-progress || complete
+            matchCache->insert(sharecode);
+        }
+        else if (upload_status <= 3)
+        {
+            Error("\nError", "Could not parse the response (to the demo sharecode POST request).\n");
+        }
+
+    }
+    else {
+        Error("\nError", "Could not POST demo sharecode.\n");
+    }
+}
+
 void uploadDemoShareCodes(DataObject &data, bool &verbose)
 {
     if (!data.has_matches_played) {
@@ -574,75 +603,23 @@ void uploadDemoShareCodes(DataObject &data, bool &verbose)
     }
 
     ShareCodeCache *matchCache = new ShareCodeCache(verbose);
-
     ShareCodeUpload *codeUpload = new ShareCodeUpload(verbose);
 
     for (auto &match : data.matches)
     {
-        // skip sharecode uploading, if cached
-        if (matchCache->find(match.sharecode)) {
-            printf("  Skipped. The ShareCode \"%s\" was already uploaded.\n", match.sharecode.c_str());
-            continue;
-        }
-
-        // upload ShareCode
-
-        std::string jsonResponse;
-
-        std::cout << "  Uploading ShareCode: " << match.sharecode << "\n";
-
-        if (codeUpload->uploadShareCode(match.sharecode, jsonResponse) == 0)
-        {
-            int upload_status = codeUpload->processJsonResponse(jsonResponse);
-
-            if (upload_status == 4 || upload_status == 5) { // in-progress || complete
-                matchCache->insert(match.sharecode);
-            }
-            else if (upload_status <= 3)
-            {
-                Error("\nError", "Could not parse the response (to the demo sharecode POST request).\n");
-            }
-        }
-        else {
-            Error("\nError", "Could not POST demo sharecode.\n");
-        }
-
+        uploadShareCode(match.sharecode, matchCache, codeUpload);
     }
 }
 
-void uploadShareCode(std::string &sharecode, bool &verbose)
+void uploadSingleShareCode(std::string &sharecode, bool &verbose)
 {
     std::cout << "\n Uploading Demo ShareCode to https://csgostats.gg/: \n" << std::endl;
 
-    ShareCodeCache *matchDb = new ShareCodeCache(verbose);
-
-    if (matchDb->find(sharecode)) {
-        printf("  Skipped. The ShareCode \"%s\" was already uploaded.\n", sharecode.c_str());
-        exit(1);
-    }
-
-    std::string jsonResponse;
-
+    ShareCodeCache *matchCache = new ShareCodeCache(verbose);
     ShareCodeUpload *codeUpload = new ShareCodeUpload(verbose);
 
-    std::cout << "  Uploading ShareCode: " << sharecode << "\n";
+    uploadShareCode(sharecode, matchCache, codeUpload);
 
-    if (codeUpload->uploadShareCode(sharecode, jsonResponse) == 0)
-    {
-        int upload_status = codeUpload->processJsonResponse(jsonResponse);
-
-        if (upload_status == 4 || upload_status == 5) { // in-progress || complete
-            matchDb->insert(sharecode);
-        }
-        else if (upload_status <= 3)
-        {
-            Error("\nError", "Could not parse the response (to the demo sharecode POST request).\n");
-        }
-
-    }
-    else {
-        Error("\nError", "Could not POST demo sharecode.\n");
-    }
     exit(1);
 }
 
@@ -715,7 +692,7 @@ int main(int argc, char** argv)
     // HANDLE UPLOADING OF SINGLE SHARECODE (no need to connect to STEAM_API)
 
     if (paramUploadShareCode) {
-        uploadShareCode(shareCode, paramVerbose);
+        uploadSingleShareCode(shareCode, paramVerbose);
         return 0;
     }
 
