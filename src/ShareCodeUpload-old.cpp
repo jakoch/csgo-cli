@@ -4,11 +4,17 @@
 #include <thread>
 #include <iostream>
 
+//
+// NOTE:
+// csgostats used to have a cloudflare protection,
+// which required a pre-flight get request, before doing the sharecode post request.
+// i'm keeping this old code, just in case, they change back to the old behaviour.
+//
+
 ShareCodeUpload::ShareCodeUpload(bool verboseMode)
 {
-    verbose = verboseMode;
-
-    curl = curl_easy_init();
+    verbose    = verboseMode;
+    curl = initCurlConnection();
 
     host = curl_slist_append(NULL, "csgostats.gg:80:104.18.76.107");
     host = curl_slist_append(host, "csgostats.gg:443:104.18.76.107");
@@ -42,19 +48,116 @@ size_t CurlWrite_CallbackFunc_StdString(void *contents, size_t size, size_t nmem
 }
 
 /*
+Perform an inital GET request to csgostats.gg to get a connection and COOKIES.
+*/
+CURL* ShareCodeUpload::initCurlConnection()
+{
+    CURL *curl = curl_easy_init();
+
+    if (curl) {
+
+        CURLcode res;
+        char errorBuffer[CURL_ERROR_SIZE];
+
+        // set the error buffer as empty before performing a request
+        errorBuffer[0] = 0;
+
+        // provide a buffer for storing errors
+        curl_easy_setopt(curl, CURLOPT_ERRORBUFFER, errorBuffer);
+
+        curl_easy_setopt(curl, CURLOPT_RESOLVE, host);
+
+        // 1. URL that is about to receive our GET request
+        curl_easy_setopt(curl, CURLOPT_URL, "https://csgostats.gg/");
+
+        // 2. we dont' want the body content (just the headers, including cookies)
+        curl_easy_setopt(curl, CURLOPT_NOBODY, 1);
+
+        // 3. follow+timeout
+        curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1L);
+        curl_easy_setopt(curl, CURLOPT_CONNECTTIMEOUT, 10L);
+
+        // 4. SSL
+        curl_easy_setopt(curl, CURLOPT_CAINFO, "cacert.pem");
+        curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, 1L); //only for https
+
+        // 5. enable verbose mode
+        if (verbose) {
+            curl_easy_setopt(curl, CURLOPT_VERBOSE, 1L);
+        }
+
+        // prepare user-agent identifier
+        char ua_ident[100];
+        sprintf(ua_ident, "User-Agent: Mozilla/5.0 (compatible; %s)", CSGO_CLI_USERAGENT_ID);
+
+        // 4. set headers
+        struct curl_slist *headers = NULL;
+        headers = curl_slist_append(headers, "Accept: */*");
+        headers = curl_slist_append(headers, "Accept-Language: en-US;q=0.8,en;q=0.7");
+        headers = curl_slist_append(headers, ua_ident);
+        curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
+
+        // 5. start the cookie engine
+        struct curl_slist *my_cookies;
+        curl_easy_setopt(curl, CURLOPT_COOKIEFILE, "");
+        curl_easy_setopt(curl, CURLOPT_COOKIELIST, &my_cookies);
+
+        // perform the request
+        res = curl_easy_perform(curl);
+
+        // show error infos
+        if (res != CURLE_OK) {
+            // if the request did not complete correctly, show the error information
+            size_t len = strlen(errorBuffer);
+            fprintf(stderr, "\nlibcurl: (%d) ", res);
+            if (len) {
+                fprintf(stderr, "%s%s", errorBuffer, ((errorBuffer[len - 1] != '\n') ? "\n" : ""));
+            }
+            else {
+                // if no detailed error information was written to errorBuffer,
+                // show the more generic information from curl_easy_strerror instead
+                fprintf(stderr, "%s\n", curl_easy_strerror(res));
+            }
+
+            // cleanup
+            curl_easy_cleanup(curl);
+            // free the custom headers
+            curl_slist_free_all(headers);
+
+            // when CURL is NOT OK, exit
+            exit(1);
+        }
+
+        // RESET
+        // keeps these info in the curl handle:
+        // live connections, Session ID cache, DNS cache, cookies and shares.
+        curl_easy_reset(curl);
+
+        // --------------------
+
+        // WAIT 1sec
+        std::this_thread::sleep_for(std::chrono::seconds(1));
+    }
+    else
+    {   // something's gone wrong with curl at the beginning
+        fprintf(stderr, "Curl init failed!\n");
+
+        exit(1);
+    }
+
+    return curl;
+}
+
+/*
   POST the CSGO Demo Sharecode to csgostats.gg
 */
 int ShareCodeUpload::uploadShareCode(std::string shareCode, std::string& responseContent)
 {
     CURLcode res;
-
     char errorBuffer[CURL_ERROR_SIZE];
 
     // set the error buffer as empty before performing a request
     errorBuffer[0] = 0;
-
-    // provide a buffer for storing errors
-    curl_easy_setopt(curl, CURLOPT_ERRORBUFFER, errorBuffer);
 
     curl_easy_setopt(curl, CURLOPT_RESOLVE, host);
 
@@ -65,6 +168,7 @@ int ShareCodeUpload::uploadShareCode(std::string shareCode, std::string& respons
     std::string postData("sharecode=");
     postData.append(shareCode); // this is the raw sharecode, not an URL. escaping not needed.
     postData.append("&index=0");
+    //std::cout << postData << std::endl;
 
     // 3. set data to POST
     const char *data = postData.c_str();
@@ -77,7 +181,7 @@ int ShareCodeUpload::uploadShareCode(std::string shareCode, std::string& respons
 
     // 4. set headers
     struct curl_slist *headers = NULL;
-    headers = curl_slist_append(headers, "Accept: application/json, text/javascript, */*; q=0.01");
+    headers = curl_slist_append(headers, "Accept: */*"); // application/json?
     headers = curl_slist_append(headers, "Accept-Language: en-US;q=0.8,en;q=0.7");
     headers = curl_slist_append(headers, ua_ident);
     headers = curl_slist_append(headers, "X-Requested-With: XMLHttpRequest");
@@ -97,9 +201,9 @@ int ShareCodeUpload::uploadShareCode(std::string shareCode, std::string& respons
     curl_easy_setopt(curl, CURLOPT_WRITEDATA, &responseContent);
 
     // 8. enable verbose mode
-    //if (verbose) {
+    if (verbose) {
         curl_easy_setopt(curl, CURLOPT_VERBOSE, 1L);
-    //}
+    }
 
     // perform the request
     res = curl_easy_perform(curl);
