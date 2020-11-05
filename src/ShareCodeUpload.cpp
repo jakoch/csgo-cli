@@ -97,9 +97,9 @@ int ShareCodeUpload::uploadShareCode(std::string shareCode, std::string& respons
     curl_easy_setopt(curl, CURLOPT_WRITEDATA, &responseContent);
 
     // 8. enable verbose mode
-    //if (verbose) {
+    if (verbose) {
         curl_easy_setopt(curl, CURLOPT_VERBOSE, 1L);
-    //}
+    }
 
     // perform the request
     res = curl_easy_perform(curl);
