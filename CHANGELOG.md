@@ -57,7 +57,8 @@ All notable changes to this project will be documented in this file.
 ### Added
 - Initial Release
 
-[Unreleased]: https://github.com/jakoch/csgo-cli/compare/v1.1.1...HEAD
+[Unreleased]: https://github.com/jakoch/csgo-cli/compare/v1.2.0...HEAD
+[1.2.0]: https://github.com/jakoch/csgo-cli/compare/v1.1.0...v1.2.0
 [1.1.0]: https://github.com/jakoch/csgo-cli/compare/v1.0.5...v1.1.0
 [1.0.5]: https://github.com/jakoch/csgo-cli/compare/v1.0.4...v1.0.5
 [1.0.4]: https://github.com/jakoch/csgo-cli/compare/v1.0.3...v1.0.4
