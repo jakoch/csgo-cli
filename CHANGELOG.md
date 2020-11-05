@@ -3,15 +3,18 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
-- added dns cache prepopulation to request handling
-- refactored uploadShareCode function
+## [1.2.0] - 2020-11-05
+
+- added dns cache prepopulation to curl request handling
+- refactored uploadShareCode function to do a single POST request
 - changed compilation triplet from "x64-windows-dynamic" to "x64-windows-static"
   - all 3th-party dependencies are now baked-in
-  - except redistributable steam64.dll
+  - except redistributable steam64.dll, cacert.pem
 - switched to automatic c++ dependency management using vcpkg
-  - rapidjson, zlib, curl, protobuf
+  - see vcpkg.json: rapidjson, zlib, curl, protobuf
 - updated sw_sdk to v150
   - switched from secure-file to password protected zip for sw_sdk
+- updated csgo protobufs
 
 ## [1.1.0] - 2019-08-23
 
