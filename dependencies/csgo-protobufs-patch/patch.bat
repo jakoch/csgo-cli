@@ -19,3 +19,5 @@ for %%f in (*.proto) do (
     REM echo "Rename/overwriting old file"
     move /y %%f.new %%f
 )
+
+del proto-syntax-patch.txt
