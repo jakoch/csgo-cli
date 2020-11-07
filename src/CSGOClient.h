@@ -7,6 +7,7 @@
 
 // CSGO Protobufs
 #include "cstrike15_gcmessages.pb.h"
+#include "engine_gcmessages.pb.h"
 #include "gcsdk_gcmessages.pb.h"
 #include "gcsystemmsgs.pb.h"
 

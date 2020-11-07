@@ -11,6 +11,7 @@
       "name": "curl",
       "features": ["http2"]
     },
-    "protobuf"
+    "protobuf",
+    "fmt"
   ]
 }

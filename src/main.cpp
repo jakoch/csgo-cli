@@ -1,7 +1,10 @@
 #include <steam/steamtypes.h>
+#include <fmt/format.h>
+#include <fmt/color.h>
 
 #include "VersionAndConstants.h"
 #include "ExceptionHandler.h"
+#include "WinCliColors.h"
 #include "CSGOMMHello.h"
 #include "CSGOMatchData.h"
 #include "CSGOMatchList.h"
@@ -20,10 +23,13 @@
 
 #include <thread>
 #include <iostream>
+#include <ostream>
 #include <sstream>
 #include <iomanip>
 // Includes needed for _setmode() (+io.h)
 #include <fcntl.h>
+
+using namespace WinCliColors;
 
 struct TableFormat {
     int width;
@@ -39,9 +45,9 @@ struct TableFormat {
     }
 };
 
-void Error(const char* title, const char* text)
+void printError(const char *title, const char *text)
 {
-    printf("%s: %s\n", title, text);
+    fprintf(stdout, "\x1B[91m%s:\033[0m %s\n", title, text);
 }
 
 std::string getYear()
@@ -54,30 +60,48 @@ std::string getYear()
     return ss.str();
 }
 
-void PrintHelp()
+std::string getDateTime(const time_t &time, const char *time_format = "%Y-%m-%d %H:%M:%S")
 {
-    std::cout << "" << CSGO_CLI_BINARYNAME << " v" << CSGO_CLI_VERSION << ", "<< CSGO_CLI_WEBSITE << "\n"
-        << "Copyright (c) 2018-" << getYear() << " Jens A. Koch.\n"
-        << "\n"
-        << " CS:GO Console shows your user account, stats and latest matches.\n"
-        << " You can also use the tool to upload demo sharecodes to csgostats.gg.\n"
-        << "\n"
-        << "Usage:\n"
-        << "  command [options] [arguments]\n"
-        << "\n"
-        << "Available commands:\n"
-        << "  -user         " << "  Show your profile (SteamID, AccountID, MM-Rank, Likes, VAC-Status)\n"
-        << "  -matches      " << "  Show your past matches in table form\n"
-        << "  -upload       " << "  Upload your past matches to csgostats.gg\n"
-        << "  -s, sharecode " << "  Upload a demo sharecode to csgostats.gg\n"
-        //<< "  -scoreboard " << "  Show your past matches in scoreboard form\n"
-        << "\n"
-        << "  -V, Version   " << "  Display application version\n"
-        << "  -h, help      " << "  Display this help message\n"
-        << "\n"
-        << "Options:\n"
-        << "  -v, verbose   " << "  Increase verbosity of messages\n"
-        << "\n";
+    std::stringstream ss;
+    ss << std::put_time(localtime(&time), time_format);
+    return ss.str();
+}
+
+void printHelp()
+{
+  std::cout
+      << formatLightGreen(CSGO_CLI_BINARYNAME) << " v" << formatYellow(CSGO_CLI_VERSION) << ", "
+      << CSGO_CLI_WEBSITE << "\n"
+      << "Copyright (c) 2018-" << getYear() << " Jens A. Koch.\n"
+      << "\n"
+      << " CS:GO Console shows your user account, stats and latest matches.\n"
+      << " You can also use the tool to upload replay sharecodes to "
+         "csgostats.gg.\n"
+      << "\n"
+      << "Usage:\n"
+      << "  command [options] [arguments]\n"
+      << "\n"
+      << "Available commands:\n"
+      << "  -user         "
+      << "  Show your profile (SteamID, AccountID, MM-Rank, Likes, "
+         "VAC-Status)\n"
+      << "  -matches      "
+      << "  Show your past matches in table form\n"
+      << "  -upload       "
+      << "  Upload your past matches to csgostats.gg\n"
+      << "  -s, sharecode "
+      << "  Upload a replay sharecode to csgostats.gg\n"
+      //<< "  -scoreboard " << "  Show your past matches in scoreboard form\n"
+      << "\n"
+      << "  -V, Version   "
+      << "  Display application version\n"
+      << "  -h, help      "
+      << "  Display this help message\n"
+      << "\n"
+      << "Options:\n"
+      << "  -v, verbose   "
+      << "  Increase verbosity of messages\n"
+      << "\n";
 }
 
 const wchar_t* toWChar(const char *c)
@@ -107,7 +131,7 @@ void initSteamAPI(bool &verbose)
 
     if (!SteamAPI_Init())
     {
-        Error("Fatal Error", "Steam not running. SteamAPI_Init() failed.\nPlease run Steam.\n");
+        printError("Fatal Error", "Steam not running. SteamAPI_Init() failed.\nPlease run Steam.");
         exit(1);
     }
 
@@ -122,10 +146,11 @@ void initSteamAPI(bool &verbose)
 
     if (!SteamUser()->BLoggedOn())
     {
-        Error("Fatal Error", "Steam user not logged in. SteamUser()->BLoggedOn() returned false.\nPlease log in.\n");
+        printError("Fatal Error", "Steam user not logged in. SteamUser()->BLoggedOn() returned false.\nPlease log in.");
         exit(1);
     }
 
+    // TODO
     // setPersonaState(Invisible) 7
 
     if (verbose) std::clog << "LOG:" << "[ End   ] STEAM_INIT\n";
@@ -145,7 +170,7 @@ std::thread createCallbackThread(bool &running, bool &verbose)
             }
             catch (ExceptionHandler& e)
             {
-                Error("Fatal Error", e.what());
+                printError("Fatal Error", e.what());
                 exit(1);
             }
         };
@@ -170,16 +195,20 @@ void initGameClientConnection(DataObject &data, bool &verbose)
         data.steam_id           = SteamUser()->GetSteamID().ConvertToUint64();
         data.steam_player_level = SteamUser()->GetPlayerSteamLevel();
         data.playername         = toWChar(SteamFriends()->GetPersonaName());
+
+        CSteamID clan_id        = SteamFriends()->GetClanByIndex(0);
+        data.clan_name          = SteamFriends()->GetClanName(clan_id);
+        data.clan_tag           = SteamFriends()->GetClanTag(clan_id);
     }
     catch (ExceptionHandler& e)
     {
-        Error("Fatal error", e.what());
+        printError("Fatal error", e.what());
         result = false;
     }
 
     if (!result)
     {
-        Error("Fatal error", "GameClient could not connect.\n");
+        printError("Fatal error", "GameClient could not connect.");
         exit(1);
     }
     if (verbose) std::clog << "LOG:" << "[ End   ] Trying to establish a GameClient Connection\n";
@@ -204,18 +233,21 @@ bool requestPlayersProfile(DataObject &data, bool &verbose)
 
             result = true;
 
-            //if (verbose) std::clog << "DEBUG:" << mmhello.data.ShortDebugString();
-            //if (verbose) std::clog << "DEBUG:" << mmhello.data.DebugString();
+            if (verbose) std::clog << "DEBUG:" << mmhello.data.ShortDebugString();
+            if (verbose) std::clog << "DEBUG:" << mmhello.data.DebugString();
+            if (verbose) std::clog << "DEBUG:" << mmhello.data.medals().DebugString();
 
             // player level
             data.player_level       = mmhello.data.player_level();
             data.player_cur_xp      = mmhello.data.player_cur_xp();
             // medals
-            /*data.medals_arms      = mmhello.data.medals().medal_arms();
-            data.medals_combat      = mmhello.data.medals().medal_combat();
-            data.medals_global      = mmhello.data.medals().medal_global();
-            data.medals_team        = mmhello.data.medals().medal_team();
-            data.medals_weapon      = mmhello.data.medals().medal_weapon();*/
+            /*if (mmhello.data.has_medals()) {
+                data.medals_arms    = mmhello.data.medals().medal_arms();
+                data.medals_combat  = mmhello.data.medals().medal_combat();
+                data.medals_global  = mmhello.data.medals().medal_global();
+                data.medals_team    = mmhello.data.medals().medal_team();
+                data.medals_weapon  = mmhello.data.medals().medal_weapon();
+            }*/
             // vac status
             data.vac_banned         = mmhello.data.vac_banned();
             data.penalty_seconds    = mmhello.data.penalty_seconds();
@@ -236,12 +268,12 @@ bool requestPlayersProfile(DataObject &data, bool &verbose)
         }
         catch (CSGO_CLI_TimeoutException)
         {
-            Error("Warning", "Timeout on receiving UserInfo.\n");
+            printError("Warning", "Timeout on receiving UserInfo.");
             result = false;
         }
         catch (ExceptionHandler& e)
         {
-            Error("Fatal error", e.what());
+            printError("Fatal error", e.what());
             result = false;
         }
         if (verbose) std::clog << "LOG:" << "[ End   ] [ Thread ] getUserInfo\n";
@@ -295,9 +327,7 @@ bool requestRecentMatches(DataObject &data, bool &verbose)
                     parsedMatch.matchtime = match.matchtime();
 
                     // MATCHTIME_STR
-                    char buffer_local[30];
-                    strftime(buffer_local, 30, "%Y-%m-%d %H:%M:%S", localtime(&parsedMatch.matchtime));
-                    parsedMatch.matchtime_str = buffer_local;
+                    parsedMatch.matchtime_str = getDateTime(parsedMatch.matchtime);
 
                     // EXTRACT REPLAY INFO
                     parsedMatch.server_ip = match.watchablematchinfo().server_ip();
@@ -339,9 +369,7 @@ bool requestRecentMatches(DataObject &data, bool &verbose)
                     parsedMatch.match_duration = roundStats.match_duration();
 
                     // MATCH DURATION STRING min:sec
-                    char buffer_local2[8];
-                    strftime(buffer_local2, 8, "%M:%S", localtime(&parsedMatch.match_duration));
-                    parsedMatch.match_duration_str = buffer_local2;
+                    parsedMatch.match_duration_str = getDateTime(parsedMatch.match_duration, "%M:%Sm");
 
                     // map
                     parsedMatch.map = match.watchablematchinfo().game_map();
@@ -350,14 +378,13 @@ bool requestRecentMatches(DataObject &data, bool &verbose)
 
                     //if (verbose) std::clog << "LOG:" << match.DebugString();
 
-                    // link to replay / demo
-                    // roundStats.map() is the http link to the bz2 archived demo file
-                    parsedMatch.demolink = roundStats.map();
+                    // link to replay
+                    // roundStats.map() is the http link to the bz2 archived replay file
+                    parsedMatch.replaylink = roundStats.map();
 
                     //if (verbose) std::clog << "LOG:" << roundStats.DebugString();
 
-                    // calculate ShareCode for demo
-                    parsedMatch.sharecode = toDemoShareCode(parsedMatch.matchid, parsedMatch.reservation_id, parsedMatch.tv_port);
+                    parsedMatch.sharecode = getShareCode(parsedMatch.matchid, parsedMatch.reservation_id, parsedMatch.tv_port);
 
                     if (matchList.getOwnIndex(roundStats) >= 5) {
                         parsedMatch.score_ally = roundStats.team_scores(1);
@@ -381,12 +408,12 @@ bool requestRecentMatches(DataObject &data, bool &verbose)
         }
         catch (CSGO_CLI_TimeoutException)
         {
-            Error("Warning", "Timeout on receiving MatchList.\n");
+            printError("Warning", "Timeout on receiving MatchList.");
             result = false;
         }
         catch (ExceptionHandler& e)
         {
-            Error("Fatal error", e.what());
+            printError("Fatal Error", e.what());
             result = false;
         }
         if (verbose) std::clog << "LOG:" << "[ End   ] [ Thread ] MatchList\n";
@@ -404,7 +431,7 @@ void exitIfGameIsRunning()
     HWND test = FindWindowW(0, L"Counter-Strike: Global Offensive");
     if (test != NULL)
     {
-        Error("Warning", "\nCS:GO is currently running.\nPlease close the game, before running this program.\n");
+        printError("Warning", "\nCS:GO is currently running.\nPlease close the game, before running this program.");
         exit(1);
     }
 #endif
@@ -412,139 +439,131 @@ void exitIfGameIsRunning()
 
 void printPlayersProfile(DataObject &data)
 {
-    wprintf(L"\n Hello %s!\n\n", data.playername);
-
-    std::cout << " Here is your user profile:\n" << std::endl;
+    // ---------- Format Output Strings
 
     char name[40];
     sprintf(name, "%ls", data.playername); // %ls format = wchar_t*
 
-    char steam_profile_url[60];
-    sprintf(steam_profile_url, "https://steamcommunity.com/profiles/%lld", data.steam_id);
+    const auto steam_profile_url = fmt::format("https://steamcommunity.com/profiles/{}", data.steam_id);
 
-    char rank[50];
-    sprintf(rank, "%s (%d/18)", data.getPlayerRank().c_str(), data.rank_id);
+    const auto rank = fmt::format("{} ({}/18)", data.getPlayerRank(), data.rank_id);
 
-    char level[50];
-    sprintf(level, "%s (%d/40) (XP:%d)", data.getPlayerLevel().c_str(), data.player_level, data.player_cur_xp);
+    const auto level = fmt::format("{0} ({1}/40) (XP: {2}/5000 | {3:.2f}%)", data.getPlayerLevel(), data.player_level, data.getPlayerXp(), data.getPlayerXpPercentage());
 
-    char likes[50];
-    sprintf(likes, "%d x friendly, %d x teaching, %d x leader", data.cmd_friendly, data.cmd_teaching, data.cmd_leader);
+    const auto likes = fmt::format("{} x friendly, {} x teaching, {} x leader", data.cmd_friendly, data.cmd_teaching, data.cmd_leader);
 
-    /*
-    char medals[50];
-    sprintf(likes, "%d x arms, %d x combat, %d x global, %d x team, %d x weapon",
-        data.medals_arms, data.medals_combat, data.medals_global, data.medals_team, data.medals_weapon);
-    */
+    const auto penalty = fmt::format("{} ({} Minutes)", data.penalty_reason, (data.penalty_seconds / 60));
 
-    char penalty[100];
-    sprintf(penalty, "%d (%d Minutes)", data.penalty_reason, (data.penalty_seconds / 60));
+    const auto clan = fmt::format("{} \"{}\"", data.clan_name,  data.clan_tag);
+
+    // TODO how to access medals data? they were available, but are now gone...
+    //auto medals = fmt::format("{} x arms, {} x combat, {} x global, {} x team, {} x weapon",
+    //    data.medals_arms, data.medals_combat, data.medals_global, data.medals_team, data.medals_weapon);
+
+    // ---------- Output Table
+
+    fmt::print("\n Hello {}!\n\n", name);
 
     TableFormat t;
-    t << " [Steam]" << std::endl;
-    t << std::endl;
-    t << " Name:"           << name                             << std::endl;
-    t << " ID:"             << toSteamIDClassic(data.steam_id)  << std::endl;
-    t << " ID32:"           << toSteamID32(data.steam_id)       << std::endl;
-    t << " ID64:"           << data.steam_id                    << std::endl;
-    t << " Player Level:"   << data.steam_player_level          << std::endl;
-    t << " VAC Status:"     << data.getVacStatus()              << std::endl;
-    t << " Profile URL:"    << steam_profile_url << std::endl;
-    t << std::endl;
-    t << " [CS:GO]" << std::endl;
-    t << std::endl;
-    t << " Rank:"               << rank                         << std::endl;
-    t << " MatchMaking Wins:"   << data.rank_wins               << std::endl;
-    t << " Player Level:"       << level                        << std::endl;
-    t << " Likes: "             << likes                        << std::endl;
-    //t << "Medals:"            << medals                       << std::endl;
-    t << " Penalty:"            << penalty                      << std::endl;
+    t << " Here is your user profile:"                              << std::endl;
+    t                                                               << std::endl;
+    t << " [Steam]"                                                 << std::endl;
+    t                                                               << std::endl;
+    t << " Name:"               << name                             << std::endl;
+    t << " Clan:"               << clan                             << std::endl;
+    t << " ID:"                 << toSteamIDClassic(data.steam_id)  << std::endl;
+    t << " ID32:"               << toSteamID32(data.steam_id)       << std::endl;
+    t << " ID64:"               << data.steam_id                    << std::endl;
+    t << " Player Level:"       << data.steam_player_level          << std::endl;
+    t << " VAC Status:"         << data.getVacStatus()              << std::endl;
+    t << " Profile URL:"        << steam_profile_url                << std::endl;
+    t                                                               << std::endl;
+    t << " [CS:GO]"                                                 << std::endl;
+    t                                                               << std::endl;
+    t << " Rank:"               << rank                             << std::endl;
+    t << " MatchMaking Wins:"   << data.rank_wins                   << std::endl;
+    t << " Player Level:"       << level                            << std::endl;
+    t << " Likes:"              << likes                            << std::endl;
+    //t << " Medals:"             << medals                           << std::endl;
+    t << " Penalty:"            << penalty                          << std::endl;
 }
 
 void printMatches(DataObject &data)
 {
-    wprintf(L"\n Hello %s!\n\n", data.playername);
+    char name[40];
+    sprintf(name, "%ls", data.playername); // %ls format = wchar_t*
+
+    fmt::print("\n Hello {}!\n\n", name);
 
     if (!data.has_matches_played) {
-        std::cout << " Your CS:GO match history is empty." << std::endl;
+        fmt::print(" Your CS:GO match history is empty.\n");
         return;
     }
 
     if (data.num_matches_played == 1) {
-        std::cout << " Here is your latest match:" << std::endl;
+        fmt::print(" Here is your latest match:\n");
     } else {
-        std::cout << " Here are your latest matches (" << data.num_matches_played << "):" << std::endl;
+        fmt::print(" Here are your {} latest matches:\n", data.num_matches_played);
     }
 
-    ConsoleTable t{ "#", "Match Played", "Duration", "Map", "Result", "Score" };
+    ConsoleTable t{ "#", "Match Played", "Duration", "Map", "Score", "Result"};
     t.setPadding(1);
     t.setStyle(3);
 
     int i = 1;
-    char score[7];
-
-    for (auto &match : data.matches)
+    for (const auto &match : data.matches)
     {
-        sprintf(score, "%02d : %02d", match.score_ally, match.score_enemy);
-
         t += {
             std::to_string(i),
-            //std::to_string(match.matchid),
+            // std::to_string(match.matchid),
             match.matchtime_str,
             match.match_duration_str,
-            ((match.map).empty() ? "? " : match.map),
-            match.result_str, //match_result_string,
-            score,
-            //"Demolink:" match.demolink,
+            match.getMapname(),
+            match.getScore(),
+            match.getMatchResult()
+            //"Replaylink:" match.replaylink,
             //"Match IP:"              << match.server_ip,
             //"Match Port:"            << match.tv_port,
             //"Match Reservation ID:"  << match.reservation_id,
-            //"Demo ShareCode:"        << match.sharecode,
+            //"Replay ShareCode:"        << match.sharecode,
             //"Mapgroup:"              << match.mapgroup,
             //"Gametype:"              << match.gametype
         };
-        i++;
+        ++i;
     }
-
     std::cout << t;
 }
 
 void printScoreboard(DataObject &data)
 {
-    std::cout << std::endl;
-
     if (!data.has_matches_played) {
-        std::cout << " Your CS:GO match history is empty." << std::endl;
+        fmt::print("\n Your CS:GO match history is empty.\n");
         return;
     }
 
-    std::cout << " Here is your scoreboard:" << std::endl;
+    fmt::print("\n Here is your scoreboard:\n");
 
     ConsoleTable t{ "Match Played", "Result", "Score", "K", "A", "D", "Headshot (%)", "K/D ratio (diff)", "Rating", "MVP", "Score" };
     t.setPadding(1);
     t.setStyle(0);
 
-    char match_finalscore[7];
-
-    for (auto &match : data.matches)
+    for (const auto &match : data.matches)
     {
-        for (auto &player : match.scoreboard)
+        for (const auto &player : match.scoreboard)
         {
             //std::cout << match.matchtime_str,
 
             if (player.account_id == data.account_id)
             {
-                //std::cout << "AcountID-API:" << data.account_id << std::endl;
-                //std::cout << "AcountID-Match:" << player.account_id << std::endl;
-
-                sprintf(match_finalscore, "%02d : %02d", match.score_ally, match.score_enemy);
+                //std::cout << "AcountID-API:" << data.account_id << "\n";
+                //std::cout << "AcountID-Match:" << player.account_id << "\n";
 
                 //sprintf(headshot_string, "%d (%d%)", headshot, headshot_percentage = ((headshots / kills) * 100))
 
                 t += {
                     match.matchtime_str,
                     match.result_str,
-                    match_finalscore,
+                    match.getScore(),
                     std::to_string(player.kills),
                     std::to_string(player.assists),
                     std::to_string(player.deaths),
@@ -562,14 +581,16 @@ void printScoreboard(DataObject &data)
 
 static inline void uploadShareCode(std::string &sharecode, ShareCodeCache *matchCache, ShareCodeUpload *codeUpload)
 {
-    if (matchCache->find(sharecode)) {
-        printf("  Skipped. The ShareCode \"%s\" was already uploaded.\n", sharecode.c_str());
-        exit(1);
+  if (matchCache->find(sharecode)) {
+        auto msg1 = fmt::format(fmt::fg(fmt::color::indian_red), "Skipped.");
+        auto msg2 = fmt::format(fmt::fg(fmt::color::green), "The ShareCode \"{}\" was already uploaded.", sharecode);
+        fmt::print(" {} {}\n", msg1, msg2);
+        return;
     }
 
     std::string jsonResponse;
 
-    std::cout << "  Uploading ShareCode: " << sharecode << "\n";
+    fmt::print(" Uploading ShareCode: {}\n", formatTerminalYellow(sharecode));
 
     if (codeUpload->uploadShareCode(sharecode, jsonResponse) == 0)
     {
@@ -580,27 +601,25 @@ static inline void uploadShareCode(std::string &sharecode, ShareCodeCache *match
         }
         else if (upload_status <= 3)
         {
-            Error("\nError", "Could not parse the response (to the demo sharecode POST request).\n");
+            printError("Error", "Could not parse the response (to the replay sharecode POST request).");
         }
 
     }
     else {
-        Error("\nError", "Could not POST demo sharecode.\n");
+        printError("Error", "Could not POST replay sharecode.");
     }
 }
 
-void uploadDemoShareCodes(DataObject &data, bool &verbose)
+void uploadReplayShareCodes(DataObject &data, bool &verbose)
 {
-    if (!data.has_matches_played) {
-        std::cout << " No demo sharecodes to upload." << std::endl;
+  if (!data.has_matches_played) {
+        printRed(" No replay sharecodes to upload.\n");
         return;
     }
 
-    if (data.num_matches_played == 1) {
-        std::cout << "\n Uploading Demo ShareCode to https://csgostats.gg/: \n" << std::endl;
-    } else {
-        std::cout << "\n Uploading Demo ShareCodes to https://csgostats.gg/: \n" << std::endl;
-    }
+    fmt::print("\n Uploading Replay ShareCode{} to https://csgostats.gg/: \n\n",
+        (data.num_matches_played == 1) ? "" : "s"
+    );
 
     ShareCodeCache *matchCache = new ShareCodeCache(verbose);
     ShareCodeUpload *codeUpload = new ShareCodeUpload(verbose);
@@ -613,19 +632,18 @@ void uploadDemoShareCodes(DataObject &data, bool &verbose)
 
 void uploadSingleShareCode(std::string &sharecode, bool &verbose)
 {
-    std::cout << "\n Uploading Demo ShareCode to https://csgostats.gg/: \n" << std::endl;
+    printTerminalYellow("\n Uploading Single Replay ShareCode to https://csgostats.gg/: \n\n");
 
     ShareCodeCache *matchCache = new ShareCodeCache(verbose);
     ShareCodeUpload *codeUpload = new ShareCodeUpload(verbose);
 
     uploadShareCode(sharecode, matchCache, codeUpload);
-
-    exit(1);
 }
 
 int main(int argc, char** argv)
 {
     SetConsoleOutputCP(CP_UTF8);
+    WinCliColors::enableConsoleColor(true);
 
     int result = 0;
 
@@ -640,7 +658,7 @@ int main(int argc, char** argv)
     // default action
     if (argc <= 1)
     {
-        PrintHelp();
+        printHelp();
         return 0;
     }
 
@@ -648,11 +666,11 @@ int main(int argc, char** argv)
     {
         std::string option = argv[i];
         if (option == "-h" || option == "--h" || option == "-help" || option == "/?") {
-            PrintHelp();
+            printHelp();
             return 0;
         }
         else if (option == "-V" || option == "--V" || option == "-version") {
-            std::cout << "" << CSGO_CLI_BINARYNAME << " version " << CSGO_CLI_VERSION << std::endl;
+            fmt::print("{} version {}\n", formatLightGreen(CSGO_CLI_BINARYNAME), formatYellow(CSGO_CLI_VERSION));
             return 0;
         }
         else if (option == "-v" || option == "--v" || option == "-verbose") {
@@ -675,17 +693,16 @@ int main(int argc, char** argv)
             paramUploadShareCode = true;
             shareCode = argv[i + 1];
             i++;
-        }
-        else if (option != "") {
-            std::cerr << "ERROR (invalid argument): " << option << std::endl;
-            std::cerr << "Please check: '" << CSGO_CLI_BINARYNAME << " -help'" << std::endl;
+        } else if (option != "") {
+            printError("ERROR (invalid argument)", option.c_str());
+            fmt::print("Please check: '{} -help'\n", CSGO_CLI_BINARYNAME);
             return 1;
         }
     }
 
     if (paramVerbose && !paramPrintUser && !paramPrintMatches && !paramPrintScoreboard && !paramUploadShareCode && !paramUploadShareCodes) {
-        std::cerr << "ERROR: You are using (-v|-verbose) without any other command." << std::endl;
-        std::cerr << "Please check: '" << CSGO_CLI_BINARYNAME << " -help'" << std::endl;
+        printError("ERROR", "You are using (-v|-verbose) without any other command.");
+        fmt::print("Please check: '{} -help'\n", CSGO_CLI_BINARYNAME);
         return 1;
     }
 
@@ -714,14 +731,14 @@ int main(int argc, char** argv)
 
     if (paramPrintUser) {
         if (!requestPlayersProfile(data, paramVerbose)) {
-            Error("\nError", "Steam did not respond in time. Could not print -user.\n");
+            printError("Error", "Steam did not respond in time. Could not print -user.");
             exit(1);
         }
     }
 
     if (paramPrintMatches || paramPrintScoreboard || paramUploadShareCodes) {
         if (!requestRecentMatches(data, paramVerbose)) {
-            Error("\nError", "Steam did not respond in time.\n");
+            printError("Error", "Steam did not respond in time.");
             exit(1);
         }
     }
@@ -741,7 +758,7 @@ int main(int argc, char** argv)
     }
 
     if (paramUploadShareCodes) {
-        uploadDemoShareCodes(data, paramVerbose);
+        uploadReplayShareCodes(data, paramVerbose);
     }
 
     // SHUTDOWN

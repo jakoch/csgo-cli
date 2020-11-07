@@ -3,6 +3,14 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+- fixed the calculation and display of current_player_xp
+- added display of xp_percentage progress for current xp level
+- added display of clan_name and clan_tag to "-user"
+- fixed crash after printing "-matches"
+- renamed all occurances of "demo" to "replay"
+- added cli color support
+- added fmt to dependencies
+
 ## [1.2.0] - 2020-11-05
 
 - added dns cache prepopulation to curl request handling

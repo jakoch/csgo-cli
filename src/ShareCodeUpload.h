@@ -11,6 +11,10 @@
 #include <sstream>
 #include <iomanip>
 
+#include "WinCliColors.h"
+
+using namespace WinCliColors;
+
 class ShareCodeUpload
 {
 public:
@@ -25,11 +29,10 @@ public:
   private:
     CURL *curl = nullptr;
     bool verbose = false;
-    
+
     struct curl_slist *host = NULL;
 
     CURL* initCurlConnection();
 };
 
 #endif
-

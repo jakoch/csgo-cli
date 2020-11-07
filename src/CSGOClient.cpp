@@ -63,7 +63,7 @@ void CSGOClient::OnMessageAvailable(GCMessageAvailable_t* msg)
     uint32_t msgType;
     uint32_t msgSize;
 
-    // TODO res unsued?
+    // TODO res unused?
     auto res = m_gameCoordinator->RetrieveMessage(
         &msgType,
         m_recvBuffer.data(),

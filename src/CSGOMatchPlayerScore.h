@@ -1,7 +1,7 @@
 #ifndef CSGOMatchPlayerScore_H
 #define CSGOMatchPlayerScore_H
 
-#include <steam/steamtypes.h>
+#include "CSGOClient.h"
 
 /**
  * This struct represents the PlayerScoreboard.

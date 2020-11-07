@@ -6,11 +6,11 @@ ConsoleTable::ConsoleTable(std::initializer_list<std::string> headers) : headers
     }
 }
 
-void ConsoleTable::setPadding(unsigned int n) {
+void ConsoleTable::setPadding(int n) {
     padding = n;
 }
 
-void ConsoleTable::setStyle(unsigned int n) {
+void ConsoleTable::setStyle(int n) {
     switch (n) {
     case 0:
         style = BasicStyle;
@@ -37,13 +37,13 @@ bool ConsoleTable::addRow(std::initializer_list<std::string> row) {
 
     auto r = std::vector<std::string>{ row };
     rows.push_back(r);
-    for (unsigned int i = 0; i < r.size(); ++i) {
+    for (int i = 0; i < r.size(); ++i) {
         widths[i] = std::max(r[i].size(), widths[i]);
     }
     return true;
 }
 
-bool ConsoleTable::removeRow(unsigned int index) {
+bool ConsoleTable::removeRow(int index) {
     if (index > rows.size())
         return false;
 
@@ -72,8 +72,8 @@ ConsoleTable &ConsoleTable::operator-=(const uint32_t rowIndex) {
 std::string ConsoleTable::getLine(RowType rowType) const {
     std::stringstream line;
     line << rowType.left;
-    for (unsigned int i = 0; i < widths.size(); ++i) {
-        for (unsigned int j = 0; j < (widths[i] + padding + padding); ++j) {
+    for (int i = 0; i < widths.size(); ++i) {
+        for (int j = 0; j < (widths[i] + padding + padding); ++j) {
             line << style.horizontal;
         }
         line << (i == widths.size() - 1 ? rowType.right : rowType.intersect);
@@ -84,7 +84,7 @@ std::string ConsoleTable::getLine(RowType rowType) const {
 std::string ConsoleTable::getHeaders(Headers headers) const {
     std::stringstream line;
     line << style.vertical;
-    for (unsigned int i = 0; i < headers.size(); ++i) {
+    for (int i = 0; i < headers.size(); ++i) {
         std::string text = headers[i];
         line << SPACE_CHARACTER * padding + text + SPACE_CHARACTER * (widths[i] - text.length()) + SPACE_CHARACTER * padding;
         line << style.vertical;
@@ -97,7 +97,7 @@ std::string ConsoleTable::getRows(Rows rows) const {
     std::stringstream line;
     for (auto &row : rows) {
         line << style.vertical;
-        for (unsigned int j = 0; j < row.size(); ++j) {
+        for (int j = 0; j < row.size(); ++j) {
             std::string text = row[j];
             line << SPACE_CHARACTER * padding + text + SPACE_CHARACTER * (widths[j] - text.length()) + SPACE_CHARACTER * padding;
             line << style.vertical;
@@ -125,7 +125,7 @@ bool ConsoleTable::sort(bool ascending) {
     return true;
 }
 
-void ConsoleTable::updateRow(unsigned int row, unsigned int header, std::string data) {
+void ConsoleTable::updateRow(int row, int header, std::string data) {
     if (row > rows.size() - 1)
         throw std::out_of_range{ "Row index out of range." };
     if (header > headers.size() - 1)
@@ -134,7 +134,7 @@ void ConsoleTable::updateRow(unsigned int row, unsigned int header, std::string 
     rows[row][header] = data;
 }
 
-void ConsoleTable::updateHeader(unsigned int header, std::string text) {
+void ConsoleTable::updateHeader(int header, std::string text) {
     if (header > headers.size())
         throw std::out_of_range{ "Header index out of range." };
 

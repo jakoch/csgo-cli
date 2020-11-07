@@ -26,7 +26,7 @@ public:
 
     // Sets the distance from the text to the cell border
     // \param n Spaces between the text and the cell border
-    void setPadding(unsigned int n);
+    void setPadding(int n);
 
     // Sets the style of the table, default is 0
     // n = 0 : Basic table style
@@ -34,7 +34,7 @@ public:
     // n = 2 : Double lined table style
     // n = 3 : Invisivle table lines style
     // \param n The table style number
-    void setStyle(unsigned int n);
+    void setStyle(int n);
 
     // Sorts the table rows based on the first column
     // \param ascending Should table be sorted ascending or descending
@@ -49,18 +49,18 @@ public:
     // Removes a row from the table by the row index
     // \param index The index of the row that should be removed
     // \return True if the row was removed successfully, otherwise false
-    bool removeRow(unsigned int index);
+    bool removeRow(int index);
 
     // Update an existing table cell with new data
     // \param row The index of the row that needs to be updated
     // \param header The index of the column that needs to be updated
     // \param data The new data that should be assigned to teh cell
-    void updateRow(unsigned int row, unsigned int header, std::string data);
+    void updateRow(int row, int header, std::string data);
 
     // Update a header with new text
     // \param header Index of the header that should be updated
     // \param text The new teext of the new header
-    void updateHeader(unsigned int header, std::string text);
+    void updateHeader(int header, std::string text);
 
     // Operator of the addRow() function
     // \param row A list of strings to add as row

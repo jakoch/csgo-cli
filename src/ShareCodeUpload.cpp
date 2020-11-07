@@ -183,7 +183,9 @@ int ShareCodeUpload::processJsonResponse(std::string& jsonResponse)
     if (strcmp("error", status->value.GetString()) == 0) {
         Value::MemberIterator msg = data->value.FindMember("msg");
 
-        printf(" %s    | %s. \n", status->value.GetString(), msg->value.GetString());
+        printRed(
+            fmt::format(" Result: {}    | {}. \n", status->value.GetString(), msg->value.GetString())
+        );
 
         return 3;
     }
@@ -203,19 +205,23 @@ int ShareCodeUpload::processJsonResponse(std::string& jsonResponse)
         std::string timeString = msgHtml.substr(msgHtml.find("~") + 1, -1);
         newMsg.append(timeString);
 
-        Value::MemberIterator queue_id = data->value.FindMember("queue_id");
+        //Value::MemberIterator queue_id = data->value.FindMember("queue_id"); queue_id->value.GetInt()
         Value::MemberIterator url = data->value.FindMember("url");
 
-        printf(" %s   | %i | %s | %s \n", status->value.GetString(), queue_id->value.GetInt(), url->value.GetString(), newMsg.c_str());
+        printDarkOrange(
+            fmt::format(" Result: {}   | {} | {} \n", status->value.GetString(), url->value.GetString(), newMsg.c_str())
+        );
 
         return 4;
     }
 
     else if (strcmp("complete", status->value.GetString()) == 0) {
-        Value::MemberIterator queue_id = data->value.FindMember("queue_id");
+        //Value::MemberIterator queue_id = data->value.FindMember("queue_id"); queue_id->value.GetInt()
         Value::MemberIterator url = data->value.FindMember("url");
 
-        printf(" %s | %i | %s \n", status->value.GetString(), queue_id->value.GetInt(), url->value.GetString());
+        printGreen(
+            fmt::format(" Result: {} -> {} \n", status->value.GetString(), url->value.GetString())
+        );
 
         return 5;
     }

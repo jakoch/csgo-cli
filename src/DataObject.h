@@ -10,15 +10,23 @@ class DataObject
 public:
     std::string getPlayerLevel();
     std::string getPlayerRank();
+    std::string getPlayerXp();
+    const float getPlayerXpPercentage();
     std::string getVacStatus();
     std::string getLevelName(int i);
     std::string getRankName(int i);
+    std::string getDangerzoneRankName(int i);
     //std::string getDemoFilename(const CDataGCCStrike15_v2_MatchInfo& match, const CMsgGCCStrike15_v2_MatchmakingServerRoundStats& roundstats);
 
+    // SteamUser
     uint32 account_id;
     uint64 steam_id;
     int steam_player_level = 0;
-    const wchar_t* playername; /* playernames might contain UTF-8 symbols */
+
+    // SteamFriends -> playername, clan_name, clan_tag
+    const wchar_t* playername; /* playernames might contain UTF-8 symbols, use getPlayerName() */
+    std::string clan_name;
+    std::string clan_tag;
 
     // ranking
     uint32 rank_id = 0;
@@ -34,7 +42,9 @@ public:
     // player level
     int32 player_level = 0;
     std::string player_level_str;
+    // current XP, starts at 327680000 (level % = (player_cur_xp - 327680000) / 5000)
     int32 player_cur_xp = 0;
+
 
     // medals
     uint32 medals_arms = 0;
@@ -60,7 +70,7 @@ public:
 
 private:
     const std::vector<std::string> ranks = {
-        "-unranked-",
+        "Not Ranked",
         "Silver 1",
         "Silver 2",
         "Silver 3",
@@ -81,8 +91,7 @@ private:
         "Global Elite",                   // big globe
     };
 
-    const std::vector<std::string> levels =
-    {
+    const std::vector<std::string> levels = {
         "Not Recruited",
         "Recruit",
         "Private I",
@@ -125,6 +134,25 @@ private:
         "General",
         "Global General"
     };
+
+    const std::vector<std::string> dangerzone_ranks = {
+        "Hidden",
+        "Lab Rat I",
+	    "Lab Rat II",
+        "Sprinting Hare I",
+        "Sprinting Hare II",
+        "Wild Scout I",
+        "Wild Scout II",
+        "Wild Scout Elite",
+        "Hunter Fox I",
+        "Hunter Fox II",
+        "Hunter Fox II",
+        "Hunter Fox Elite",
+        "Timber Wolf",
+        "Ember Wolf",
+        "Wildfire Wolf",
+        "The Howling Alpha"
+   };
 };
 
 #endif

@@ -68,6 +68,11 @@ endif()
 # Compiler flags
 # ==================================================================================================
 
+# Define C++ Standard to use
+set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_EXTENSIONS ON)
+
 if(MSVC)
   message(STATUS "\n-- Compiler and platform toolset:\n")
 
@@ -77,7 +82,6 @@ if(MSVC)
   message(STATUS "MSVC_TOOLSET_VERSION: ${MSVC_TOOLSET_VERSION}")
   message(STATUS "CMAKE_MSVC_RUNTIME_LIBRARY: ${CMAKE_MSVC_RUNTIME_LIBRARY}")
 
-  # Define C++ Standard to use
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /std:c++latest")
 
   # Be quiet
@@ -218,6 +222,12 @@ set(RapidJSON_DIR "${VCPKG_DIR}/share/rapidjson")
 find_package(RapidJSON CONFIG REQUIRED)
 
 #
+# FMT
+#
+set(FMT_DIR "${VCPKG_DIR}/share/fmt")
+find_package(FMT CONFIG REQUIRED)
+
+#
 # Copy Additional Files
 #
 configure_file("${CMAKE_CURRENT_SOURCE_DIR}/README.md"                "build/readme.txt"    COPYONLY)
@@ -263,6 +273,8 @@ add_executable(csgo_cli
         src/ShareCodeCache.cpp
         src/ConsoleTable.h
         src/ConsoleTable.cpp
+        src/WinCliColors.h
+        src/WinCliColors.cpp
 
     # Generated Protobuf Includes
         ${PROTO_ENGINE_GCMESSAGES_SRC}
@@ -280,6 +292,8 @@ add_executable(csgo_cli
 include_directories(
     ${STEAMWORKS_INCLUDE_DIR}
     ${PROTOBUF_INCLUDE_DIR}
+    ${CURL_INCLUDE_DIR}
+    ${fmt_INCLUDE_DIRS}
 )
 
 target_link_libraries(csgo_cli
@@ -288,6 +302,7 @@ target_link_libraries(csgo_cli
         CURL::libcurl
         ZLIB::ZLIB
         protobuf::libprotobuf
+        fmt::fmt
 )
 
 target_compile_features(csgo_cli PUBLIC cxx_std_20)

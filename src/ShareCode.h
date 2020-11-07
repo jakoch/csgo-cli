@@ -61,7 +61,7 @@ void quotientAndRemainder(
 * @param tvPort number tvPort
 * @return {string} Share code as string
 */
-std::string toDemoShareCode(uint64_t matchid, uint64_t reservationid, uint32_t tvport)
+std::string getShareCode(uint64_t matchid, uint64_t reservationid, uint32_t tvport)
 {
     // charset for base57
     std::string dictionary = "ABCDEFGHJKLMNOPQRSTUVWXYZabcdefhijkmnopqrstuvwxyz23456789";

@@ -14,6 +14,17 @@ std::string DataObject::getPlayerLevel()
     return getLevelName(level);
 }
 
+std::string DataObject::getPlayerXp() {
+    return std::to_string(player_cur_xp - 327680000);
+}
+
+const float DataObject::getPlayerXpPercentage() {
+
+    const int xp_minus_base = (player_cur_xp - 327680000);
+    const float playerXpPercentage = ((float)xp_minus_base / 5000) *100;
+    return playerXpPercentage;
+}
+
 std::string DataObject::getVacStatus()
 {
     return (vac_banned == 1) ? "banned" : "ok";
@@ -26,8 +37,14 @@ std::string DataObject::getLevelName(int i)
 
 std::string DataObject::getRankName(int i)
 {
-    return ranks[i];
+  return ranks[i];
 }
+
+std::string DataObject::getDangerzoneRankName(int i)
+{
+    return dangerzone_ranks[i];
+}
+
 /*std::string DataObject::getDemoFilename(const CDataGCCStrike15_v2_MatchInfo& match, const CMsgGCCStrike15_v2_MatchmakingServerRoundStats& roundstats) {
     std::ostringstream out;
     out << "match730_";
