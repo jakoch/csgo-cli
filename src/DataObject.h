@@ -2,7 +2,7 @@
 #define DataObject_H
 
 #include <steam/steamtypes.h>
-#include "CSGOMatchData.h"
+#include "csgo/CSGOMatchData.h"
 #include <vector>
 
 class DataObject

@@ -1,6 +1,6 @@
-#include "VersionAndConstants.h"
+#include "../VersionAndConstants.h"
+#include "../ExceptionHandler.h"
 #include "CSGOClient.h"
-#include "ExceptionHandler.h"
 
 static const uint32_t ProtobufFlag = (1 << 31);
 CSGOClient* CSGOClient::m_instance = nullptr;

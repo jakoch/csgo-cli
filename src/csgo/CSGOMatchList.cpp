@@ -1,6 +1,7 @@
-#include "VersionAndConstants.h"
+#include "../VersionAndConstants.h"
+#include "../ExceptionHandler.h"
 #include "CSGOMatchList.h"
-#include "ExceptionHandler.h"
+
 #include <thread>
 #include <iostream>
 #include <algorithm>
@@ -8,7 +9,6 @@
 /*
   request_recent_user_games
 */
-
 
 CSGOMatchList::CSGOMatchList()
     :m_matchListHandler(this, &CSGOMatchList::OnMatchList)

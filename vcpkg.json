@@ -12,6 +12,8 @@
       "features": ["http2"]
     },
     "protobuf",
-    "fmt"
+    "fmt",
+    "tabulate",
+    "variant-lite"
   ]
 }

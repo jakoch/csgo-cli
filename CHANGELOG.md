@@ -3,13 +3,18 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
-- fixed the calculation and display of current_player_xp
-- added display of xp_percentage progress for current xp level
-- added display of clan_name and clan_tag to "-user"
+- added tabulate to dependencies for table rendering
+  - dropped ConsoleTable and TableFormat
+- large code refactoring
+  - new src folder structure, including /commands folder
+- added display of "xp_percentage progress" for "current xp level"
+- added display of "clan_name" and "clan_tag" to "-user"
+- fixed the calculation and display of "current_player_xp"
 - fixed crash after printing "-matches"
 - renamed all occurances of "demo" to "replay"
-- added cli color support
 - added fmt to dependencies
+  - added cli color support
+  - switch output printing from std::cout to fmt::print/fmt::format
 
 ## [1.2.0] - 2020-11-05
 

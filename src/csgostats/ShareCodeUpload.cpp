@@ -1,4 +1,4 @@
-#include "VersionAndConstants.h"
+#include "../VersionAndConstants.h"
 #include "ShareCodeUpload.h"
 
 #include <thread>

@@ -6,12 +6,12 @@
 #include <rapidjson/document.h>// rapidjson DOM api
 #include <rapidjson/error/en.h> // parse error messages
 
+#include "../platform/windows/WinCliColors.h"
+
 #include <stdio.h>
 #include <iostream>
 #include <sstream>
 #include <iomanip>
-
-#include "WinCliColors.h"
 
 using namespace WinCliColors;
 

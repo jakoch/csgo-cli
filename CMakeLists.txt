@@ -228,6 +228,18 @@ set(FMT_DIR "${VCPKG_DIR}/share/fmt")
 find_package(FMT CONFIG REQUIRED)
 
 #
+# tabulate
+#
+set(tabulate_DIR "${VCPKG_DIR}/share/tabulate")
+find_package(tabulate CONFIG REQUIRED)
+
+#
+# variant-lite (actually a compatibility dependency of tabulate)
+#
+set(variant-lite_DIR "${VCPKG_DIR}/share/variant-lite")
+find_package(variant-lite CONFIG REQUIRED)
+
+#
 # Copy Additional Files
 #
 configure_file("${CMAKE_CURRENT_SOURCE_DIR}/README.md"                "build/readme.txt"    COPYONLY)
@@ -250,31 +262,50 @@ add_executable(csgo_cli
 
     # application files
         src/main.cpp
-        src/VersionAndConstants.h
-        src/CSGOClient.h
-        src/CSGOClient.cpp
-        src/GCMsgHandler.h
-        src/CSGOMMHello.h
-        src/CSGOMMHello.cpp
-        src/CSGOMatchList.h
-        src/CSGOMatchList.cpp
-        src/CSGOMatchData.h
-        src/CSGOMatchPlayerScore.h
-        src/CSGOMatchPlayerScore.cpp
-        src/ExceptionHandler.h
-        src/ExceptionHandler.cpp
+        # base
         src/DataObject.h
         src/DataObject.cpp
-        src/SteamId.h
+        src/DateTimeUtils.h
+        src/DateTimeUtils.cpp
+        src/ErrorHandler.h
+        src/ExceptionHandler.h
+        src/ExceptionHandler.cpp
+        src/Table.h
         src/ShareCode.h
-        src/ShareCodeUpload.h
-        src/ShareCodeUpload.cpp
-        src/ShareCodeCache.h
-        src/ShareCodeCache.cpp
-        src/ConsoleTable.h
-        src/ConsoleTable.cpp
-        src/WinCliColors.h
-        src/WinCliColors.cpp
+        src/ShareCode.cpp
+        src/SteamId.h
+        src/SteamId.cpp
+        src/VersionAndConstants.h
+        # commands
+        src/commands/cmd.help.h
+        src/commands/cmd.help.cpp
+        src/commands/cmd.user.h
+        src/commands/cmd.user.cpp
+        src/commands/cmd.upload.h
+        src/commands/cmd.upload.cpp
+        src/commands/cmd.matches.h
+        src/commands/cmd.matches.cpp
+        src/commands/cmd.scoreboard.h
+        src/commands/cmd.scoreboard.cpp
+        # csgo api
+        src/csgo/CSGOClient.h
+        src/csgo/CSGOClient.cpp
+        src/csgo/GCMsgHandler.h
+        src/csgo/CSGOMMHello.h
+        src/csgo/CSGOMMHello.cpp
+        src/csgo/CSGOMatchList.h
+        src/csgo/CSGOMatchList.cpp
+        src/csgo/CSGOMatchData.h
+        src/csgo/CSGOMatchPlayerScore.h
+        src/csgo/CSGOMatchPlayerScore.cpp
+        # csgostats
+        src/csgostats/ShareCodeUpload.h
+        src/csgostats/ShareCodeUpload.cpp
+        src/csgostats/ShareCodeCache.h
+        src/csgostats/ShareCodeCache.cpp
+        # windows platform
+        src/platform/windows/WinCliColors.h
+        src/platform/windows/WinCliColors.cpp
 
     # Generated Protobuf Includes
         ${PROTO_ENGINE_GCMESSAGES_SRC}
@@ -294,6 +325,7 @@ include_directories(
     ${PROTOBUF_INCLUDE_DIR}
     ${CURL_INCLUDE_DIR}
     ${fmt_INCLUDE_DIRS}
+    ${tabulate_INCLUDE_DIRS}
 )
 
 target_link_libraries(csgo_cli
@@ -303,6 +335,8 @@ target_link_libraries(csgo_cli
         ZLIB::ZLIB
         protobuf::libprotobuf
         fmt::fmt
+        tabulate::tabulate
+        nonstd::variant-lite
 )
 
 target_compile_features(csgo_cli PUBLIC cxx_std_20)

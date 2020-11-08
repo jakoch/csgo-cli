@@ -1,6 +1,7 @@
+#include "../VersionAndConstants.h"
+#include "../ExceptionHandler.h"
 #include "CSGOMMHello.h"
-#include "VersionAndConstants.h"
-#include "ExceptionHandler.h"
+
 #include <iostream>
 
 CSGOMMHello::CSGOMMHello()
