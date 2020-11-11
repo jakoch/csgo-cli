@@ -1,6 +1,7 @@
 #ifndef ERRORHANDLER_H
 #define ERRORHANDLER_H
 
+#include <spdlog/spdlog.h>
 #include <iostream>
 
 static inline void printError(const char *title, const char *text)

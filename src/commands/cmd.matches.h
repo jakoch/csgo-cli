@@ -8,7 +8,8 @@
 #include "../DateTimeUtils.h"
 #include "../csgo/CSGOMatchList.h"
 #include "../ShareCode.h"
-#include "../Table.h"
+
+#include <ranges>
 
 bool requestRecentMatches(DataObject &data, bool &verbose);
 void printMatches(DataObject &data);

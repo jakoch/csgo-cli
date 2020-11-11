@@ -1,6 +1,7 @@
 #include "../VersionAndConstants.h"
 #include "ShareCodeUpload.h"
 
+
 #include <thread>
 #include <iostream>
 
@@ -141,154 +142,97 @@ int ShareCodeUpload::uploadShareCode(std::string shareCode, std::string& respons
 
 /**
  * return codes:
- * 0. ---
- * 1. Error: we got an HTML response instead of JSON
+ * 0. should never happen :) "and you may ask yourself: how did i get here?"
+ * 1. Error: response empty or response content HTML, instead of JSON
  * 2. Error: JSON parsing failed
  * 3. Server-Side: Error
  * 4. Server-Side: Match queued / processing demo file
  * 5. Server-Side: complete
  */
-int ShareCodeUpload::processJsonResponse(std::string& jsonResponse)
+int ShareCodeUpload::processJsonResponse(std::string &jsonResponse)
 {
-    // Error: we got an HTML response instead of JSON
-    if (jsonResponse.rfind("<!doctype html>", 0) == 0) {
-        fprintf(stderr, "\nError: Response content is not JSON, but HTML.\n");
+    // response empty?
+    if(jsonResponse.empty()) {
+        printError("Error", "The response content is empty.\n");
         return 1;
     }
 
-    using namespace rapidjson;
-
-    Document document;
-    document.Parse(jsonResponse.c_str());
-
-    // Error: JSON parsing failed
-    if (document.HasParseError()) {
-        fprintf(stderr, "\nError(offset %u): %s\n%s\n",
-            (unsigned)document.GetErrorOffset(),
-            GetParseError_En(document.GetParseError()),
-            jsonResponse.substr(0, (int)document.GetErrorOffset() + 1).c_str()
-        );
-        return 2;
+    // make sure response is JSON and not HTML
+    if (jsonResponse.rfind("<!doctype html>", 0) == 0 || jsonResponse.rfind("<!DOCTYPE html>", 0) == 0) {
+        printError("Error", "The response content is not JSON, but HTML.\n");
+        return 1;
     }
 
-    Value::MemberIterator status = document.FindMember("status");
-    Value::MemberIterator data = document.FindMember("data");
+    // parse response as json, catch parsing errors
+    nlohmann::json json;
+    try
+	{
+        json = nlohmann::json::parse(jsonResponse);
+    }
+	catch (nlohmann::json::parse_error & e)
+	{
+		const auto msg = fmt::format("Message: {}\n Exception Id: {}\n Byte position of parsing error: {}\n", e.what(), e.id, e.byte);
+        printError("JsonParsingError", msg.c_str());
+        return 2;
+	}
+
+    // ensure that the keys "status" and "data" are present
+    if(!json.contains("status") && !json.contains("data"))
+    {
+        fmt::print("Response: {}", jsonResponse);
+        printError("Error", "Json Response does not contain the keys \"status\" and \"data\".");
+        return 2;
+    }
+    const auto status = json["status"].get<std::string>();
+    const auto data = json["data"];
 
     /*
-       csgostats.gg has the following 3 response cases for a sharecode POST request
-       the keys status and data are always present. rest is changing.
-       see testProcessJsonResponse() below.
+       csgostats.gg has 3 json responses to a sharecode POST request: error, queued, complete.
     */
 
-    if (strcmp("error", status->value.GetString()) == 0) {
-        Value::MemberIterator msg = data->value.FindMember("msg");
+    if (status == "error")
+    {
+        const std::string msg = data["msg"].get<std::string>();
 
-        printRed(
-            fmt::format(" Result: {}    | {}. \n", status->value.GetString(), msg->value.GetString())
-        );
+        const auto result = fmt::format(" Result: {}    -> {}. \n", status, msg);
+        printRed(result);
 
         return 3;
     }
 
-    else if (strcmp("queued", status->value.GetString()) == 0) {
-        Value::MemberIterator msg = data->value.FindMember("msg");
+    if (status ==  "queued")
+    {
+        const std::string msg = data["msg"].get<std::string>();
 
         // msg contains HTML crap, let's cut that out
-        std::string msgHtml = msg->value.GetString();
+        std::string msgHtml = msg;
         std::string newMsg(" ");
 
         // get the "in queue #X" part (start of value (char 0) to char "<"span)
-        std::string queuedString = msgHtml.substr(0, msgHtml.find("<"));
+        const std::string queuedString = msgHtml.substr(0, msgHtml.find("<"));
         newMsg.append(queuedString);
 
         // get the "time remaining part (start of value (char "~" + 1) to end)
-        std::string timeString = msgHtml.substr(msgHtml.find("~") + 1, -1);
+        const std::string timeString = msgHtml.substr(msgHtml.find("~") + 1, -1);
         newMsg.append(timeString);
 
-        //Value::MemberIterator queue_id = data->value.FindMember("queue_id"); queue_id->value.GetInt()
-        Value::MemberIterator url = data->value.FindMember("url");
+        const std::string url = data["url"].get<std::string>();
 
-        printDarkOrange(
-            fmt::format(" Result: {}   | {} | {} \n", status->value.GetString(), url->value.GetString(), newMsg.c_str())
-        );
+        const auto result = fmt::format(" Result: {}   -> {} | {} \n", status, url, newMsg);
+        printDarkOrange(result);
 
         return 4;
     }
 
-    else if (strcmp("complete", status->value.GetString()) == 0) {
-        //Value::MemberIterator queue_id = data->value.FindMember("queue_id"); queue_id->value.GetInt()
-        Value::MemberIterator url = data->value.FindMember("url");
+    if (status == "complete")
+    {
+        const std::string url = data["url"].get<std::string>();
 
-        printGreen(
-            fmt::format(" Result: {} -> {} \n", status->value.GetString(), url->value.GetString())
-        );
+        const auto result = fmt::format(" Result: {} -> {} \n", status, url);
+        printGreen(result);
 
         return 5;
     }
 
     return 0;
 }
-
-/*
-int ShareCodeUpload::testProcessJsonResponse()
-{
-    // csgostats.gg has the following 3 response cases for a sharecode POST request:
-
-    static const char *JSON_ERROR_STRING =
-    "{"
-        "\"status\": \"error\","
-        "\"data\" : {"
-            "\"msg\": \"Failed to add to the queue, please verify sharecode\","
-            "\"index\" : null,"
-            "\"sharecode\" : null"
-        "},"
-        "\"error\" : 1"
-    "}";
-
-    static const char *JSON_QUEUED_STRING =
-    "{"
-        "\"status\": \"queued\","
-        "\"data\" : {"
-            "\"msg\": \"in Queue #9  <span style=\\\"margin-left:8px;\\\"><\/span> ~ Time Remaining 4m 50s\","
-            "\"queue_id\" : 1827459,"
-            "\"queue_pos\" : 9,"
-            "\"in_queue\" : 1,"
-            "\"demo_id\" : 0,"
-            "\"url\" : \"https:\/\/csgostats.gg\/match\/processing\/1827459\","
-            "\"demo_url\" : null,"
-            "\"start\" : false,"
-            "\"index\" : 0,"
-            "\"sharecode\" : \"CSGO-R7CCX-WRquC-xFxQO-hvFHt-uMOcF\""
-        "},"
-        "\"error\" : 0"
-    "}";
-
-    static const char *JSON_COMPLETE_STRING =
-    "{"
-        "\"status\": \"complete\","
-        "\"data\" : {"
-            "\"msg\": \"Complete - <a href=\\\"\/match\/1731725\\\">View<\/a>\","
-            "\"index\" : 0,"
-            "\"sharecode\" : \"CSGO-c5vYt-KEmjy-j6FYV-tz8Rt-JrzUO\","
-            "\"queue_id\" : 1765382,"
-            "\"demo_id\" : 1731725,"
-            "\"url\" : \"https:\/\/csgostats.gg\/match\/1731725\""
-        "},"
-        "\"error\" : 0"
-    "}";
-
-    // in-case the response content is not JSON, but HTML
-    static const char *HTML_ERROR_STRING = "<!doctype html><html></html>";
-
-    std::string html(HTML_ERROR_STRING);
-    std::string error(JSON_ERROR_STRING);
-    std::string queued(JSON_ERROR_STRING);
-    std::string complete(JSON_COMPLETE_STRING);
-
-    processJsonResponse(html);
-    processJsonResponse(error);
-    processJsonResponse(queued);
-    processJsonResponse(complete);
-
-    return 0;
-}*/

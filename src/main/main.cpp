@@ -1,17 +1,18 @@
 #include <steam/steamtypes.h>
 #include <fmt/format.h>
 #include <fmt/color.h>
+#include <spdlog/spdlog.h>
 
-#include "VersionAndConstants.h"
-#include "ExceptionHandler.h"
-#include "ErrorHandler.h"
-#include "platform/windows/WinCliColors.h"
+#include "../VersionAndConstants.h"
+#include "../ExceptionHandler.h"
+#include "../ErrorHandler.h"
+#include "../platform/windows/WinCliColors.h"
 
-#include "commands/cmd.help.h"
-#include "commands/cmd.matches.h"
-#include "commands/cmd.scoreboard.h"
-#include "commands/cmd.upload.h"
-#include "commands/cmd.user.h"
+#include "../commands/cmd.help.h"
+#include "../commands/cmd.matches.h"
+#include "../commands/cmd.scoreboard.h"
+#include "../commands/cmd.upload.h"
+#include "../commands/cmd.user.h"
 
 #ifdef _WIN32
 #include <io.h>
@@ -28,18 +29,9 @@
 
 using namespace WinCliColors;
 
-const wchar_t* toWChar(const char *c)
-{
-    const size_t cSize = strlen(c) + 1;
-    wchar_t* wc = new wchar_t[cSize];
-    mbstowcs(wc, c, cSize);
-
-    return wc;
-}
-
 void initSteamAPI(bool &verbose)
 {
-    if (verbose) std::clog << "LOG:" << "[ Start ] STEAM_INIT\n";
+    if (verbose) spdlog::info("[ Start ] STEAM_INIT");
 
     if (SteamAPI_RestartAppIfNecessary(k_uAppIdInvalid)) {
         exit(1);
@@ -77,12 +69,12 @@ void initSteamAPI(bool &verbose)
     // TODO
     // setPersonaState(Invisible) 7
 
-    if (verbose) std::clog << "LOG:" << "[ End   ] STEAM_INIT\n";
+    if (verbose) spdlog::info("[ End   ] STEAM_INIT");
 }
 
 std::thread createCallbackThread(bool &running, bool &verbose)
 {
-    if (verbose) std::clog << "LOG:" << "[ Start ] CallbackThread & Steam_RunCallbacks\n";
+    if (verbose) spdlog::info("[ Start ] CallbackThread & Steam_RunCallbacks");
     auto CallbackThread = std::thread([&running]()
     {
         while (running)
@@ -99,26 +91,27 @@ std::thread createCallbackThread(bool &running, bool &verbose)
             }
         };
     });
-    if (verbose) std::clog << "LOG:" << "[ End   ] CallbackThread & Steam_RunCallbacks\n";
+    if (verbose) spdlog::info("[ End   ] CallbackThread & Steam_RunCallbacks");
     return CallbackThread;
 }
 
 void initGameClientConnection(DataObject &data, bool &verbose)
 {
-    if (verbose) std::clog << "LOG:" << "[ Start ] Trying to establish a GameClient Connection\n";
+    if (verbose) spdlog::info("[ Start ] Trying to establish a GameClient Connection");
     bool result = false;
     try
     {
         // make sure we are connected to the GameClient
-        if (verbose) std::clog << "LOG:" << "          Requesting: GameClient Connection\n";
+        if (verbose) spdlog::info("          -> Requesting: GameClient Connection");
         CSGOClient::GetInstance()->WaitForGameClientConnect();
-        if (verbose) std::clog << "LOG:" << "          Successful: GameClient connected!\n";
+        if (verbose) spdlog::info("          -> Successful: GameClient connected!");
         result = true;
 
         data.account_id         = SteamUser()->GetSteamID().GetAccountID();
         data.steam_id           = SteamUser()->GetSteamID().ConvertToUint64();
         data.steam_player_level = SteamUser()->GetPlayerSteamLevel();
-        data.playername         = toWChar(SteamFriends()->GetPersonaName());
+        // this is a "const char*" UTF data narrowing to std::string
+        data.playername         = reinterpret_cast<const char*>(SteamFriends()->GetPersonaName());
 
         CSteamID clan_id        = SteamFriends()->GetClanByIndex(0);
         data.clan_name          = SteamFriends()->GetClanName(clan_id);
@@ -135,7 +128,7 @@ void initGameClientConnection(DataObject &data, bool &verbose)
         printError("Fatal error", "GameClient could not connect.");
         exit(1);
     }
-    if (verbose) std::clog << "LOG:" << "[ End   ] Trying to establish a GameClient Connection\n";
+    if (verbose) spdlog::info("[ End   ] Trying to establish a GameClient Connection");
 }
 
 void exitIfGameIsRunning()
@@ -155,7 +148,7 @@ int main(int argc, char** argv)
     SetConsoleOutputCP(CP_UTF8);
     WinCliColors::enableConsoleColor(true);
 
-    int result = 0;
+    //spdlog::set_level(spdlog::level::debug);
 
     bool paramVerbose = false;
     bool paramPrintUser = false;
@@ -278,5 +271,5 @@ int main(int argc, char** argv)
     CSGOClient::Destroy();
     SteamAPI_Shutdown();
 
-    return result;
+    return EXIT_SUCCESS;
 }

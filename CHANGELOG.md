@@ -3,6 +3,8 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+- replaced RapidJson with nlohmann::json
+- added GameTypes enum for mapnames
 - added tabulate to dependencies for table rendering
   - dropped ConsoleTable and TableFormat
 - large code refactoring

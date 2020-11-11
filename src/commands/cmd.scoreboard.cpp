@@ -7,39 +7,43 @@ void printScoreboard(DataObject &data)
         return;
     }
 
-    fmt::print("\n Here is your scoreboard:\n");
+    // ---------- Output Table
 
-    tabulate::Table t;
-    t.add_row(row_t{ "Match Played", "Result", "Score", "K", "A", "D", "Headshot (%)", "K/D ratio (diff)", "Rating", "MVP", "Score" });
+    //{0:^3} {1:<20} {2:^8} {3:^5} {4:<9} {5:<7}
+
+    const auto printRow {[=](const std::string &s1, const std::string &s2, const std::string &s3,
+    const std::string &s4, const std::string &s5, const std::string &s6, const std::string &s7, const std::string &s8, const std::string &s9, const std::string &s10, const std::string &s11) {
+      return fmt::print(" {0} {1} {2} {3} {4} {5} {6} {7} {8} {9} {10} \n", s1, s2, s3, s4, s5, s6, s7, s8, s9, s10, s11);
+    }};
+
+    fmt::print("\n Hello {}!\n", data.playername);
+    fmt::print("\n Here is your scoreboard:\n\n");
+
+    printRow("Match Played", "Result", "Score", "K", "A", "D", "HS(%)", "K/D", "Rating", "MVP", "Score");
 
     for (const auto &match : data.matches)
     {
         for (const auto &player : match.scoreboard)
         {
-            //std::cout << match.matchtime_str,
-
             if (player.account_id == data.account_id)
             {
-                //std::cout << "AcountID-API:" << data.account_id << "\n";
-                //std::cout << "AcountID-Match:" << player.account_id << "\n";
+                //fmt::print("AcountID-API: {}\n", data.account_id);
+                //fmt::print("AcountID-Match: {}\n", player.account_id);
 
-                //sprintf(headshot_string, "%d (%d%)", headshot, headshot_percentage = ((headshots / kills) * 100))
-
-                /*t += {
+                printRow(
                     match.matchtime_str,
                     match.result_str,
                     match.getScore(),
-                    std::to_string(player.kills),
-                    std::to_string(player.assists),
-                    std::to_string(player.deaths),
-                        // headshot_string
-                        // k/d ratio (kill/death difference)
-                    std::to_string(player.mvps),
-                    std::to_string(player.score)
-                };*/
+                    player.getKills(),
+                    player.getAssists(),
+                    player.getDeaths(),
+                    "hs", //player.getHSRatio(),
+                    player.getKillDeathRatio(),
+                    "rating",
+                    player.getMVPs(),
+                    player.getScore()
+                );
             }
         }
     }
-
-    std::cout << t << std::endl;
 }

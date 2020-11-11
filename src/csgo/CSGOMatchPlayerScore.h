@@ -2,6 +2,7 @@
 #define CSGOMatchPlayerScore_H
 
 #include "CSGOClient.h"
+#include <fmt/format.h>
 
 /**
  * This struct represents the PlayerScoreboard.
@@ -17,8 +18,17 @@ struct CSGOMatchPlayerScore
         int32 kills=0;
         int32 assists=0;
         int32 deaths=0;
+        int32 kdr=0;
         int32 mvps=0;
         int32 score=0;
+
+        std::string getKills() const;
+        std::string getAssists() const;
+        std::string getDeaths() const;
+        std::string getKillDeathRatio() const;
+        //std::string getHSRatio() const;
+        std::string getMVPs() const;
+        std::string getScore() const;
 };
 
 #endif

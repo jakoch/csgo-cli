@@ -1,5 +1,7 @@
 cmake_minimum_required(VERSION 3.2 FATAL_ERROR)
 
+cmake_policy(SET CMP0091 NEW)
+
 project(csgo_cli)
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake")
@@ -73,7 +75,8 @@ set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS ON)
 
-if(MSVC)
+if (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
+
   message(STATUS "\n-- Compiler and platform toolset:\n")
 
   # Report compiler and platform toolset
@@ -90,6 +93,7 @@ if(MSVC)
   # MSVC warning suppressions
   add_definitions(-D_CRT_SECURE_NO_WARNINGS)
   add_definitions(-D_SCL_SECURE_NO_WARNINGS)
+  add_definitions(-D_SILENCE_CXX20_IS_POD_DEPRECATION_WARNING) # protobuf triggers this warning
   add_definitions(-DNOMINMAX)
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /bigobj")
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /wd4146") # Warning C4146: unary minus operator applied to unsigned type, result still unsigned
@@ -105,6 +109,16 @@ if(MSVC)
   message(STATUS "USING THESE CMAKE_CXX_FLAGS: ${CMAKE_CXX_FLAGS}")
 endif()
 
+if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+  # MSVC warning suppressions
+  add_definitions(-D_CRT_SECURE_NO_WARNINGS)
+  add_definitions(-D_SCL_SECURE_NO_WARNINGS)
+  add_definitions(-D_SILENCE_CXX20_IS_POD_DEPRECATION_WARNING) # protobuf triggers this warning
+  add_definitions(-DNOMINMAX)
+
+  set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -stdlib=libc++ ") # -lc++abi
+endif()
+
 # ==================================================================================================
 # Linker flags
 # ==================================================================================================
@@ -112,8 +126,10 @@ endif()
 # Link static runtime libraries
 #set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}") # /MD
 
-add_link_options("/nologo")
-add_link_options("/VERBOSE:LIB")
+if (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
+    add_link_options("/nologo")
+    add_link_options("/VERBOSE:LIB")
+endif()
 
 # ==================================================================================================
 # Setup Dependencies
@@ -239,6 +255,19 @@ find_package(tabulate CONFIG REQUIRED)
 set(variant-lite_DIR "${VCPKG_DIR}/share/variant-lite")
 find_package(variant-lite CONFIG REQUIRED)
 
+
+#
+# optional-lite (actually a compatibility dependency of tabulate)
+#
+set(optional-lite_DIR "${VCPKG_DIR}/share/optional-lite")
+find_package(optional-lite CONFIG REQUIRED)
+
+#
+# nlohman-json
+#
+set(nlohmann_json_DIR "${VCPKG_DIR}/share/nlohmann_json")
+find_package(nlohmann_json CONFIG REQUIRED)
+
 #
 # Copy Additional Files
 #
@@ -256,12 +285,11 @@ else()
     set(ADDITIONAL_RESOURCES "")
 endif()
 
-add_executable(csgo_cli
-    # icon
-        ${ADDITIONAL_RESOURCES}
+#
+# Application Library
+#
 
-    # application files
-        src/main.cpp
+add_library(csgo_cli_lib
         # base
         src/DataObject.h
         src/DataObject.cpp
@@ -270,7 +298,6 @@ add_executable(csgo_cli
         src/ErrorHandler.h
         src/ExceptionHandler.h
         src/ExceptionHandler.cpp
-        src/Table.h
         src/ShareCode.h
         src/ShareCode.cpp
         src/SteamId.h
@@ -328,7 +355,7 @@ include_directories(
     ${tabulate_INCLUDE_DIRS}
 )
 
-target_link_libraries(csgo_cli
+target_link_libraries(csgo_cli_lib
     PRIVATE
         ${STEAMWORKS_LIBRARY}
         CURL::libcurl
@@ -337,7 +364,33 @@ target_link_libraries(csgo_cli
         fmt::fmt
         tabulate::tabulate
         nonstd::variant-lite
+        nonstd::optional-lite
+        nlohmann_json::nlohmann_json
 )
+
+set_property(TARGET csgo_cli_lib PROPERTY
+            MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
+
+target_compile_features(csgo_cli_lib PUBLIC cxx_std_20)
+
+#
+# Executable
+#
+
+add_executable(csgo_cli
+    # icon
+    ${ADDITIONAL_RESOURCES}
+    # application files
+    src/main/main.cpp
+)
+
+target_link_libraries(csgo_cli
+    PRIVATE
+        csgo_cli_lib
+)
+
+set_property(TARGET csgo_cli PROPERTY
+            MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
 
 target_compile_features(csgo_cli PUBLIC cxx_std_20)
 
@@ -363,3 +416,9 @@ source_group("Protobuf Generated Files" FILES
     ${PROTO_GCSYSTEMMSGS_SRC}
     ${PROTO_GCSYSTEMMSGS_HDR}
 )
+
+option(CSGO_CLI_BUILD_TESTS "Build tests" ON)
+
+if(CSGO_CLI_BUILD_TESTS)
+    add_subdirectory(tests)
+endif()

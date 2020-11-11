@@ -7,7 +7,6 @@
 #include "../ExceptionHandler.h"
 #include "../csgo/CSGOMMHello.h"
 #include "../SteamId.h"
-#include "../Table.h"
 
 bool requestPlayersProfile(DataObject &data, bool &verbose);
 void printPlayersProfile(DataObject &data);

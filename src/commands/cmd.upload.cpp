@@ -17,7 +17,7 @@ static inline void uploadShareCode(std::string &sharecode, ShareCodeCache *match
     {
         int upload_status = codeUpload->processJsonResponse(jsonResponse);
 
-        if (upload_status == 4 || upload_status == 5) { // in-progress || complete
+        if (upload_status == 4 || upload_status == 5) { // queued (in-progress) or complete
             matchCache->insert(sharecode);
         }
         else if (upload_status <= 3)

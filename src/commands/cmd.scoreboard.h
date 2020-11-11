@@ -3,7 +3,6 @@
 
 #include <fmt/format.h>
 #include "../DataObject.h"
-#include "../Table.h"
 
 void printScoreboard(DataObject &data);
 

@@ -30,8 +30,16 @@ EGCResults CSGOClient::SendGCMessage(uint32_t uMsgType, google::protobuf::Messag
 {
     std::lock_guard<std::mutex> lock(m_sendMutex);
 
-    if (m_msgBuffer.size() < msg->ByteSize() + 2 * sizeof(uint32_t)) {
-        m_msgBuffer.resize(msg->ByteSize() + 2 * sizeof(uint32_t));
+    #if GOOGLE_PROTOBUF_VERSION > 3009002
+        int body_size = google::protobuf::internal::ToIntSize(msg->ByteSizeLong());
+    #else
+        int body_size = msg->ByteSize();
+    #endif
+
+    auto size = body_size + 2 * sizeof(uint32_t);
+
+    if (m_msgBuffer.size() < size) {
+        m_msgBuffer.resize(size);
     }
 
     uMsgType |= ProtobufFlag;
@@ -44,11 +52,7 @@ EGCResults CSGOClient::SendGCMessage(uint32_t uMsgType, google::protobuf::Messag
         m_msgBuffer.size() - 2 * sizeof(uint32_t)
     );
 
-    return m_gameCoordinator->SendMessage(
-        uMsgType,
-        m_msgBuffer.data(),
-        msg->ByteSize() + 2 * sizeof(uint32_t)
-    );
+    return m_gameCoordinator->SendMessage(uMsgType, m_msgBuffer.data(), size);
 }
 
 void CSGOClient::OnMessageAvailable(GCMessageAvailable_t* msg)

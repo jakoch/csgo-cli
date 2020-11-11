@@ -3,10 +3,10 @@
 
 #include <curl/curl.h>
 #include <curl/easy.h>
-#include <rapidjson/document.h>// rapidjson DOM api
-#include <rapidjson/error/en.h> // parse error messages
+#include <nlohmann/json.hpp>
 
 #include "../platform/windows/WinCliColors.h"
+#include "../ErrorHandler.h"
 
 #include <stdio.h>
 #include <iostream>
