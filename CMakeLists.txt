@@ -327,7 +327,6 @@ include_directories(
     ${PROTOBUF_INCLUDE_DIR}
     ${CURL_INCLUDE_DIR}
     ${fmt_INCLUDE_DIRS}
-    ${tabulate_INCLUDE_DIRS}
 )
 
 target_link_libraries(csgo_cli_lib
@@ -337,9 +336,6 @@ target_link_libraries(csgo_cli_lib
         ZLIB::ZLIB
         protobuf::libprotobuf
         fmt::fmt
-        tabulate::tabulate
-        nonstd::variant-lite
-        nonstd::optional-lite
         nlohmann_json::nlohmann_json
 )
 
