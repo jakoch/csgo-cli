@@ -232,35 +232,10 @@ set(CURL_DIR "${VCPKG_DIR}/share/curl")
 find_package(CURL CONFIG REQUIRED)
 
 #
-# RapidJson
-#
-set(RapidJSON_DIR "${VCPKG_DIR}/share/rapidjson")
-find_package(RapidJSON CONFIG REQUIRED)
-
-#
 # FMT
 #
 set(FMT_DIR "${VCPKG_DIR}/share/fmt")
 find_package(FMT CONFIG REQUIRED)
-
-#
-# tabulate
-#
-set(tabulate_DIR "${VCPKG_DIR}/share/tabulate")
-find_package(tabulate CONFIG REQUIRED)
-
-#
-# variant-lite (actually a compatibility dependency of tabulate)
-#
-set(variant-lite_DIR "${VCPKG_DIR}/share/variant-lite")
-find_package(variant-lite CONFIG REQUIRED)
-
-
-#
-# optional-lite (actually a compatibility dependency of tabulate)
-#
-set(optional-lite_DIR "${VCPKG_DIR}/share/optional-lite")
-find_package(optional-lite CONFIG REQUIRED)
 
 #
 # nlohman-json

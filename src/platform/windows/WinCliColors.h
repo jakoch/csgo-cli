@@ -1,8 +1,8 @@
 #ifndef WinCliColors_H
 #define WinCliColors_H
 
-#include <fmt/format.h>
 #include <fmt/color.h>
+#include <fmt/format.h>
 
 #include "Windows.h"
 
@@ -24,6 +24,6 @@ namespace WinCliColors
     std::string formatLightGreen(std::string message);
     std::string formatTerminalYellow(std::string message);
 
-} // namespace WinConsole
+} // namespace WinCliColors
 
 #endif

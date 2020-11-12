@@ -41,7 +41,7 @@ std::string DataObject::getLevelName(int i)
 
 std::string DataObject::getRankName(int i)
 {
-  return ranks[i];
+    return ranks[i];
 }
 
 std::string DataObject::getDangerzoneRankName(int i)
@@ -49,12 +49,14 @@ std::string DataObject::getDangerzoneRankName(int i)
     return dangerzone_ranks[i];
 }
 
-std::string DataObject::getSteamId() {
-  return std::to_string(steam_id);
+std::string DataObject::getSteamId()
+{
+    return std::to_string(steam_id);
 }
 
-std::string DataObject::getSteamProfileUrl() {
-  return steam_profile_url_base + getSteamId();
+std::string DataObject::getSteamProfileUrl()
+{
+    return steam_profile_url_base + getSteamId();
 }
 
 /*std::string DataObject::getDemoFilename(const CDataGCCStrike15_v2_MatchInfo&
@@ -70,18 +72,30 @@ match, const CMsgGCCStrike15_v2_MatchmakingServerRoundStats& roundstats) {
 std::string DataObject::getGameType(GameTypes &game_types)
 {
     switch (game_types) {
-        case GameTypes::de_train    : return "de_train";
-        case GameTypes::de_dust2    : return "de_dust2";
-        case GameTypes::de_inferno  : return "de_inferno";
-        case GameTypes::de_nuke     : return "de_nuke";
-        case GameTypes::de_vertigo  : return "de_vertigo";
-        case GameTypes::cs_office   : return "cs_office";
-        case GameTypes::de_mirage   : return "de_mirage";
-        case GameTypes::de_cache    : return "de_cache";
-        case GameTypes::de_zoo      : return "de_zoo";
-        case GameTypes::cs_agency   : return "cs_agency";
-        case GameTypes::de_overpass : return "de_overpass";
-        case GameTypes::de_workout  : return "de_workout";
+    case GameTypes::de_train:
+        return "de_train";
+    case GameTypes::de_dust2:
+        return "de_dust2";
+    case GameTypes::de_inferno:
+        return "de_inferno";
+    case GameTypes::de_nuke:
+        return "de_nuke";
+    case GameTypes::de_vertigo:
+        return "de_vertigo";
+    case GameTypes::cs_office:
+        return "cs_office";
+    case GameTypes::de_mirage:
+        return "de_mirage";
+    case GameTypes::de_cache:
+        return "de_cache";
+    case GameTypes::de_zoo:
+        return "de_zoo";
+    case GameTypes::cs_agency:
+        return "cs_agency";
+    case GameTypes::de_overpass:
+        return "de_overpass";
+    case GameTypes::de_workout:
+        return "de_workout";
         // omit default case to trigger compiler warning for missing cases
     };
     return std::to_string(static_cast<std::uint32_t>(game_types));

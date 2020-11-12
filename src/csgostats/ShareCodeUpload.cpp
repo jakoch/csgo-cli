@@ -1,9 +1,8 @@
-#include "../VersionAndConstants.h"
 #include "ShareCodeUpload.h"
+#include "../VersionAndConstants.h"
 
-
-#include <thread>
 #include <iostream>
+#include <thread>
 
 ShareCodeUpload::ShareCodeUpload(bool verboseMode)
 {
@@ -29,15 +28,14 @@ size_t CurlWrite_CallbackFunc_StdString(void *contents, size_t size, size_t nmem
 
     try {
         s->resize(oldLength + newLength);
-    }
-    catch (std::bad_alloc &e) {
+    } catch (std::bad_alloc &e) {
         // cast to void (formerly self-assign) to avoid unused/unreferenced variable e
         static_cast<void>(e);
-        //handle memory problem
+        // handle memory problem
         return 0;
     }
 
-    std::copy((char*)contents, (char*)contents + newLength, s->begin() + oldLength);
+    std::copy((char *)contents, (char *)contents + newLength, s->begin() + oldLength);
 
     return size * nmemb;
 }
@@ -45,7 +43,7 @@ size_t CurlWrite_CallbackFunc_StdString(void *contents, size_t size, size_t nmem
 /*
   POST the CSGO Demo Sharecode to csgostats.gg
 */
-int ShareCodeUpload::uploadShareCode(std::string shareCode, std::string& responseContent)
+int ShareCodeUpload::uploadShareCode(std::string shareCode, std::string &responseContent)
 {
     CURLcode res;
 
@@ -78,10 +76,10 @@ int ShareCodeUpload::uploadShareCode(std::string shareCode, std::string& respons
 
     // 4. set headers
     struct curl_slist *headers = NULL;
-    headers = curl_slist_append(headers, "Accept: application/json, text/javascript, */*; q=0.01");
-    headers = curl_slist_append(headers, "Accept-Language: en-US;q=0.8,en;q=0.7");
-    headers = curl_slist_append(headers, ua_ident);
-    headers = curl_slist_append(headers, "X-Requested-With: XMLHttpRequest");
+    headers                    = curl_slist_append(headers, "Accept: application/json, text/javascript, */*; q=0.01");
+    headers                    = curl_slist_append(headers, "Accept-Language: en-US;q=0.8,en;q=0.7");
+    headers                    = curl_slist_append(headers, ua_ident);
+    headers                    = curl_slist_append(headers, "X-Requested-With: XMLHttpRequest");
     headers = curl_slist_append(headers, "Content-Type: application/x-www-form-urlencoded; charset=UTF-8");
     curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
 
@@ -91,16 +89,14 @@ int ShareCodeUpload::uploadShareCode(std::string shareCode, std::string& respons
 
     // 6. SSL
     curl_easy_setopt(curl, CURLOPT_CAINFO, "cacert.pem");
-    curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, 1L); //only for https
+    curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, 1L); // only for https
 
     // 7. setup method to handle the response data
     curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, &CurlWrite_CallbackFunc_StdString);
     curl_easy_setopt(curl, CURLOPT_WRITEDATA, &responseContent);
 
     // 8. enable verbose mode
-    if (verbose) {
-        curl_easy_setopt(curl, CURLOPT_VERBOSE, 1L);
-    }
+    if (verbose) { curl_easy_setopt(curl, CURLOPT_VERBOSE, 1L); }
 
     // perform the request
     res = curl_easy_perform(curl);
@@ -112,8 +108,7 @@ int ShareCodeUpload::uploadShareCode(std::string shareCode, std::string& respons
         fprintf(stderr, "\nlibcurl: (%d) ", res);
         if (len) {
             fprintf(stderr, "%s%s", errorBuffer, ((errorBuffer[len - 1] != '\n') ? "\n" : ""));
-        }
-        else {
+        } else {
             // if no detailed error information was written to errorBuffer,
             // show the more generic information from curl_easy_strerror instead
             fprintf(stderr, "%s\n", curl_easy_strerror(res));
@@ -152,7 +147,7 @@ int ShareCodeUpload::uploadShareCode(std::string shareCode, std::string& respons
 int ShareCodeUpload::processJsonResponse(std::string &jsonResponse)
 {
     // response empty?
-    if(jsonResponse.empty()) {
+    if (jsonResponse.empty()) {
         printError("Error", "The response content is empty.\n");
         return 1;
     }
@@ -165,33 +160,29 @@ int ShareCodeUpload::processJsonResponse(std::string &jsonResponse)
 
     // parse response as json, catch parsing errors
     nlohmann::json json;
-    try
-	{
+    try {
         json = nlohmann::json::parse(jsonResponse);
-    }
-	catch (nlohmann::json::parse_error & e)
-	{
-		const auto msg = fmt::format("Message: {}\n Exception Id: {}\n Byte position of parsing error: {}\n", e.what(), e.id, e.byte);
+    } catch (nlohmann::json::parse_error &e) {
+        const auto msg = fmt::format(
+            "Message: {}\n Exception Id: {}\n Byte position of parsing error: {}\n", e.what(), e.id, e.byte);
         printError("JsonParsingError", msg.c_str());
         return 2;
-	}
+    }
 
     // ensure that the keys "status" and "data" are present
-    if(!json.contains("status") && !json.contains("data"))
-    {
+    if (!json.contains("status") && !json.contains("data")) {
         fmt::print("Response: {}", jsonResponse);
         printError("Error", "Json Response does not contain the keys \"status\" and \"data\".");
         return 2;
     }
     const auto status = json["status"].get<std::string>();
-    const auto data = json["data"];
+    const auto data   = json["data"];
 
     /*
        csgostats.gg has 3 json responses to a sharecode POST request: error, queued, complete.
     */
 
-    if (status == "error")
-    {
+    if (status == "error") {
         const std::string msg = data["msg"].get<std::string>();
 
         const auto result = fmt::format(" Result: {}    -> {}. \n", status, msg);
@@ -200,8 +191,7 @@ int ShareCodeUpload::processJsonResponse(std::string &jsonResponse)
         return 3;
     }
 
-    if (status ==  "queued")
-    {
+    if (status == "queued") {
         const std::string msg = data["msg"].get<std::string>();
 
         // msg contains HTML crap, let's cut that out
@@ -224,8 +214,7 @@ int ShareCodeUpload::processJsonResponse(std::string &jsonResponse)
         return 4;
     }
 
-    if (status == "complete")
-    {
+    if (status == "complete") {
         const std::string url = data["url"].get<std::string>();
 
         const auto result = fmt::format(" Result: {} -> {} \n", status, url);

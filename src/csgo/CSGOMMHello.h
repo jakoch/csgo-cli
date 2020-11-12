@@ -8,7 +8,6 @@
 class CSGOMMHello
 {
 public:
-
     CSGOMMHello();
     ~CSGOMMHello();
 
@@ -18,7 +17,7 @@ public:
     CMsgGCCStrike15_v2_MatchmakingGC2ClientHello data;
 
 private:
-    void OnMMHello(const CMsgGCCStrike15_v2_MatchmakingGC2ClientHello& msg);
+    void OnMMHello(const CMsgGCCStrike15_v2_MatchmakingGC2ClientHello &msg);
 
 private:
     bool m_updateComplete = false;

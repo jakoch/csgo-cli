@@ -1,8 +1,8 @@
 #ifndef SteamID_H
 #define SteamID_H
 
-#include <steam/steamtypes.h>
 #include <sstream>
+#include <steam/steamtypes.h>
 
 // 76561197960493477 -> 113874
 uint32 calcSteamID32(uint64 steamID64);

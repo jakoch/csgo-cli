@@ -5,8 +5,8 @@
 #include <fstream>
 #include <iostream>
 #include <iterator>
-#include <vector>
 #include <string>
+#include <vector>
 
 class ShareCodeCache
 {
@@ -23,7 +23,7 @@ private:
 
     std::vector<std::string> sharecodeCache;
 
-    std::vector<std::string> read(std::istream& input);
+    std::vector<std::string> read(std::istream &input);
 };
 
 #endif

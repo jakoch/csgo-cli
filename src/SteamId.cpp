@@ -4,7 +4,7 @@
 uint32 calcSteamID32(uint64 steamID64)
 {
     const uint64 steamID64Base = 76561197960265728;
-    uint32 iSteamID32 = (steamID64 - steamID64Base);
+    uint32 iSteamID32          = (steamID64 - steamID64Base);
     return iSteamID32;
 }
 

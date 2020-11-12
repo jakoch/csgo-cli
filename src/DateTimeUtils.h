@@ -2,8 +2,8 @@
 #define DATETIMEUTILS_H
 
 #include <chrono>
-#include <iostream>
 #include <iomanip>
+#include <iostream>
 #include <sstream>
 
 std::string getYear();

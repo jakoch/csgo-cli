@@ -5,13 +5,13 @@
 #include <curl/easy.h>
 #include <nlohmann/json.hpp>
 
-#include "../platform/windows/WinCliColors.h"
 #include "../ErrorHandler.h"
+#include "../platform/windows/WinCliColors.h"
 
-#include <stdio.h>
+#include <iomanip>
 #include <iostream>
 #include <sstream>
-#include <iomanip>
+#include <stdio.h>
 
 using namespace WinCliColors;
 
@@ -24,15 +24,15 @@ public:
     int uploadShareCode(std::string shareCode, std::string &responseContent);
     int processJsonResponse(std::string &jsonResponse);
 
-    //int testProcessJsonResponse();
+    // int testProcessJsonResponse();
 
-  private:
-    CURL *curl = nullptr;
+private:
+    CURL *curl   = nullptr;
     bool verbose = false;
 
     struct curl_slist *host = NULL;
 
-    CURL* initCurlConnection();
+    CURL *initCurlConnection();
 };
 
 #endif

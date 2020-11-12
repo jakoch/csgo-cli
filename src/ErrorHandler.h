@@ -1,8 +1,8 @@
 #ifndef ERRORHANDLER_H
 #define ERRORHANDLER_H
 
-#include <spdlog/spdlog.h>
 #include <iostream>
+#include <spdlog/spdlog.h>
 
 static inline void printError(const char *title, const char *text)
 {

@@ -1,14 +1,14 @@
 #include "ShareCode.h"
 
-void quotientAndRemainder(
-    uint64_t& a0, uint64_t& a1, uint16_t& a2,
-    uint16_t m, uint16_t& r) {
-    uint64_t q0 = 0;
-    uint64_t q1 = 0;
-    uint16_t q2 = 0;
+void quotientAndRemainder(uint64_t &a0, uint64_t &a1, uint16_t &a2, uint16_t m, uint16_t &r)
+{
+    r                             = 0;
+    uint64_t q0                   = 0;
+    uint64_t q1                   = 0;
+    uint16_t q2                   = 0;
     const unsigned int ull_bitnum = sizeof(uint64_t) * 8;
-    const unsigned int us_bitnum = sizeof(uint16_t) * 8;
-    r = 0;
+    const unsigned int us_bitnum  = sizeof(uint16_t) * 8;
+
     for (int i = 2 * ull_bitnum + us_bitnum - 1; i >= 0; --i) {
         r <<= 1;
         bool a_ith_bit;
@@ -31,59 +31,62 @@ void quotientAndRemainder(
             }
         }
     }
-    a0 = q0; a1 = q1; a2 = q2;
+    a0 = q0;
+    a1 = q1;
+    a2 = q2;
 }
 
 /**
-* Generate a demo share code from its object data and return its string representation.
-* Required fields should come from a CDataGCCStrike15_v2_MatchInfo protobuf message.
-* https://github.com/SteamRE/SteamKit/blob/master/Resources/Protobufs/csgo/cstrike15_gcmessages.proto#L773
-*
-* Steps to generate the share code:
-*
-* Required data from the protobuf message are:
-* - uint64 match_id
-* - uint64 reservationid from the last repeated entry in roundstatsall, or if that doesn�t exist from roundstats_legacy
-* - uint16 low bits of uint32 tv_port
-*
-* 1. From these 3 items, we generate a big 144-bit number.
-* 2. The big number has to be run with a base57 encoding process
-*    against the string "ABCDEFGHJKLMNOPQRSTUVWXYZabcdefhijkmnopqrstuvwxyz23456789".
-* 3. Construct ShareCode string
-*
-* @param matchId {Object|Long} matchId
-* @param reservationId {Object|Long} reservationId
-* @param tvPort number tvPort
-* @return {string} Share code as string
-*/
+ * Generate a demo share code from its object data and return its string representation.
+ * Required fields should come from a CDataGCCStrike15_v2_MatchInfo protobuf message.
+ * https://github.com/SteamRE/SteamKit/blob/master/Resources/Protobufs/csgo/cstrike15_gcmessages.proto#L773
+ *
+ * Steps to generate the share code:
+ *
+ * Required data from the protobuf message are:
+ * - uint64 match_id
+ * - uint64 reservationid from the last repeated entry in roundstatsall, or if that doesn�t exist from roundstats_legacy
+ * - uint16 low bits of uint32 tv_port
+ *
+ * 1. From these 3 items, we generate a big 144-bit number.
+ * 2. The big number has to be run with a base57 encoding process
+ *    against the string "ABCDEFGHJKLMNOPQRSTUVWXYZabcdefhijkmnopqrstuvwxyz23456789".
+ * 3. Construct ShareCode string
+ *
+ * @param matchId {Object|Long} matchId
+ * @param reservationId {Object|Long} reservationId
+ * @param tvPort number tvPort
+ * @return {string} Share code as string
+ */
 std::string getShareCode(uint64_t matchid, uint64_t reservationid, uint32_t tvport)
 {
     // charset for base57
     const std::string dictionary = "ABCDEFGHJKLMNOPQRSTUVWXYZabcdefhijkmnopqrstuvwxyz23456789";
 
     std::string code;
-    uint64_t matchid_reversed = _byteswap_uint64(matchid);
+    uint64_t matchid_reversed       = _byteswap_uint64(matchid);
     uint64_t reservationid_reversed = _byteswap_uint64(reservationid);
-    uint16_t tvport_reversed = _byteswap_ushort(*(uint16_t*)(&tvport));
-    uint16_t r = 0;
-    uint16_t dl = dictionary.length();
+    uint16_t tvport_reversed        = _byteswap_ushort(*(uint16_t *)(&tvport));
+    uint16_t r                      = 0;
+    uint16_t dl                     = dictionary.length();
 
     for (int i = 0; i < 25; ++i) {
         quotientAndRemainder(matchid_reversed, reservationid_reversed, tvport_reversed, dl, r);
         code += dictionary[r];
-        //std::cout << "i " << i << " r " << r << " code " << code << std::endl;
+        // std::cout << "i " << i << " r " << r << " code " << code << std::endl;
     }
 
-    char shareCode[35]; // Char buffer for ShareCode
-
     // example: "CSGO-GADqf-jjyJ8-cSP2r-smZRo-TO2xK"
-    sprintf(shareCode, "CSGO-%s-%s-%s-%s-%s\0",
+    char shareCode[35];
+
+    sprintf(
+        shareCode,
+        "CSGO-%s-%s-%s-%s-%s\0",
         code.substr(0, 5).c_str(),
         code.substr(5, 5).c_str(),
         code.substr(10, 5).c_str(),
         code.substr(15, 5).c_str(),
-        code.substr(20).c_str()
-    );
+        code.substr(20).c_str());
 
     return shareCode;
 }
