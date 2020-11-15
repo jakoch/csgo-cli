@@ -81,7 +81,7 @@ std::string getShareCode(uint64_t matchid, uint64_t reservationid, uint32_t tvpo
 
     sprintf(
         shareCode,
-        "CSGO-%s-%s-%s-%s-%s\0",
+        "CSGO-%s-%s-%s-%s-%s",
         code.substr(0, 5).c_str(),
         code.substr(5, 5).c_str(),
         code.substr(10, 5).c_str(),
