@@ -48,7 +48,7 @@ bool requestRecentMatches(DataObject &data, bool &verbose)
                     parsedMatch.mapgroup  = match.watchablematchinfo().game_mapgroup();
                     parsedMatch.game_type = match.watchablematchinfo().game_type(); // this is nowadays 0
 
-                    spdlog::info("{}", match.DebugString());
+                    if (verbose) { spdlog::info("{}", match.DebugString()); }
 
                     // iterate roundstats
                     CMsgGCCStrike15_v2_MatchmakingServerRoundStats roundStats;
