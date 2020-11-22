@@ -3,8 +3,10 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+- added rank information for wingman and dangerzone to "-user"
+- added GlobalStats command
 - replaced RapidJson with nlohmann::json
-- added GameTypes enum for mapnames
+- added GameTypes enum for mapnames, not sure if this is correct
 - added tabulate to dependencies for table rendering
   - dropped ConsoleTable and TableFormat
 - large code refactoring
