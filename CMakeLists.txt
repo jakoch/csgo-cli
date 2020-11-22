@@ -289,6 +289,8 @@ add_library(csgo_cli_lib
         src/commands/cmd.matches.cpp
         src/commands/cmd.scoreboard.h
         src/commands/cmd.scoreboard.cpp
+        src/commands/cmd.globalstats.h
+        src/commands/cmd.globalstats.cpp
         # csgo api
         src/csgo/CSGOClient.h
         src/csgo/CSGOClient.cpp
@@ -300,6 +302,8 @@ add_library(csgo_cli_lib
         src/csgo/CSGOMatchData.h
         src/csgo/CSGOMatchPlayerScore.h
         src/csgo/CSGOMatchPlayerScore.cpp
+        src/csgo/CSGORankUpdate.cpp
+        src/csgo/CSGORankUpdate.h
         # csgostats
         src/csgostats/ShareCodeUpload.h
         src/csgostats/ShareCodeUpload.cpp
