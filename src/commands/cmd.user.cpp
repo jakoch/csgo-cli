@@ -103,20 +103,20 @@ bool requestPlayersRankInfo(DataObject &data, bool &verbose)
 
             // wingman
             PlayerRankingInfo wm_pri = rankUpdate.data[0].rankings().Get(0);
-            ri.id     = wm_pri.rank_id();
-            ri.type   = wm_pri.rank_type_id();
-            ri.wins   = wm_pri.wins();
-            ri.change = wm_pri.rank_change();
+            ri.id                    = wm_pri.rank_id();
+            ri.type                  = wm_pri.rank_type_id();
+            ri.wins                  = wm_pri.wins();
+            ri.change                = wm_pri.rank_change();
             data.rankings.push_back(ri);
 
             ri = {}; // reset
 
             // dangerzone
             PlayerRankingInfo dz_pri = rankUpdate.data[1].rankings().Get(0);
-            ri.id     = dz_pri.rank_id();
-            ri.type   = dz_pri.rank_type_id();
-            ri.wins   = dz_pri.wins();
-            ri.change = dz_pri.rank_change();
+            ri.id                    = dz_pri.rank_id();
+            ri.type                  = dz_pri.rank_type_id();
+            ri.wins                  = dz_pri.wins();
+            ri.change                = dz_pri.rank_change();
             data.rankings.push_back(ri);
 
         } catch (CSGO_CLI_TimeoutException) {
@@ -156,17 +156,17 @@ void printPlayersProfile(DataObject &data)
     auto mm_ranks     = data.rankings[0];
     auto mm_rank_name = data.getRankName(mm_ranks.id);
 
-    std::string matchmaking_rank = fmt::format("{} ({}/18) - Wins: {}", mm_rank_name, mm_ranks.id, mm_ranks.wins);
+    std::string matchmaking_rank = fmt::format("{} ({}/18) ({} wins)", mm_rank_name, mm_ranks.id, mm_ranks.wins);
 
     auto wm_ranks     = data.rankings[1];
     auto wm_rank_name = data.getRankName(wm_ranks.id);
 
-    std::string wingman_rank = fmt::format("{} ({}/18) - Wins: {}", wm_rank_name, wm_ranks.id, wm_ranks.wins);
+    std::string wingman_rank = fmt::format("{} ({}/18) ({} wins)", wm_rank_name, wm_ranks.id, wm_ranks.wins);
 
     auto dz_ranks     = data.rankings[2];
     auto dz_rank_name = data.getRankName(dz_ranks.id);
 
-    std::string dangerzone_rank = fmt::format("{} ({}/18) - Wins: {}", dz_rank_name, dz_ranks.id, dz_ranks.wins);
+    std::string dangerzone_rank = fmt::format("{} ({}/18) ({} wins)", dz_rank_name, dz_ranks.id, dz_ranks.wins);
 
     // TODO how to access medals data?
     // auto medals = fmt::format("{} x arms, {} x combat, {} x global, {} x team, {} x weapon",
@@ -194,10 +194,9 @@ void printPlayersProfile(DataObject &data)
     printAligned(" ");
     printAligned("[CS:GO]");
     printAligned(" ");
-    printAligned("Ranks");
-    printAligned(" MatchMaking:", matchmaking_rank);
-    printAligned(" Wingman:", wingman_rank);
-    printAligned(" DangerZone: ", dangerzone_rank);
+    printAligned("MatchMaking Rank:", matchmaking_rank);
+    printAligned("Wingman Rank:", wingman_rank);
+    printAligned("DangerZone Rank:", dangerzone_rank);
     printAligned("Player Level:", level);
     printAligned("Likes:", likes);
     printAligned("Penalty:", penalty);

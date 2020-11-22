@@ -15,7 +15,7 @@ void printHelp()
     fmt::print("   command [options] [arguments]\n");
     fmt::print("\n");
     fmt::print(" Available commands:\n");
-    fmt::print("  -user            Show your profile (SteamID, AccountID, MM-Rank, Likes, VAC-Status)\n");
+    fmt::print("  -user            Show your Steam and CS:GO profile\n");
     fmt::print("  -matches         Show your past matches in table form\n");
     fmt::print("  -upload          Upload your past matches to csgostats.gg\n");
     fmt::print("  -s, sharecode    Upload a replay sharecode to csgostats.gg\n");
