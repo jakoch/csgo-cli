@@ -2,36 +2,31 @@
 
 void printHelp()
 {
-    std::cout << WinCliColors::formatLightGreen(CSGO_CLI_BINARYNAME) << " v"
-              << WinCliColors::formatYellow(CSGO_CLI_VERSION) << ", " << CSGO_CLI_WEBSITE << "\n"
-              << "Copyright (c) 2018-" << getYear() << " Jens A. Koch.\n"
-              << "\n"
-              << " CS:GO Console shows your user account, stats and latest matches.\n"
-              << " You can also use the tool to upload replay sharecodes to "
-                 "csgostats.gg.\n"
-              << "\n"
-              << "Usage:\n"
-              << "  command [options] [arguments]\n"
-              << "\n"
-              << "Available commands:\n"
-              << "  -user         "
-              << "  Show your profile (SteamID, AccountID, MM-Rank, Likes, "
-                 "VAC-Status)\n"
-              << "  -matches      "
-              << "  Show your past matches in table form\n"
-              << "  -upload       "
-              << "  Upload your past matches to csgostats.gg\n"
-              << "  -s, sharecode "
-              << "  Upload a replay sharecode to csgostats.gg\n"
-              //<< "  -scoreboard " << "  Show your past matches in scoreboard form\n"
-              << "\n"
-              << "  -V, Version   "
-              << "  Display application version\n"
-              << "  -h, help      "
-              << "  Display this help message\n"
-              << "\n"
-              << "Options:\n"
-              << "  -v, verbose   "
-              << "  Increase verbosity of messages\n"
-              << "\n";
+    const std::string binary  = WinCliColors::formatLightGreen(CSGO_CLI_BINARYNAME);
+    const std::string version = WinCliColors::formatYellow(CSGO_CLI_VERSION);
+
+    fmt::print("{} v{}, {}\n", binary, version, CSGO_CLI_WEBSITE);
+    fmt::print("Copyright (c) 2018-{} Jens A. Koch.\n", getYear());
+    fmt::print("\n");
+    fmt::print(" CS:GO Console shows your user account, stats and latest matches.\n");
+    fmt::print(" You can also use the tool to upload replay sharecodes to csgostats.gg.\n");
+    fmt::print("\n");
+    fmt::print(" Usage:\n");
+    fmt::print("   command [options] [arguments]\n");
+    fmt::print("\n");
+    fmt::print(" Available commands:\n");
+    fmt::print("  -user            Show your profile (SteamID, AccountID, MM-Rank, Likes, VAC-Status)\n");
+    fmt::print("  -matches         Show your past matches in table form\n");
+    fmt::print("  -upload          Upload your past matches to csgostats.gg\n");
+    fmt::print("  -s, sharecode    Upload a replay sharecode to csgostats.gg\n");
+    // fmt::print("  -scoreboard      Show your past matches in scoreboard form\n");
+    fmt::print("  -globalstats     Show global server stats\n");
+    fmt::print("\n");
+    fmt::print("  -V, Version      Display application version\n");
+    fmt::print("  -h, help         Display this help message\n");
+    fmt::print("\n");
+    fmt::print("Options:\n");
+    fmt::print("  -v, verbose      Increase verbosity of messages\n");
+    fmt::print("  -vv              Raise verbosity level to debug\n");
+    fmt::print("\n");
 }

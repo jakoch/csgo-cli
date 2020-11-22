@@ -16,3 +16,23 @@ std::string getDateTime(const time_t &time, const char *time_format)
     ss << std::put_time(localtime(&time), time_format);
     return ss.str();
 }
+
+std::string format_duration_get_minutes(int msecs)
+{
+    using namespace std::chrono;
+    auto ms = milliseconds(msecs);
+    auto secs = duration_cast<seconds>(ms);
+    ms -= duration_cast<milliseconds>(secs);
+    auto mins = duration_cast<minutes>(secs);
+    secs -= duration_cast<seconds>(mins);
+    auto hour = duration_cast<hours>(mins);
+    mins -= duration_cast<minutes>(hour);
+
+    std::stringstream ss;
+    // ss << hour.count() << " Hours : "
+    // << mins.count() << " Minutes : "
+    // << secs.count() << " Seconds : "
+    // << ms.count()   << " Milliseconds";
+    ss << mins.count() << "m " << secs.count() << "s";
+    return ss.str();
+}

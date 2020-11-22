@@ -13,6 +13,7 @@
 #include "../commands/cmd.scoreboard.h"
 #include "../commands/cmd.upload.h"
 #include "../commands/cmd.user.h"
+#include "../commands/cmd.globalstats.h"
 
 #ifdef _WIN32
 #include <io.h>
@@ -139,14 +140,13 @@ int main(int argc, char **argv)
     SetConsoleOutputCP(CP_UTF8);
     WinCliColors::enableConsoleColor(true);
 
-    // spdlog::set_level(spdlog::level::debug);
-
     bool paramVerbose          = false;
     bool paramPrintUser        = false;
     bool paramPrintMatches     = false;
     bool paramPrintScoreboard  = false;
     bool paramUploadShareCodes = false;
     bool paramUploadShareCode  = false;
+    bool paramPrintGlobalStats = false;
     std::string shareCode;
 
     // default action
@@ -165,6 +165,11 @@ int main(int argc, char **argv)
             return 0;
         } else if (option == "-v" || option == "--v" || option == "-verbose") {
             paramVerbose = true;
+        } else if (option == "-vv" || option == "--vv") {
+            paramVerbose = true;
+            spdlog::set_level(spdlog::level::debug);
+        } else if (option == "-globalstats") {
+            paramPrintGlobalStats = true;
         } else if (option == "-matches") {
             paramPrintMatches = true;
         } else if (option == "-scoreboard") {
@@ -185,7 +190,7 @@ int main(int argc, char **argv)
         }
     }
 
-    if (paramVerbose && !paramPrintUser && !paramPrintMatches && !paramPrintScoreboard && !paramUploadShareCode &&
+    if (paramVerbose && !paramPrintUser && !paramPrintGlobalStats && !paramPrintMatches && !paramPrintScoreboard && !paramUploadShareCode &&
         !paramUploadShareCodes) {
         printError("ERROR", "You are using (-v|-verbose) without any other command.");
         fmt::print("Please check: '{} -help'\n", CSGO_CLI_BINARYNAME);
@@ -220,6 +225,17 @@ int main(int argc, char **argv)
             printError("Error", "Steam did not respond in time. Could not print -user.");
             exit(1);
         }
+        if (!requestPlayersRankInfo(data, paramVerbose)) {
+            printError("Error", "Steam did not respond in time. Could not print -user.");
+            exit(1);
+        }
+    }
+
+    if (paramPrintGlobalStats) {
+        if (!requestGlobalStats(data, paramVerbose)) {
+            printError("Error", "Steam did not respond in time. Could not print -globalstats.");
+            exit(1);
+        }
     }
 
     if (paramPrintMatches || paramPrintScoreboard || paramUploadShareCodes) {
@@ -232,6 +248,8 @@ int main(int argc, char **argv)
     // OUTPUT
 
     if (paramPrintUser) { printPlayersProfile(data); }
+
+    if (paramPrintGlobalStats) { printGlobalStats(data); }
 
     if (paramPrintMatches) { printMatches(data); }
 

@@ -1,7 +1,9 @@
 #ifndef DataObject_H
 #define DataObject_H
 
+#include "DateTimeUtils.h"
 #include "csgo/CSGOMatchData.h" // for vector<MatchData> matches
+#include "cstrike15_gcmessages.pb.h"
 
 #include <ostream>
 #include <steam/steamtypes.h>
@@ -63,23 +65,54 @@ private:
         "Wildfire Wolf",
         "The Howling Alpha"};
 
-    enum GameTypes : uint32_t
-    {
-        de_train    = 1032,
-        de_dust2    = 520,
-        de_inferno  = 4104,
-        de_nuke     = 8200,
-        de_vertigo  = 16392,
-        cs_office   = 65544,
-        de_mirage   = 32776,
-        de_cache    = 1048584,
-        de_zoo      = 33554440,
-        cs_agency   = 134217736,
-        de_overpass = 268435464,
-        de_workout  = 67108872
-    };
+    const std::vector<std::string> penalty_reasons_long = {
+        "Temporary Matchmaking Cooldown (No reason)",
+        "You have been kicked from your last matchmaking game.",
+        "You killed too many teammates.",
+        "You killed a teammate at round start.",
+        "You failed to reconnect to your last match.",
+        "You abandoned your last match.",
+        "You dealt too much damage to your teammates.",
+        "You dealt too much damage to your teammates at round start.",
+        "Your account is permanently untrusted. (Illegal Angles)",
+        "You were kicked from too many recent matches.",
+        "Convicted by Overwatch: Majorly Disruptive",
+        "Convicted by Overwatch: Minorly Disruptive",
+        "Resolving Matchmaking state for your account.",
+        "Resolving Matchmaking state for your last match.",
+        "Your account is permanently untrusted. (VAC)",
+        "Permanent Matchmaking Cooldown (No reason)",
+        "You failed to connect by match start.",
+        "You kicked too many teammates in recent matches.",
+        "Your account is under skill placement calibration.",
+        "A server using your game server token has been banned."};
+
+    const std::vector<std::string> penalty_reasons_short = {
+        "CooldownNone"
+        "Kicked"
+        "KilledMate"
+        "RoundStartKill"
+        "FailReconnect"
+        "Abandon"
+        "DamagedMate"
+        "DamagedMateStart"
+        "UntrustedAngles"
+        "KickedTooMuch"
+        "MajorlyDisruptive"
+        "MinorlyDisruptive"
+        "ResolveState"
+        "ResolveStateLastMatch"
+        "UntrustedVac"
+        "PermanentCooldownNone"
+        "FailConnect"
+        "KickedMates"
+        "NewbieCooldown"
+        "GameServerBanned"};
 
     const std::string steam_profile_url_base = "https://steamcommunity.com/profiles/";
+
+    // TODO
+    const std::string tpl_url_wingman_replays = "https://steamcommunity.com/id/{}/gcpd/730/?tab=matchhistorywingman";
 
     const int calcPlayerXpBase() const;
 
@@ -87,20 +120,22 @@ public:
     std::string getSteamId();
     std::string getSteamProfileUrl();
     std::string getPlayerLevel();
-    std::string getPlayerRank();
+    std::string getPlayerRank(int rank_type_id);
     std::string getPlayerXp();
     const float getPlayerXpPercentage();
     std::string getVacStatus();
     std::string getLevelName(int i);
     std::string getRankName(int i);
+    std::string getRankType(int i);
     std::string getDangerzoneRankName(int i);
-    std::string getGameType(GameTypes &game_types);
-    // std::string getDemoFilename(const CDataGCCStrike15_v2_MatchInfo& match, const
-    // CMsgGCCStrike15_v2_MatchmakingServerRoundStats& roundstats);
+    std::string getCanDoOverwatch();
+    std::string getAverageSearchTime();
+    std::string getPenaltyReasonShort(int i);
+    std::string getPenaltyReasonLong(int i);
 
     // SteamUser
-    uint32 account_id;
-    uint64 steam_id;
+    uint32 account_id      = 0;
+    uint64 steam_id        = 0;
     int steam_player_level = 0;
     std::string steam_profile_url;
 
@@ -110,9 +145,14 @@ public:
     std::string clan_tag;
 
     // ranking
-    uint32 rank_id   = 0;
-    uint32 rank_wins = 0;
-    float rank_change;
+    struct RankingInfo
+    {
+        uint32 id   = 0;
+        uint32 type = 0;
+        uint32 wins = 0;
+        float change;
+    };
+    std::vector<RankingInfo> rankings;
 
     // commendation
     uint32 cmd_friendly = 0;
@@ -120,9 +160,9 @@ public:
     uint32 cmd_leader   = 0;
 
     // player level
-    int32 player_level = 0;
-    // current XP, starts at 327680000 (level % = (player_cur_xp - 327680000) / 5000)
-    int32 player_cur_xp = 0;
+    int32 player_level  = 0;
+    int32 player_cur_xp = 0; // starts at 327680000 (level % = (player_cur_xp - 327680000) / 5000)
+    int32 player_xp_bonus_flags = 0; // TODO
 
     // medals
     uint32 medals_arms   = 0;
@@ -136,14 +176,28 @@ public:
     uint32 penalty_reason  = 0;
     uint32 penalty_seconds = 0;
 
-    /*uint32 global_stats_players_online = 0;
-    uint32 global_stats_servers_online = 0;
-    uint32 global_stats_players_searching = 0;
-    uint32 global_stats_servers_available = 0;
-    uint32 global_stats_ongoing_matches = 0;*/
-
+    // matches
     bool has_matches_played = 0;
     int num_matches_played  = 0;
     std::vector<CSGOMatchData> matches;
+
+    // statistics
+    struct GameTypeStats
+    {
+        uint32 game_type         = 0;
+        uint32 players_searching = 0;
+        uint32 search_time_avg   = 0;
+    };
+    struct GlobalStats
+    {
+        uint32 players_online    = 0;
+        uint32 servers_online    = 0;
+        uint32 players_searching = 0;
+        uint32 servers_available = 0;
+        uint32 ongoing_matches   = 0;
+        uint32 search_time_avg   = 0;
+        std::vector<GameTypeStats> gameTypeStats;
+    };
+    GlobalStats global_stats;
 };
 #endif

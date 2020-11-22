@@ -7,8 +7,9 @@
 #include <thread>
 
 /*
-  request_recent_user_games
-*/
+ * MatchList
+ * MatchListRequestRecentUserGames
+ */
 
 CSGOMatchList::CSGOMatchList() : m_matchListHandler(this, &CSGOMatchList::OnMatchList)
 {
@@ -41,7 +42,7 @@ void CSGOMatchList::OnMatchList(const CMsgGCCStrike15_v2_MatchList &msg)
 
 void CSGOMatchList::Refresh()
 {
-    uint32 accountId = SteamUser()->GetSteamID().GetAccountID();
+    const uint32 accountId = SteamUser()->GetSteamID().GetAccountID();
 
     CMsgGCCStrike15_v2_MatchListRequestRecentUserGames request;
     request.set_accountid(accountId);
@@ -71,7 +72,7 @@ const std::vector<CDataGCCStrike15_v2_MatchInfo> &CSGOMatchList::Matches() const
 
 int CSGOMatchList::getOwnIndex(const CMsgGCCStrike15_v2_MatchmakingServerRoundStats &roundStats) const
 {
-    uint32 accountId = SteamUser()->GetSteamID().GetAccountID();
+    const uint32 accountId = SteamUser()->GetSteamID().GetAccountID();
 
     for (int i = 0; i < roundStats.reservation().account_ids().size(); ++i) {
         if (roundStats.reservation().account_ids(i) == accountId) { return i; }

@@ -1,4 +1,5 @@
 #include "cmd.user.h"
+#include "cstrike15_gcmessages.pb.h"
 
 bool requestPlayersProfile(DataObject &data, bool &verbose)
 {
@@ -17,12 +18,13 @@ bool requestPlayersProfile(DataObject &data, bool &verbose)
 
             result = true;
 
-            if (verbose) spdlog::debug("mmhello.data.ShortDebugString: {}", mmhello.data.ShortDebugString());
-            if (verbose) spdlog::debug("mmhello.data.DebugString {}", mmhello.data.DebugString());
+            if (verbose) { spdlog::debug("mmhello.data.DebugString {}", mmhello.data.DebugString()); }
 
             // player level
-            data.player_level  = mmhello.data.player_level();
-            data.player_cur_xp = mmhello.data.player_cur_xp();
+            data.player_level          = mmhello.data.player_level();
+            data.player_cur_xp         = mmhello.data.player_cur_xp();
+            data.player_xp_bonus_flags = mmhello.data.player_xp_bonus_flags();
+
             // medals
             /*if (mmhello.data.has_medals()) {
                 data.medals_arms    = mmhello.data.medals().medal_arms();
@@ -38,9 +40,13 @@ bool requestPlayersProfile(DataObject &data, bool &verbose)
 
             // ranks
             if (mmhello.data.has_ranking()) {
-                data.rank_id     = mmhello.data.ranking().rank_id();
-                data.rank_wins   = mmhello.data.ranking().wins();
-                data.rank_change = mmhello.data.ranking().rank_change();
+                spdlog::debug("mmhello.data.rankings() (MatchMaking) {}", mmhello.data.ranking().DebugString());
+                DataObject::RankingInfo ri;
+                ri.id     = mmhello.data.ranking().rank_id();
+                ri.type   = mmhello.data.ranking().rank_type_id();
+                ri.wins   = mmhello.data.ranking().wins();
+                ri.change = mmhello.data.ranking().rank_change();
+                data.rankings.push_back(ri);
             }
             // commendations
             if (mmhello.data.has_commendation()) {
@@ -64,11 +70,74 @@ bool requestPlayersProfile(DataObject &data, bool &verbose)
     return result;
 }
 
+bool requestPlayersRankInfo(DataObject &data, bool &verbose)
+{
+    if (verbose) spdlog::info("[ Start ] [ Thread ] requestPlayersRankInfo");
+
+    bool result = false;
+
+    auto rankUpdateThread = std::thread([&data, verbose, &result]() {
+        try {
+            std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+
+            CSGORankUpdate rankUpdate;
+
+            if (verbose) spdlog::info("          Requesting: rankUpdate for Wingman");
+            rankUpdate.RefreshWaitWingmanRank();
+            if (verbose) spdlog::info("          Got rankUpdate for Wingman");
+
+            std::this_thread::sleep_for(std::chrono::milliseconds(500));
+
+            if (verbose) spdlog::info("          Requesting: rankUpdate for DangerZone");
+            rankUpdate.RefreshWaitDangerZoneRank();
+            if (verbose) spdlog::info("          Got rankUpdate for DangerZone");
+
+            result = true;
+
+            if (verbose) {
+                spdlog::debug("rankUpdate.data[0] (Wingman) {}", rankUpdate.data[0].DebugString());
+                spdlog::debug("rankUpdate.data[1] (DangerZone) {}", rankUpdate.data[1].DebugString());
+            }
+
+            DataObject::RankingInfo ri;
+
+            // wingman
+            PlayerRankingInfo wm_pri = rankUpdate.data[0].rankings().Get(0);
+            ri.id     = wm_pri.rank_id();
+            ri.type   = wm_pri.rank_type_id();
+            ri.wins   = wm_pri.wins();
+            ri.change = wm_pri.rank_change();
+            data.rankings.push_back(ri);
+
+            ri = {}; // reset
+
+            // dangerzone
+            PlayerRankingInfo dz_pri = rankUpdate.data[1].rankings().Get(0);
+            ri.id     = dz_pri.rank_id();
+            ri.type   = dz_pri.rank_type_id();
+            ri.wins   = dz_pri.wins();
+            ri.change = dz_pri.rank_change();
+            data.rankings.push_back(ri);
+
+        } catch (CSGO_CLI_TimeoutException) {
+            printError("Warning", "Timeout on receiving RankUpdate.");
+            result = false;
+        } catch (ExceptionHandler &e) {
+            printError("Fatal error", e.what());
+            result = false;
+        }
+        if (verbose) spdlog::info("[ End   ] [ Thread ] rankUpdate");
+        return 0;
+    });
+
+    rankUpdateThread.join();
+
+    return result;
+}
+
 void printPlayersProfile(DataObject &data)
 {
     // ---------- Format Output Strings
-
-    std::string rank = fmt::format("{} ({}/18)", data.getPlayerRank(), data.rank_id);
 
     std::string level = fmt::format(
         "{0} ({1}/40) (XP: {2}/5000 | {3:.2f}%)",
@@ -83,6 +152,21 @@ void printPlayersProfile(DataObject &data)
     std::string penalty = fmt::format("{} ({} Minutes)", data.penalty_reason, (data.penalty_seconds / 60));
 
     std::string clan = fmt::format("{} \"{}\"", data.clan_name, data.clan_tag);
+
+    auto mm_ranks     = data.rankings[0];
+    auto mm_rank_name = data.getRankName(mm_ranks.id);
+
+    std::string matchmaking_rank = fmt::format("{} ({}/18) - Wins: {}", mm_rank_name, mm_ranks.id, mm_ranks.wins);
+
+    auto wm_ranks     = data.rankings[1];
+    auto wm_rank_name = data.getRankName(wm_ranks.id);
+
+    std::string wingman_rank = fmt::format("{} ({}/18) - Wins: {}", wm_rank_name, wm_ranks.id, wm_ranks.wins);
+
+    auto dz_ranks     = data.rankings[2];
+    auto dz_rank_name = data.getRankName(dz_ranks.id);
+
+    std::string dangerzone_rank = fmt::format("{} ({}/18) - Wins: {}", dz_rank_name, dz_ranks.id, dz_ranks.wins);
 
     // TODO how to access medals data?
     // auto medals = fmt::format("{} x arms, {} x combat, {} x global, {} x team, {} x weapon",
@@ -110,10 +194,13 @@ void printPlayersProfile(DataObject &data)
     printAligned(" ");
     printAligned("[CS:GO]");
     printAligned(" ");
-    printAligned("Rank:", rank);
-    printAligned("MatchMaking Wins:", std::to_string(data.rank_wins));
+    printAligned("Ranks");
+    printAligned(" MatchMaking:", matchmaking_rank);
+    printAligned(" Wingman:", wingman_rank);
+    printAligned(" DangerZone: ", dangerzone_rank);
     printAligned("Player Level:", level);
     printAligned("Likes:", likes);
     printAligned("Penalty:", penalty);
-    // printAligned("Medals:"              , medals                                  );
+    printAligned("Overwatch:", data.getCanDoOverwatch());
+    // printAligned("Medals:", medals);
 }

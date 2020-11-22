@@ -34,10 +34,8 @@ void printScoreboard(DataObject &data)
     for (const auto &match : data.matches) {
         for (const auto &player : match.scoreboard) {
             if (player.account_id == data.account_id) {
-                // fmt::print("AcountID-API: {}\n", data.account_id);
-                // fmt::print("AcountID-Match: {}\n", player.account_id);
-
-                printRow(
+                fmt::print("{}\n", match.matchtime_str);
+                /*printRow(
                     match.matchtime_str,
                     match.result_str,
                     match.getScore(),
@@ -48,7 +46,7 @@ void printScoreboard(DataObject &data)
                     player.getKillDeathRatio(),
                     "rating",
                     player.getMVPs(),
-                    player.getScore());
+                    player.getScore());*/
             }
         }
     }

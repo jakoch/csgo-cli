@@ -12,6 +12,56 @@
 
 struct CSGOMatchData
 {
+private:
+    // TODO find out, if this is correct?
+    // the idea is that "lastRound.reservation.game_type" is the "map_name"
+    enum GameTypes
+    {
+        de_dust2    = 520,
+        de_train    = 1032,
+        de_inferno  = 4104,
+        de_nuke     = 8200,
+        de_vertigo  = 16392,
+        cs_office   = 65544,
+        de_mirage   = 32776,
+        de_cache    = 1048584,
+        de_workout  = 67108872,
+        de_zoo      = 33554440,
+        cs_agency   = 134217736,
+        de_overpass = 268435464
+    };
+
+    std::string getGameTypeStr(/*GameTypes game_types*/ int32 game_type) const
+    {
+        switch (game_type) {
+        case GameTypes::de_train:
+            return "de_train";
+        case GameTypes::de_dust2:
+            return "de_dust2";
+        case GameTypes::de_inferno:
+            return "de_inferno";
+        case GameTypes::de_nuke:
+            return "de_nuke";
+        case GameTypes::de_vertigo:
+            return "de_vertigo";
+        case GameTypes::cs_office:
+            return "cs_office";
+        case GameTypes::de_mirage:
+            return "de_mirage";
+        case GameTypes::de_cache:
+            return "de_cache";
+        case GameTypes::de_zoo:
+            return "de_zoo";
+        case GameTypes::cs_agency:
+            return "cs_agency";
+        case GameTypes::de_overpass:
+            return "de_overpass";
+        case GameTypes::de_workout:
+            return "de_workout";
+            // omit default case to trigger compiler warning for missing cases
+        };
+        return std::to_string(static_cast<std::uint32_t>(game_type));
+    };
 
 public:
     uint64 matchid;
@@ -31,7 +81,7 @@ public:
 
     std::string map;      /* watchablematchinfo.game_map */
     std::string mapgroup; /* watchablematchinfo.game_mapgroup */
-    uint32 gametype;      /* roundstatsall.reservation.game_type | watchablematchinfo.game_type */
+    uint32 game_type;     /* roundstatsall.reservation.game_type | watchablematchinfo.game_type */
 
     uint32 spectators;
 
@@ -63,6 +113,11 @@ public:
         } else { // result_str == "TIE"
             return fmt::format(fmt::fg(fmt::color::yellow), "TIE");
         }
+    }
+
+    std::string getGameType() const
+    {
+        return getGameTypeStr(game_type);
     }
 };
 
