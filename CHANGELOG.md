@@ -11,8 +11,7 @@ All notable changes to this project will be documented in this file.
 - added GlobalStats command
 - replaced RapidJson with nlohmann::json
 - added GameTypes enum for mapnames, not sure if this is correct
-- added tabulate to dependencies for table rendering
-  - dropped ConsoleTable and TableFormat
+- table rendering using fmt, dropped ConsoleTable and TableFormat
 - large code refactoring
   - new src folder structure, including /commands folder
 - added display of "xp_percentage progress" for "current xp level"
