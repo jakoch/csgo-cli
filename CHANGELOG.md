@@ -66,10 +66,6 @@ All notable changes to this project will be documented in this file.
 - updated dependency: csgo-protobuf to #ab60446
 - refactoring
 
-## [1.0.2]
-
-- skipped release
-
 ## [1.0.1] - 2018-07-14
 ### Added
 - added deployment of `csgo-cli-dependencies.zip`
@@ -79,7 +75,7 @@ All notable changes to this project will be documented in this file.
 - Initial Release
 
 [Unreleased]: https://github.com/jakoch/csgo-cli/compare/v1.3.0...HEAD
-[1.2.0]: https://github.com/jakoch/csgo-cli/compare/v1.2.0...v1.3.0
+[1.3.0]: https://github.com/jakoch/csgo-cli/compare/v1.2.0...v1.3.0
 [1.2.0]: https://github.com/jakoch/csgo-cli/compare/v1.1.0...v1.2.0
 [1.1.0]: https://github.com/jakoch/csgo-cli/compare/v1.0.5...v1.1.0
 [1.0.5]: https://github.com/jakoch/csgo-cli/compare/v1.0.4...v1.0.5
