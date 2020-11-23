@@ -21,6 +21,12 @@ TEST_CASE("[ShareCodeUpload] Response to POST request can be parsed:", "[testPro
     REQUIRE(r == 1);
   }
 
+  SECTION("if response content is not JSON, but HTML and a Cloudflare Captcha, return 1") {
+    std::string response = "<!DOCTYPE html> ... Cloudflare</title>";
+    int r = shareCodeUpload->processJsonResponse(response);
+    REQUIRE(r == 1);
+  }
+
   /*SECTION("if response content is JSON, but syntax - invalid JSON, return 2") {
     auto response = R"(
         {

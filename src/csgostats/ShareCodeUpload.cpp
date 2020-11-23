@@ -152,8 +152,15 @@ int ShareCodeUpload::processJsonResponse(std::string &jsonResponse)
         return 1;
     }
 
+
+
     // make sure response is JSON and not HTML
     if (jsonResponse.rfind("<!doctype html>", 0) == 0 || jsonResponse.rfind("<!DOCTYPE html>", 0) == 0) {
+        // if HTML, check if we hit the Cloudflare Captcha page
+        if (jsonResponse.find("Cloudflare") != std::string::npos) {
+            printError("Error", "The response content is not JSON, but HTML (Cloudflare Captcha!).\n");
+            return 1;
+        }
         printError("Error", "The response content is not JSON, but HTML.\n");
         return 1;
     }
