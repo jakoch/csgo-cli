@@ -3,8 +3,8 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
-- ...
-
+- added error message for "Cloudflare Captcha" as HTML reponse to ShareCodeUploader
+  
 ## [1.3.0] - 2020-11-22
 
 - added rank information for wingman and dangerzone to "-user"
