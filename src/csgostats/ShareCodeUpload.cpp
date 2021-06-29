@@ -10,8 +10,8 @@ ShareCodeUpload::ShareCodeUpload(bool verboseMode)
 
     curl = curl_easy_init();
 
-    host = curl_slist_append(NULL, "csgostats.gg:80:104.18.76.107");
-    host = curl_slist_append(host, "csgostats.gg:443:104.18.76.107");
+    host = curl_slist_append(NULL, "csgostats.gg:80:104.16.222.55");
+    host = curl_slist_append(host, "csgostats.gg:443:104.16.222.55");
 }
 
 ShareCodeUpload::~ShareCodeUpload()
@@ -152,8 +152,6 @@ int ShareCodeUpload::processJsonResponse(std::string &jsonResponse)
         return 1;
     }
 
-
-
     // make sure response is JSON and not HTML
     if (jsonResponse.rfind("<!doctype html>", 0) == 0 || jsonResponse.rfind("<!DOCTYPE html>", 0) == 0) {
         // if HTML, check if we hit the Cloudflare Captcha page
@@ -186,7 +184,7 @@ int ShareCodeUpload::processJsonResponse(std::string &jsonResponse)
     const auto data   = json["data"];
 
     /*
-       csgostats.gg has 3 json responses to a sharecode POST request: error, queued, complete.
+       csgostats.gg has 4 json responses to a sharecode POST request: error, queued, retrying, complete.
     */
 
     if (status == "error") {
@@ -198,7 +196,7 @@ int ShareCodeUpload::processJsonResponse(std::string &jsonResponse)
         return 3;
     }
 
-    if (status == "queued") {
+    if (status == "queued" || status == "retrying") {
         const std::string msg = data["msg"].get<std::string>();
 
         // msg contains HTML crap, let's cut that out
