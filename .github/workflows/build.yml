@@ -79,6 +79,7 @@ jobs:
           ren sdk sw_sdk
 
       - name: Patch CSGO Protobufs
+        working-directory: ${{ github.workspace }}
         run: dependencies\csgo-protobufs-patch\patch.bat
 
       - name: ❔ CHECK important folders, to see if everything is present (before building)
