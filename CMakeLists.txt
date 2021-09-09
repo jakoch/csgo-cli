@@ -23,7 +23,9 @@ include(setup-vcpkg)
 # Options
 # ==================================================================================================
 
-option(ENABLE_LTO   "Enable link-time optimizations if supported by the compiler"   OFF)
+option(ENABLE_LTO      "Enable link-time optimizations if supported by the compiler"   OFF)
+option(ENABLE_ASAN     "Enable address sanitizer (ASAN)"                               OFF)
+option(BUILD_TESTS     "Build tests"                                                    ON)
 
 # ==================================================================================================
 # Link time optimizations (LTO)
@@ -330,10 +332,15 @@ set_property(TARGET csgo_cli_lib PROPERTY
             MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
 
 if(${CMAKE_VERSION} VERSION_LESS "3.21.0")
-    target_compile_features(csgo_cli_lib  PUBLIC cxx_std_20)
+    target_compile_features(csgo_cli_lib PUBLIC cxx_std_20)
 else()
-    # CMake uses the incorrect /std:c++20 on MSVC when cxx_std_20 is used.
-    target_compile_features(csgo_cli_lib  PUBLIC cxx_std_23)
+    target_compile_features(csgo_cli_lib PUBLIC cxx_std_23)
+endif()
+
+if(MSVC)
+    if(ENABLE_ASAN)
+        target_compile_options(csgo_cli_lib PUBLIC -fsanitize=address)
+    endif()
 endif()
 
 #
@@ -355,7 +362,17 @@ target_link_libraries(csgo_cli
 set_property(TARGET csgo_cli PROPERTY
             MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
 
-target_compile_features(csgo_cli PUBLIC cxx_std_20)
+if(${CMAKE_VERSION} VERSION_LESS "3.21.0")
+    target_compile_features(csgo_cli PUBLIC cxx_std_20)
+else()
+    target_compile_features(csgo_cli PUBLIC cxx_std_23)
+endif()
+
+if(MSVC)
+    if(ENABLE_ASAN)
+        target_compile_options(csgo_cli PUBLIC -fsanitize=address)
+    endif()
+endif()
 
 #
 # Create "source-group" folders for these files in Visual Studio
@@ -380,8 +397,6 @@ source_group("Protobuf Generated Files" FILES
     ${PROTO_GCSYSTEMMSGS_HDR}
 )
 
-option(CSGO_CLI_BUILD_TESTS "Build tests" ON)
-
-if(CSGO_CLI_BUILD_TESTS)
+if(BUILD_TESTS)
     add_subdirectory(tests)
 endif()
