@@ -78,17 +78,12 @@ jobs:
           cd dependencies
           ren sdk sw_sdk
 
-      - name: Patch CSGO Protobufs
-        working-directory: ${{ github.workspace }}
-        run: dependencies\csgo-protobufs-patch\patch.bat
-
       - name: ❔ CHECK important folders, to see if everything is present (before building)
         run: |
           dir ${{ github.workspace }}
           dir ${{ github.workspace }}\downloads
           dir ${{ github.workspace }}\dependencies
           dir ${{ github.workspace }}\dependencies\csgo-protobufs
-          dir ${{ github.workspace }}\build\vcpkg_installed\x64-windows-static
 
       - name: ✏ CMake ➔ Configure (including VCPKG → Install Dependencies)
         run: |
@@ -100,8 +95,13 @@ jobs:
                 -DBUILD_SHARED_LIBS=${{ env.BUILD_SHARED_LIBS }}                               ^
                 -DCMAKE_VERBOSE_MAKEFILE=ON
 
+      - name: Patch CSGO Protobufs
+        working-directory: ${{ github.workspace }}
+        run: dependencies\csgo-protobufs-patch\patch.bat
+
       - name: ❔ CHECK important folders, to see if everything is present (after building)
         run: |
+          dir ${{ github.workspace }}\build\vcpkg_installed\x64-windows-static
           dir ..\build
           dir /S /B ..\build\vcpkg_installed\${{ env.VCPKG_TARGET_TRIPLET }}
           dir /S /B ..\build
