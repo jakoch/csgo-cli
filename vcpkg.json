@@ -3,6 +3,9 @@
   "version-string": "1.1.0",
   "homepage": "https://github.com/jakoch/csgo-cli",
   "description": "csgo-cli",
+  "maintainers": [
+    "Jens A. Koch <jakoch@web.de>"
+  ],
   "dependencies": [
     "zlib",
     {

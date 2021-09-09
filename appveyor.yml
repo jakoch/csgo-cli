@@ -48,14 +48,14 @@ install:
   - git pull
   - .\bootstrap-vcpkg.bat -disableMetrics
   - cd C:\projects\csgo-cli
-  # 3) update curl to v7.73.0
+  # 3) update curl to v7.77.0
   #    -> C:\projects\csgo-cli\downloads\curl\curl.exe
   - cd C:\projects\csgo-cli\downloads
-  - curl -L -o curl-7.73.0-win64-mingw.zip https://dl.bintray.com/vszakats/generic/curl-7.73.0-win64-mingw.zip
-  - 7z x C:\projects\csgo-cli\downloads\curl-7.73.0-win64-mingw.zip -aoa -y -oC:\projects\csgo-cli\downloads
-  - del /Q C:\projects\csgo-cli\downloads\curl-7.73.0-win64-mingw.zip
-  - move C:\projects\csgo-cli\downloads\curl-7.73.0-win64-mingw\bin C:\projects\csgo-cli\downloads\curl
-  - rmdir /S /Q C:\projects\csgo-cli\downloads\curl-7.73.0-win64-mingw
+  - curl -L -o curl-7.77.0_2-win64-mingw.zip https://curl.se/windows/dl-7.77.0_2/curl-7.77.0_2-win64-mingw.zip
+  - 7z x C:\projects\csgo-cli\downloads\curl-7.77.0_2-win64-mingw.zip -aoa -y -oC:\projects\csgo-cli\downloads
+  - del /Q C:\projects\csgo-cli\downloads\curl-7.77.0_2-win64-mingw.zip
+  - move C:\projects\csgo-cli\downloads\curl-7.77.0-win64-mingw\bin C:\projects\csgo-cli\downloads\curl
+  - rmdir /S /Q C:\projects\csgo-cli\downloads\curl-7.77.0-win64-mingw
   - C:\projects\csgo-cli\downloads\curl\curl.exe --version
   - cd C:\projects\csgo-cli
   # 4) copy Cert for cURL

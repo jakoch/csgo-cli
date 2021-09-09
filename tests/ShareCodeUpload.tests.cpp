@@ -40,16 +40,16 @@ TEST_CASE("[ShareCodeUpload] Response to POST request can be parsed:", "[testPro
   SECTION("if response content is JSON, with status error, return 3") {
 
     auto response = R"(
-    {
-      "status": "error",
-      "data" : {
-          "msg": "Failed to add to the queue, please verify sharecode",
-          "index" : null,
-          "sharecode" : null
-      },
-      "error" : 1
-    }
-  )"_json;
+      {
+        "status": "error",
+        "data" : {
+            "msg": "Failed to add to the queue, please verify sharecode",
+            "index" : null,
+            "sharecode" : null
+        },
+        "error" : 1
+      }
+    )"_json;
 
     std::string response_string = response.dump();
     int r = shareCodeUpload->processJsonResponse(response_string);
@@ -74,15 +74,41 @@ TEST_CASE("[ShareCodeUpload] Response to POST request can be parsed:", "[testPro
         },
         "error" : 0
       }
-  )"_json;
+    )"_json;
 
     std::string response_string = response.dump();
     int r = shareCodeUpload->processJsonResponse(response_string);
     REQUIRE(r == 4);
   }
 
+  SECTION("if response content is JSON, with status retrying, return 4")
+  {
+      auto response = R"(
+          {
+            "status" : "retrying",
+            "data" : {
+                "msg" : "Failed to parse demo file. Demo may be corrupt<br \/>Retrying, in Queue #1099  <span style=\"margin-left:8px;\"><\/span> ~ Time Remaining 7h 39m",
+                "queue_id" : 70007,
+                "queue_pos" : 1099,
+                "in_queue" : 1,
+                "demo_id" : 0,
+                "url" : "https:\/\/csgostats.gg\/match\/processing\/70007",
+                "demo_url" : "http:\/\/replay187.valve.net\/730\/003106056003414655216_0510340674.dem.bz2",
+                "start" : false,
+                "index" : "0",
+                "sharecode" : "CSGO-U6MWi-hYFWJ-opPwD-JciHm-qOijD"
+            },
+            "error" : 2
+          }
+      )"_json;
+
+      std::string response_string = response.dump();
+      int r = shareCodeUpload->processJsonResponse(response_string);
+      REQUIRE(r == 4);
+  }
+
   SECTION("if response content is JSON, with status complete, return 5") {
-    auto response = R"(
+      auto response = R"(
         {
           "status": "complete",
           "data" : {
@@ -96,6 +122,7 @@ TEST_CASE("[ShareCodeUpload] Response to POST request can be parsed:", "[testPro
           "error" : 0
         }
       )"_json;
+
     std::string response_string = response.dump();
     int r = shareCodeUpload->processJsonResponse(response_string);
     REQUIRE(r == 5);

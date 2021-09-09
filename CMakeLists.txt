@@ -17,18 +17,6 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/build")
 
 set(VCPKG_TARGET_TRIPLET        x64-windows-static)
 
-#if (WIN32)
-    # x64-windows-static
-    #set(VCPKG_TARGET_ARCHITECTURE   x64)
-    #set(VCPKG_CRT_LINKAGE           static)
-    #set(VCPKG_LIBRARY_LINKAGE       static)
-
-    # x64-dynamic-static
-    #set(VCPKG_TARGET_ARCHITECTURE   x64)
-    #set(VCPKG_CRT_LINKAGE           dynamic)
-    #set(VCPKG_LIBRARY_LINKAGE       static)
-#endif (WIN32)
-
 include(setup-vcpkg)
 
 # ==================================================================================================
@@ -69,11 +57,6 @@ endif()
 # ==================================================================================================
 # Compiler flags
 # ==================================================================================================
-
-# Define C++ Standard to use
-set(CMAKE_CXX_STANDARD 20)
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
-set(CMAKE_CXX_EXTENSIONS ON)
 
 if (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
 
@@ -346,7 +329,12 @@ target_link_libraries(csgo_cli_lib
 set_property(TARGET csgo_cli_lib PROPERTY
             MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
 
-target_compile_features(csgo_cli_lib PUBLIC cxx_std_20)
+if(${CMAKE_VERSION} VERSION_LESS "3.21.0")
+    target_compile_features(csgo_cli_lib  PUBLIC cxx_std_20)
+else()
+    # CMake uses the incorrect /std:c++20 on MSVC when cxx_std_20 is used.
+    target_compile_features(csgo_cli_lib  PUBLIC cxx_std_23)
+endif()
 
 #
 # Executable
