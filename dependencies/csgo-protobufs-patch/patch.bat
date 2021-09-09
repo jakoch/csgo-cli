@@ -1,5 +1,9 @@
 @echo off
 
+echo "Patching CSGO Protobufs"
+
+@echo ~dp0= %~dp0
+
 REM 1. copy the Protobuf Descriptor file
 mkdir "%~dp0..\csgo-protobufs\csgo\google\protobuf"
 copy "%~dp0..\..\vcpkg_installed\x64-windows-static\include\google\protobuf\descriptor.proto" "%~dp0..\csgo-protobufs\csgo\google\protobuf"
