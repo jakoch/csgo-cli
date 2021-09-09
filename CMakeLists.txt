@@ -200,7 +200,7 @@ endif()
 #set(Protobuf_LIBRARY             "${VCPKG_DIR}/lib/libprotobuf.lib")
 
 set(Protobuf_USE_STATIC_LIBS ON)
-#set(Protobuf_PROTOC_EXECUTABLE   "${VCPKG_DIR}/tools/protobuf/protoc") # protoc.exe
+set(Protobuf_PROTOC_EXECUTABLE    "${VCPKG_DIR}/tools/protobuf/protoc") # protoc.exe
 
 set(Protobuf_DIR "${VCPKG_DIR}/share/protobuf")
 
@@ -241,10 +241,10 @@ protobuf_generate_cpp(PROTO_GCSYSTEMMSGS_SRC PROTO_GCSYSTEMMSGS_HDR
 # zlib
 #
 if(POLICY CMP0074)
-  cmake_policy(SET CMP0074 NEW) #3.12.0 `find_package()`` uses ``<PackageName>_ROOT`` variables.
+  cmake_policy(SET CMP0074 NEW) #3.12.0 `find_package()` uses `<PackageName>_ROOT` variables.
 endif()
-set(ZLIB_ROOT "${VCPKG_DIR}")
-find_package(ZLIB)#REQUIRED)
+set(ZLIB_ROOT "${VCPKG_DIR}/lib")
+find_package(ZLIB REQUIRED)
 
 #
 # Curl

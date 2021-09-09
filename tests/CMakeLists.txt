@@ -17,9 +17,9 @@ include_directories(
 set(Catch2_DIR "${VCPKG_DIR}/share/catch2")
 find_package(Catch2 CONFIG REQUIRED)
 
-add_executable(TestSuite ${TEST_SOURCES})
+add_executable(test_suite ${TEST_SOURCES})
 
-target_link_libraries(TestSuite
+target_link_libraries(test_suite
     PRIVATE
         Catch2::Catch2
         csgo_cli_lib
