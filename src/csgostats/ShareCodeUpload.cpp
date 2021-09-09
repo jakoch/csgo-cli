@@ -190,7 +190,7 @@ int ShareCodeUpload::processJsonResponse(std::string &jsonResponse)
     if (status == "error") {
         const std::string msg = data["msg"].get<std::string>();
 
-        const auto result = fmt::format(" Result: {}    -> {}. \n", status, msg);
+        const auto result = fmt::format(" Result: {} -> {}. \n", status, msg);
         printRed(result);
 
         return 3;
