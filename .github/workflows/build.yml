@@ -86,6 +86,8 @@ jobs:
           dir /S /B ..\build
 
       - name: Extract SW_SDK
+        env:
+          SW_SDK_SECRET: ${{ secrets.SW_SDK_SECRET }}
         run: |
           7z x downloads\sw_sdk_150.zip -aoa -y -odependencies -p%SW_SDK_SECRET%
           cd dependencies
