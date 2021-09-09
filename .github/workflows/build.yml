@@ -35,6 +35,8 @@ jobs:
     steps:
       - name: 🤘 Checkout Code
         uses: actions/checkout@v2 # https://github.com/actions/checkout
+        with:
+          submodules: true
 
       - name: ℹ Show Tool Versions
         run: |
