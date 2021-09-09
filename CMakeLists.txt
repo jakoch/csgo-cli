@@ -202,6 +202,8 @@ endif()
 set(Protobuf_USE_STATIC_LIBS ON)
 set(Protobuf_DIR "${VCPKG_DIR}/share/protobuf")
 
+list(APPEND CMAKE_PREFIX_PATH "${VCPKG_DIR}/tools/protobuf")
+
 #
 # Please fix your protobuf_generate(), okay?
 # https://stackoverflow.com/questions/52533396/cmake-cant-find-protobuf-protobuf-generate-cpp
@@ -243,7 +245,7 @@ protobuf_generate_cpp(PROTO_GCSYSTEMMSGS_SRC PROTO_GCSYSTEMMSGS_HDR
 if(POLICY CMP0074)
   cmake_policy(SET CMP0074 NEW) #3.12.0 `find_package()` uses `<PackageName>_ROOT` variables.
 endif()
-set(ZLIB_ROOT "${VCPKG_DIR}/lib")
+set(ZLIB_ROOT "${VCPKG_DIR}")
 find_package(ZLIB REQUIRED)
 
 #
