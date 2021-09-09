@@ -329,7 +329,12 @@ target_link_libraries(csgo_cli_lib
 set_property(TARGET csgo_cli_lib PROPERTY
             MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
 
-target_compile_features(csgo_cli_lib PUBLIC cxx_std_20)
+if(${CMAKE_VERSION} VERSION_LESS "3.21.0")
+    target_compile_features(csgo_cli_lib  PUBLIC cxx_std_20)
+else()
+    # CMake uses the incorrect /std:c++20 on MSVC when cxx_std_20 is used.
+    target_compile_features(csgo_cli_lib  PUBLIC cxx_std_23)
+endif()
 
 #
 # Executable

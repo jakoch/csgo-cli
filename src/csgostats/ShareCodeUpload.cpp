@@ -213,7 +213,7 @@ int ShareCodeUpload::processJsonResponse(std::string &jsonResponse)
 
         const std::string url = data["url"].get<std::string>();
 
-        const auto result = fmt::format(" Result: {}   -> {} | {} \n", status, url, newMsg);
+        const auto result = fmt::format(" Result: {} -> {} | {} \n", status, url, newMsg);
         printDarkOrange(result);
 
         return 4;
