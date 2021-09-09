@@ -73,7 +73,8 @@ jobs:
         env:
           SW_SDK_SECRET: ${{ secrets.SW_SDK_SECRET }}
         run: |
-          7z x downloads\sw_sdk_150.zip -aoa -y -odependencies -p%SW_SDK_SECRET%
+          dir
+          7z x ${{ github.workspace }}\downloads\sw_sdk_150.zip -aoa -y -odependencies -p%SW_SDK_SECRET%
           cd dependencies
           ren sdk sw_sdk
 
