@@ -85,9 +85,10 @@ jobs:
       - name: ❔ CHECK important folders, to see if everything is present (before building)
         run: |
           dir ${{ github.workspace }}
-          dir ${{ github.workspace }}\downloads\
-          dir ${{ github.workspace }}\dependencies\
+          dir ${{ github.workspace }}\downloads
+          dir ${{ github.workspace }}\dependencies
           dir ${{ github.workspace }}\dependencies\csgo-protobufs
+          dir ${{ github.workspace }}\build\vcpkg_installed\x64-windows-static
 
       - name: ✏ CMake ➔ Configure (including VCPKG → Install Dependencies)
         run: |
