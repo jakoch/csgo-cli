@@ -90,7 +90,24 @@ if (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /wd4996") # Warning C4996: Call to 'function' with parameters that may be unsafe
   # You don't want to know why.
   # https://github.com/protocolbuffers/protobuf/blob/master/cmake/README.md#notes-on-compiler-warnings
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /wd4251") # Warning C4251:
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /wd4251") # Warning C4251: 'identifier': class 'type' needs to have dll-interface to be used by clients of class 'type2'
+
+  # /EHsc: Specifies the model of exception handling.
+  # /GL:   Enables whole program optimization.
+  # /Gm:   Enable minimal rebuilds; conflicts with /MP
+  # /GS:   Buffers security check.
+  # /MD:   Creates a multithreaded DLL using MSVCRT.lib.
+  # /MDd:  Creates a debug multithreaded DLL using MSVCRTD.lib.
+  # /O2:   Creates fast code.
+  # /Od:   Disables optimization.
+  # /Oi:   Generates intrinsic functions.
+  # /RTC1: Enables run-time error checking.
+  # /W4:   Sets which warning level to output.
+  # /Zi:   Generates complete debugging information.
+  set(CMAKE_CXX_FLAGS           "/EHsc /GS /Zi /Gm-") #/W4
+  set(CMAKE_CXX_FLAGS_DEBUG     "/Od /RTC1")
+  set(CMAKE_CXX_FLAGS_RELEASE   "/GL /O2 /Oi")
+
   message(STATUS "USING THESE CMAKE_CXX_FLAGS: ${CMAKE_CXX_FLAGS}")
 endif()
 
@@ -102,6 +119,19 @@ if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
   add_definitions(-DNOMINMAX)
 
   set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -stdlib=libc++ ") # -lc++abi
+endif()
+
+  # /MP: Multiprocess compilation
+if(CMAKE_GENERATOR MATCHES "Visual Studio" AND CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
+  if(CMake_MSVC_PARALLEL)
+    if(CMake_MSVC_PARALLEL GREATER 0)
+      string(APPEND CMAKE_C_FLAGS " /MP${CMake_MSVC_PARALLEL}")
+      string(APPEND CMAKE_CXX_FLAGS " /MP${CMake_MSVC_PARALLEL}")
+    else()
+      string(APPEND CMAKE_C_FLAGS " /MP")
+      string(APPEND CMAKE_CXX_FLAGS " /MP")
+    endif()
+  endif()
 endif()
 
 # ==================================================================================================
@@ -165,15 +195,21 @@ if(MSVC AND protobuf_MSVC_STATIC_RUNTIME)
     endforeach()
 endif()
 
-set(Protobuf_INCLUDE_DIR         "${VCPKG_DIR}/include")
-set(Protobuf_IMPORT_DIRS         "${VCPKG_DIR}/include") # additional proto files from include folder
-set(Protobuf_LIBRARY             "${VCPKG_DIR}/lib/libprotobuf.lib")
+#set(Protobuf_INCLUDE_DIR         "${VCPKG_DIR}/include")
+#set(Protobuf_IMPORT_DIRS         "${VCPKG_DIR}/include") # additional proto files from include folder
+#set(Protobuf_LIBRARY             "${VCPKG_DIR}/lib/libprotobuf.lib")
 
 set(Protobuf_USE_STATIC_LIBS ON)
-set(Protobuf_PROTOC_EXECUTABLE   "${VCPKG_DIR}/tools/protobuf/protoc") # protoc.exe
+#set(Protobuf_PROTOC_EXECUTABLE   "${VCPKG_DIR}/tools/protobuf/protoc") # protoc.exe
 
 set(Protobuf_DIR "${VCPKG_DIR}/share/protobuf")
+
+#
+# Please fix your protobuf_generate(), okay?
+# https://stackoverflow.com/questions/52533396/cmake-cant-find-protobuf-protobuf-generate-cpp
+#
 set(protobuf_MODULE_COMPATIBLE ON CACHE BOOL "")
+
 find_package(Protobuf CONFIG REQUIRED)
 
 #
@@ -219,14 +255,20 @@ find_package(CURL CONFIG REQUIRED)
 #
 # FMT
 #
-set(FMT_DIR "${VCPKG_DIR}/share/fmt")
-find_package(FMT CONFIG REQUIRED)
+set(fmt_DIR "${VCPKG_DIR}/share/fmt")
+find_package(fmt CONFIG REQUIRED)
 
 #
 # nlohman-json
 #
 set(nlohmann_json_DIR "${VCPKG_DIR}/share/nlohmann_json")
 find_package(nlohmann_json CONFIG REQUIRED)
+
+#
+# spdlog
+#
+set(spdlog_DIR "${VCPKG_DIR}/share/spdlog")
+find_package(spdlog CONFIG REQUIRED)
 
 #
 # Copy Additional Files
@@ -311,6 +353,21 @@ add_library(csgo_cli_lib
         ${PROTO_GCSYSTEMMSGS_HDR}
 )
 
+#
+# Process CS:GO Protobufs
+# See comment above @ "protobuf_MODULE_COMPATIBLE"
+#
+#protobuf_generate(
+#    LANGUAGE cpp
+#    TARGET csgo_cli_lib
+#    PROTOS
+#    ${CMAKE_CURRENT_SOURCE_DIR}/dependencies/csgo-protobufs/csgo/steammessages.proto
+#    ${CMAKE_CURRENT_SOURCE_DIR}/dependencies/csgo-protobufs/csgo/gcsdk_gcmessages.proto
+#    ${CMAKE_CURRENT_SOURCE_DIR}/dependencies/csgo-protobufs/csgo/gcsystemmsgs.proto
+#    ${CMAKE_CURRENT_SOURCE_DIR}/dependencies/csgo-protobufs/csgo/engine_gcmessages.proto
+#    ${CMAKE_CURRENT_SOURCE_DIR}/dependencies/csgo-protobufs/csgo/cstrike15_gcmessages.proto
+#)
+
 include_directories(
     ${STEAMWORKS_INCLUDE_DIR}
     ${PROTOBUF_INCLUDE_DIR}
@@ -319,13 +376,14 @@ include_directories(
 )
 
 target_link_libraries(csgo_cli_lib
-    PRIVATE
-        ${STEAMWORKS_LIBRARY}
-        CURL::libcurl
-        ZLIB::ZLIB
-        protobuf::libprotobuf
-        fmt::fmt
-        nlohmann_json::nlohmann_json
+PRIVATE
+    fmt::fmt
+    #spdlog::spdlog
+    nlohmann_json::nlohmann_json
+    CURL::libcurl
+    ZLIB::ZLIB
+    ${STEAMWORKS_LIBRARY}
+    protobuf::libprotobuf
 )
 
 set_property(TARGET csgo_cli_lib PROPERTY
@@ -357,6 +415,7 @@ add_executable(csgo_cli
 target_link_libraries(csgo_cli
     PRIVATE
         csgo_cli_lib
+        fmt::fmt-header-only
 )
 
 set_property(TARGET csgo_cli PROPERTY
@@ -383,18 +442,6 @@ source_group("Protobuf Protocol Files" FILES
     proto/steammessages.proto
     proto/gcsdk_gcmessages.proto
     proto/gcsystemmsgs.proto
-)
-source_group("Protobuf Generated Files" FILES
-    ${PROTO_ENGINE_GCMESSAGES_SRC}
-    ${PROTO_ENGINE_GCMESSAGES_HDR}
-    ${PROTO_CSTRIKE15_GCMESSAGES_SRC}
-    ${PROTO_CSTRIKE15_GCMESSAGES_HDR}
-    ${PROTO_STEAMMESSAGES_SRC}
-    ${PROTO_STEAMMESSAGES_HDR}
-    ${PROTO_GCSDK_GCMESSAGES_SRC}
-    ${PROTO_GCSDK_GCMESSAGES_HDR}
-    ${PROTO_GCSYSTEMMSGS_SRC}
-    ${PROTO_GCSYSTEMMSGS_HDR}
 )
 
 if(BUILD_TESTS)
