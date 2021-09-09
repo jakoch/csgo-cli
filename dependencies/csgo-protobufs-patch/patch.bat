@@ -6,7 +6,12 @@ echo "Patching CSGO Protobufs"
 
 echo "1. Copying the Protobuf Descriptor file"
 mkdir "%~dp0..\csgo-protobufs\csgo\google\protobuf"
-copy "%~dp0..\..\vcpkg_installed\x64-windows-static\include\google\protobuf\descriptor.proto" "%~dp0..\csgo-protobufs\csgo\google\protobuf"
+
+if("%GITHUB_WORKFLOW%"=="") (
+    copy "%~dp0..\..\vcpkg_installed\x64-windows-static\include\google\protobuf\descriptor.proto" "%~dp0..\csgo-protobufs\csgo\google\protobuf"
+) else (
+    copy "C:\vcpkg\packages\x64-windows-static\include\google\protobuf\descriptor.proto" "%~dp0..\csgo-protobufs\csgo\google\protobuf"
+)
 
 echo "2. Copying the proto-syntax-patch.txt, which contains a new header line"
 copy "%~dp0proto-syntax-patch.txt" "%~dp0..\csgo-protobufs\csgo"
