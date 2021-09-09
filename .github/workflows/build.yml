@@ -81,6 +81,13 @@ jobs:
       - name: Patch CSGO Protobufs
         run: dependencies/csgo-protobufs-patch/patch.bat
 
+      - name: ❔ CHECK important folders, to see if everything is present (before building)
+        run: |
+          dir ${{ github.workspace }}
+          dir ${{ github.workspace }}\downloads\
+          dir ${{ github.workspace }}\dependencies\
+          dir ${{ github.workspace }}\dependencies\csgo-protobufs
+
       - name: ✏ CMake ➔ Configure (including VCPKG → Install Dependencies)
         run: |
           cmake -G "Visual Studio 17 2022" -A x64                                              ^
