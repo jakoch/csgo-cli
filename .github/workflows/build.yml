@@ -110,28 +110,28 @@ jobs:
       - name: 🙏 CMake → Build
         run: cmake --build build --config %BUILD_TYPE% -j %NUMBER_OF_PROCESSORS%
 
-      - name: 📦 CMake ➔ Install
-        run: cmake --install build --config %BUILD_TYPE% --prefix install --verbose
+      # - name: 📦 CMake ➔ Install
+      #   run: cmake --install build --config %BUILD_TYPE% --prefix install --verbose
 
-      - name: 🔼 Upload Build Artifact -> app
-        uses: actions/upload-artifact@v2 # https://github.com/actions/upload-artifact
-        if: always()
-        with:
-          name: csgo_cli-${{ env.VCPKG_TARGET_TRIPLET }}-${{ env.COMPILER }}
-          path: build/install/
+      # - name: 🔼 Upload Build Artifact -> app
+      #   uses: actions/upload-artifact@v2 # https://github.com/actions/upload-artifact
+      #   if: always()
+      #   with:
+      #     name: csgo_cli-${{ env.VCPKG_TARGET_TRIPLET }}-${{ env.COMPILER }}
+      #     path: build/install/
 
-      - name: 🔼 Upload Build Artifact -> CMakeOutput.log
-        uses: actions/upload-artifact@v2 # https://github.com/actions/upload-artifact
-        if: always()
-        continue-on-error: true
-        with:
-          name: CMakeOutput.log
-          path: build/CMakeFiles/CMakeOutput.log
+      # - name: 🔼 Upload Build Artifact -> CMakeOutput.log
+      #   uses: actions/upload-artifact@v2 # https://github.com/actions/upload-artifact
+      #   if: always()
+      #   continue-on-error: true
+      #   with:
+      #     name: CMakeOutput.log
+      #     path: build/CMakeFiles/CMakeOutput.log
 
-      - name: 🔼 Upload Build Artifact -> CMakeError.log
-        uses: actions/upload-artifact@v2 # https://github.com/actions/upload-artifact
-        if: always()
-        continue-on-error: true
-        with:
-          name: CMakeError.log
-          path: build/CMakeFiles/CMakeError.log
+      # - name: 🔼 Upload Build Artifact -> CMakeError.log
+      #   uses: actions/upload-artifact@v2 # https://github.com/actions/upload-artifact
+      #   if: always()
+      #   continue-on-error: true
+      #   with:
+      #     name: CMakeError.log
+      #     path: build/CMakeFiles/CMakeError.log
