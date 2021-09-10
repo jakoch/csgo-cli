@@ -28,8 +28,6 @@ set(CMAKE_INCLUDE_CURRENT_DIR ON)
 # Setup Dependency Manager: VCPKG
 #-------------------------------------------------------------------
 
-set(VCPKG_TARGET_TRIPLET        x64-windows-static)
-
 include(setup-vcpkg)
 
 # ==================================================================================================
@@ -269,9 +267,6 @@ protobuf_generate_cpp(PROTO_GCSYSTEMMSGS_SRC PROTO_GCSYSTEMMSGS_HDR
 #
 # zlib
 #
-if(POLICY CMP0074)
-  cmake_policy(SET CMP0074 NEW) #3.12.0 `find_package()` uses `<PackageName>_ROOT` variables.
-endif()
 set(ZLIB_ROOT "${VCPKG_DIR}")
 find_package(ZLIB REQUIRED)
 
@@ -308,7 +303,7 @@ configure_file("${CMAKE_SOURCE_DIR}/resources/update.bat"           "update.bat"
 configure_file("${CMAKE_SOURCE_DIR}/dependencies/curl/cacert.pem"   "cacert.pem"  COPYONLY)
 
 #
-# Add Exe Resources
+# Add Resources to Executable
 #
 if(WIN32)
     set(ADDITIONAL_RESOURCES "resources/CSGO_CLI.rc")
@@ -316,9 +311,9 @@ else()
     set(ADDITIONAL_RESOURCES "")
 endif()
 
-#
-# Application Library
-#
+#-------------------------------------------------------------------
+# Build Target: csgo_cli_lib                               (library)
+#-------------------------------------------------------------------
 
 add_library(csgo_cli_lib
         # base
@@ -430,9 +425,9 @@ if(MSVC)
     endif()
 endif()
 
-#
-# Executable
-#
+#-------------------------------------------------------------------
+# Build Target: csgo_cli                                       (app)
+#-------------------------------------------------------------------
 
 add_executable(csgo_cli
     # icon
