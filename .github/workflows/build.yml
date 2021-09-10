@@ -116,19 +116,14 @@ jobs:
       - name: 📦 CMake ➔ Install
         run: |
           cd ..\build
-          cmake --install . --config %BUILD_TYPE% --prefix install/csgo_cli --verbose
-
-      - name: Copy build artifact to packaging folder
-        run: |
-          mkdir artifact
-          copy ..\build\${{ env.BUILD_TYPE }}\csgo_cli.exe artifact\
+          cmake --install . --config %BUILD_TYPE% --prefix install --verbose
 
       - name: 🔼 Upload Build Artifact -> app
         uses: actions/upload-artifact@v2 # https://github.com/actions/upload-artifact
         if: always()
         with:
           name: csgo_cli-${{ env.VCPKG_TARGET_TRIPLET }}-${{ env.COMPILER }}
-          path: artifact\csgo_cli.exe
+          path: build\install\bin\csgo_cli.exe
 
       - name: 🔼 Upload Build Artifact -> CMakeOutput.log
         uses: actions/upload-artifact@v2 # https://github.com/actions/upload-artifact

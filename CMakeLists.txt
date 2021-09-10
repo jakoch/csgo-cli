@@ -302,10 +302,10 @@ find_package(spdlog CONFIG REQUIRED)
 #
 # Copy Additional Files
 #
-configure_file("${CMAKE_CURRENT_SOURCE_DIR}/README.md"                      "readme.txt"   COPYONLY)
-configure_file("${CMAKE_CURRENT_SOURCE_DIR}/LICENSE"                        "license.txt"  COPYONLY)
-configure_file("${CMAKE_CURRENT_SOURCE_DIR}/resources/update.bat"           "update.bat"   COPYONLY)
-configure_file("${CMAKE_CURRENT_SOURCE_DIR}/dependencies/curl/cacert.pem"   "cacert.pem"   COPYONLY)
+configure_file("${CMAKE_SOURCE_DIR}/README.md"                      "readme.txt"  COPYONLY)
+configure_file("${CMAKE_SOURCE_DIR}/LICENSE"                        "license.txt" COPYONLY)
+configure_file("${CMAKE_SOURCE_DIR}/resources/update.bat"           "update.bat"  COPYONLY)
+configure_file("${CMAKE_SOURCE_DIR}/dependencies/curl/cacert.pem"   "cacert.pem"  COPYONLY)
 
 #
 # Add Exe Resources
@@ -485,14 +485,14 @@ include(GNUInstallDirs)
 
 install(TARGETS csgo_cli RESOURCE)
 
-install(FILES "build/readme.txt"        DESTINATION ${CMAKE_INSTALL_BINDIR})
-install(FILES "build/license.txt"       DESTINATION ${CMAKE_INSTALL_BINDIR})
-install(FILES "build/update.bat"        DESTINATION ${CMAKE_INSTALL_BINDIR})
-install(FILES "build/cacert.pem"        DESTINATION ${CMAKE_INSTALL_BINDIR})
-install(FILES "build/steam_appid.txt"   DESTINATION ${CMAKE_INSTALL_BINDIR})
+install(FILES "${CMAKE_BINARY_DIR}/build/readme.txt"        DESTINATION ${CMAKE_INSTALL_BINDIR})
+install(FILES "${CMAKE_BINARY_DIR}/build/license.txt"       DESTINATION ${CMAKE_INSTALL_BINDIR})
+install(FILES "${CMAKE_BINARY_DIR}/build/update.bat"        DESTINATION ${CMAKE_INSTALL_BINDIR})
+install(FILES "${CMAKE_BINARY_DIR}/build/cacert.pem"        DESTINATION ${CMAKE_INSTALL_BINDIR})
+install(FILES "${CMAKE_BINARY_DIR}/build/steam_appid.txt"   DESTINATION ${CMAKE_INSTALL_BINDIR})
 
 if(WIN32)
-    install(FILES "build/steam_api64.dll" DESTINATION ${CMAKE_INSTALL_BINDIR})
+    install(FILES "${CMAKE_BINARY_DIR}/build/steam_api64.dll" DESTINATION ${CMAKE_INSTALL_BINDIR})
 else()
-    install(FILES "build/libsteam_api.so" DESTINATION ${CMAKE_INSTALL_BINDIR})
+    install(FILES "${CMAKE_BINARY_DIR}/build/libsteam_api.so" DESTINATION ${CMAKE_INSTALL_BINDIR})
 endif()
