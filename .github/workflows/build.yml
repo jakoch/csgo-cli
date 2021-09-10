@@ -113,19 +113,35 @@ jobs:
           cd ..\build
           cmake --build . --config %BUILD_TYPE% -j %NUMBER_OF_PROCESSORS%
 
-      #- name: 📦 CMake ➔ Install
-      #  run: |
-      #    cd ..\build
-      #    cmake --install . --config %BUILD_TYPE% --prefix build/wiuc --verbose
+      - name: 📦 CMake ➔ Install
+        run: |
+          cd ..\build
+          cmake --install . --config %BUILD_TYPE% --prefix install/csgo_cli --verbose
 
       - name: Copy build artifact to packaging folder
         run: |
           mkdir artifact
           copy ..\build\${{ env.BUILD_TYPE }}\csgo_cli.exe artifact\
 
-      - name: 🔼 Upload Build Artifact
+      - name: 🔼 Upload Build Artifact -> app
         uses: actions/upload-artifact@v2 # https://github.com/actions/upload-artifact
         if: always()
         with:
           name: csgo_cli-${{ env.VCPKG_TARGET_TRIPLET }}-${{ env.COMPILER }}
           path: artifact\csgo_cli.exe
+
+      - name: 🔼 Upload Build Artifact -> CMakeOutput.log
+        uses: actions/upload-artifact@v2 # https://github.com/actions/upload-artifact
+        if: always()
+        continue-on-error: true
+        with:
+          name: CMakeOutput.log
+          path: build/CMakeFiles/CMakeOutput.log
+
+      - name: 🔼 Upload Build Artifact -> CMakeError.log
+        uses: actions/upload-artifact@v2 # https://github.com/actions/upload-artifact
+        if: always()
+        continue-on-error: true
+        with:
+          name: CMakeError.log
+          path: build/CMakeFiles/CMakeError.log

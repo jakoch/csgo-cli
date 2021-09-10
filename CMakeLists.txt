@@ -1,6 +1,21 @@
 cmake_minimum_required(VERSION 3.2 FATAL_ERROR)
 
-cmake_policy(SET CMP0091 NEW)
+#-------------------------------------------------------------------
+# CMake Policies
+#-------------------------------------------------------------------
+
+# Policy CMP0074 is required to let find_package() use <PackageName>_ROOT variables.
+# https://cmake.org/cmake/help/git-stage/policy/CMP0074.html
+if(POLICY CMP0074)
+   cmake_policy(SET CMP0074 NEW)
+endif()
+
+# Policy CMP0091 is required to enable MSVC_RUNTIME_LIBRARY property.
+# This needs to be set before the first project for the policy to have an effect.
+# https://cmake.org/cmake/help/git-stage/policy/CMP0091.html
+if(POLICY CMP0091)
+    cmake_policy(SET CMP0091 NEW)
+endif()
 
 project(csgo_cli)
 
@@ -8,19 +23,6 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake")
 include(FindPackageHandleStandardArgs)
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
-
-set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/build")
-
-
-#-------------------------------------------------------------------
-# CMAKE Setup
-#-------------------------------------------------------------------
-
-# -- Policies
-
-if(POLICY CMP0074)
-   cmake_policy(SET CMP0074 NEW)
-endif()
 
 #-------------------------------------------------------------------
 # Setup Dependency Manager: VCPKG
@@ -44,8 +46,10 @@ option(BUILD_TESTS     "Build tests"                                            
 
 if (ENABLE_LTO)
     # https://cmake.org/cmake/help/git-stage/policy/CMP0069.html
-    cmake_policy(SET CMP0069 NEW)
-    set(CMAKE_POLICY_DEFAULT_CMP0069 NEW)
+    if(POLICY CMP0069)
+        cmake_policy(SET CMP0069 NEW)
+        set(CMAKE_POLICY_DEFAULT_CMP0069 NEW)
+    endif()
 
     include(CheckIPOSupported)
     check_ipo_supported(RESULT IPO_SUPPORT OUTPUT IPO_OUTPUT)
@@ -181,14 +185,14 @@ message(STATUS "\n-- Dependencies:\n")
 set(STEAMWORKS_INCLUDE_DIR "${CMAKE_SOURCE_DIR}/dependencies/sw_sdk/public")
 set(STEAMWORKS_REDISTBIN_DIR "${CMAKE_SOURCE_DIR}/dependencies/sw_sdk/redistributable_bin")
 
-configure_file("${CMAKE_SOURCE_DIR}/res/steam_appid.txt" "build/steam_appid.txt" COPYONLY)
+configure_file("${CMAKE_SOURCE_DIR}/resources/steam_appid.txt" "steam_appid.txt" COPYONLY)
 
 if(WIN32)
     set(STEAMWORKS_LIBRARY "${STEAMWORKS_REDISTBIN_DIR}/win64/steam_api64.lib")
-    configure_file("${STEAMWORKS_REDISTBIN_DIR}/win64/steam_api64.dll" "build/steam_api64.dll" COPYONLY)
+    configure_file("${STEAMWORKS_REDISTBIN_DIR}/win64/steam_api64.dll" "steam_api64.dll" COPYONLY)
 else()
     set(STEAMWORKS_LIBRARY "${STEAMWORKS_REDISTBIN_DIR}/linux64/libsteam_api.so")
-    configure_file("${STEAMWORKS_LIBRARY}" "build/libsteam_api.so" COPYONLY)
+    configure_file("${STEAMWORKS_LIBRARY}" "libsteam_api.so" COPYONLY)
 endif()
 
 find_package(Steamworks REQUIRED)
@@ -298,16 +302,16 @@ find_package(spdlog CONFIG REQUIRED)
 #
 # Copy Additional Files
 #
-configure_file("${CMAKE_CURRENT_SOURCE_DIR}/README.md"                      "build/readme.txt"    COPYONLY)
-configure_file("${CMAKE_CURRENT_SOURCE_DIR}/LICENSE"                        "build/license.txt"   COPYONLY)
-configure_file("${CMAKE_CURRENT_SOURCE_DIR}/res/update.bat"                 "build/update.bat"    COPYONLY)
-configure_file("${CMAKE_CURRENT_SOURCE_DIR}/dependencies/curl/cacert.pem"   "build/cacert.pem"    COPYONLY)
+configure_file("${CMAKE_CURRENT_SOURCE_DIR}/README.md"                      "readme.txt"   COPYONLY)
+configure_file("${CMAKE_CURRENT_SOURCE_DIR}/LICENSE"                        "license.txt"  COPYONLY)
+configure_file("${CMAKE_CURRENT_SOURCE_DIR}/resources/update.bat"           "update.bat"   COPYONLY)
+configure_file("${CMAKE_CURRENT_SOURCE_DIR}/dependencies/curl/cacert.pem"   "cacert.pem"   COPYONLY)
 
 #
 # Add Exe Resources
 #
 if(WIN32)
-    set(ADDITIONAL_RESOURCES "res/CSGO_CLI.rc")
+    set(ADDITIONAL_RESOURCES "resources/CSGO_CLI.rc")
 else()
     set(ADDITIONAL_RESOURCES "")
 endif()
@@ -471,4 +475,24 @@ source_group("Protobuf Protocol Files" FILES
 
 if(BUILD_TESTS)
     add_subdirectory(tests)
+endif()
+
+#-------------------------------------------------------------------
+# Installation Rules: csgo_cli                                 (app)
+#-------------------------------------------------------------------
+
+include(GNUInstallDirs)
+
+install(TARGETS csgo_cli RESOURCE)
+
+install(FILES "build/readme.txt"        DESTINATION ${CMAKE_INSTALL_BINDIR})
+install(FILES "build/license.txt"       DESTINATION ${CMAKE_INSTALL_BINDIR})
+install(FILES "build/update.bat"        DESTINATION ${CMAKE_INSTALL_BINDIR})
+install(FILES "build/cacert.pem"        DESTINATION ${CMAKE_INSTALL_BINDIR})
+install(FILES "build/steam_appid.txt"   DESTINATION ${CMAKE_INSTALL_BINDIR})
+
+if(WIN32)
+    install(FILES "build/steam_api64.dll" DESTINATION ${CMAKE_INSTALL_BINDIR})
+else()
+    install(FILES "build/libsteam_api.so" DESTINATION ${CMAKE_INSTALL_BINDIR})
 endif()
