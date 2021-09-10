@@ -11,6 +11,17 @@ set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/build")
 
+
+#-------------------------------------------------------------------
+# CMAKE Setup
+#-------------------------------------------------------------------
+
+# -- Policies
+
+if(POLICY CMP0074)
+   cmake_policy(SET CMP0074 NEW)
+endif()
+
 #-------------------------------------------------------------------
 # Setup Dependency Manager: VCPKG
 #-------------------------------------------------------------------
@@ -23,21 +34,32 @@ include(setup-vcpkg)
 # Options
 # ==================================================================================================
 
-option(ENABLE_LTO      "Enable link-time optimizations if supported by the compiler"   OFF)
+option(ENABLE_LTO      "Enable link-time optimizations if supported by the compiler"    ON)
 option(ENABLE_ASAN     "Enable address sanitizer (ASAN)"                               OFF)
 option(BUILD_TESTS     "Build tests"                                                    ON)
 
 # ==================================================================================================
 # Link time optimizations (LTO)
 # ==================================================================================================
-if (ENABLE_LTO)
-    include(CheckIPOSupported)
 
-    check_ipo_supported(RESULT IPO_SUPPORT)
+if (ENABLE_LTO)
+    # https://cmake.org/cmake/help/git-stage/policy/CMP0069.html
+    cmake_policy(SET CMP0069 NEW)
+    set(CMAKE_POLICY_DEFAULT_CMP0069 NEW)
+
+    include(CheckIPOSupported)
+    check_ipo_supported(RESULT IPO_SUPPORT OUTPUT IPO_OUTPUT)
 
     if (IPO_SUPPORT)
-        message(STATUS "LTO support is enabled")
+        message(STATUS "Link time optimizations (LTO) is enabled")
         set(CMAKE_INTERPROCEDURAL_OPTIMIZATION TRUE)
+    else()
+        message(WARNING "Link time optimizations (LTO) is not supported: ${IPO_OUTPUT}")
+    endif()
+
+    if(MSVC)
+        # CMake IPO doesn't set the LTCG flag, which causes the linker to restart
+        add_link_options($<$<BOOL:${CMAKE_INTERPROCEDURAL_OPTIMIZATION}>:/LTCG>)
     endif()
 endif()
 
@@ -46,10 +68,10 @@ endif()
 # ==================================================================================================
 
 if (WIN32)
-
     set(BUILD_SHARED_LIBS OFF)
 
     cmake_policy(SET CMP0091 NEW) # https://cmake.org/cmake/help/v3.15/variable/CMAKE_MSVC_RUNTIME_LIBRARY.html
+
     if (NOT DEFINED CMAKE_MSVC_RUNTIME_LIBRARY)
       set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
     endif()
@@ -121,7 +143,8 @@ if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
   set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -stdlib=libc++ ") # -lc++abi
 endif()
 
-  # /MP: Multiprocess compilation
+# /MP: build with multiple processors
+# https://docs.microsoft.com/en-us/cpp/build/reference/mp-build-with-multiple-processes?view=msvc-160
 if(CMAKE_GENERATOR MATCHES "Visual Studio" AND CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
   if(CMake_MSVC_PARALLEL)
     if(CMake_MSVC_PARALLEL GREATER 0)
@@ -191,7 +214,7 @@ if(MSVC AND protobuf_MSVC_STATIC_RUNTIME)
     foreach(CompilerFlag ${CompilerFlags})
         string(REPLACE "/MD" "/MT" ${CompilerFlag} "${${CompilerFlag}}")
         set(${CompilerFlag} "${${CompilerFlag}}" CACHE STRING "msvc compiler flags" FORCE)
-        message("MSVC flags: ${CompilerFlag}:${${CompilerFlag}}")
+        message("MSVC flags: ${CompilerFlag}: ${${CompilerFlag}}")
     endforeach()
 endif()
 
