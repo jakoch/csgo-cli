@@ -5,11 +5,11 @@
 #define CSGO_CLI_BINARYNAME "csgo_cli"
 
 // Application Version
-#define CSGO_CLI_VERSION_MAJOR "1"
-#define CSGO_CLI_VERSION_MINOR "4"
-#define CSGO_CLI_VERSION_PATCH "0"
+#define CSGO_CLI_VERSION_MAJOR "@PROJECT_VERSION_MAJOR@"
+#define CSGO_CLI_VERSION_MINOR "@PROJECT_VERSION_MINOR@"
+#define CSGO_CLI_VERSION_PATCH "@PROJECT_VERSION_PATCH@"
 
-#define CSGO_CLI_VERSION "1.4.0"
+#define CSGO_CLI_VERSION "@PROJECT_VERSION@"
 
 // CURL user-agent identifier
 #define CSGO_CLI_WEBSITE      "https://github.com/jakoch/csgo-cli"

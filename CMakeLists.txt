@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.2 FATAL_ERROR)
 
 #-------------------------------------------------------------------
-# CMake Policies
+# Setup CMake Policies
 #-------------------------------------------------------------------
 
 # Policy CMP0074 is required to let find_package() use <PackageName>_ROOT variables.
@@ -17,10 +17,30 @@ if(POLICY CMP0091)
     cmake_policy(SET CMP0091 NEW)
 endif()
 
-project(csgo_cli)
+#-------------------------------------------------------------------
+# CMake Project
+#-------------------------------------------------------------------
+
+# vcpkg.json is the primary source for version data
+file(READ ${CMAKE_SOURCE_DIR}/vcpkg.json VCPKG_JSON_STRING)
+string(JSON APP_VERSION GET ${VCPKG_JSON_STRING} "version")
+
+project(csgo_cli VERSION ${APP_VERSION} LANGUAGES CXX)
+
+# inject version data into version header
+configure_file(
+    "${PROJECT_SOURCE_DIR}/src/VersionAndConstants.h.in"
+    "${PROJECT_SOURCE_DIR}/src/VersionAndConstants.h"
+)
+
+#-------------------------------------------------------------------
+# Setup CMake Includes
+#-------------------------------------------------------------------
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake")
+
 include(FindPackageHandleStandardArgs)
+include(ShowBuildTargetProperties)
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
@@ -128,8 +148,9 @@ if (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
   # /RTC1: Enables run-time error checking.
   # /W4:   Sets which warning level to output.
   # /Zi:   Generates complete debugging information.
+  # /JMC:  Just my code enables the VS debugger to step over internal (system, framework, library, and other non-user) calls.
   set(CMAKE_CXX_FLAGS           "/EHsc /GS /Zi /Gm-") #/W4
-  set(CMAKE_CXX_FLAGS_DEBUG     "/Od /RTC1")
+  set(CMAKE_CXX_FLAGS_DEBUG     "/Od /RTC1 /JMC")
   set(CMAKE_CXX_FLAGS_RELEASE   "/GL /O2 /Oi")
 
   message(STATUS "USING THESE CMAKE_CXX_FLAGS: ${CMAKE_CXX_FLAGS}")
@@ -220,15 +241,9 @@ if(MSVC AND protobuf_MSVC_STATIC_RUNTIME)
     endforeach()
 endif()
 
-#set(Protobuf_INCLUDE_DIR         "${VCPKG_DIR}/include")
-#set(Protobuf_IMPORT_DIRS         "${VCPKG_DIR}/include") # additional proto files from include folder
-#set(Protobuf_LIBRARY             "${VCPKG_DIR}/lib/libprotobuf.lib")
-
 set(Protobuf_USE_STATIC_LIBS ON)
 set(Protobuf_DIR "${VCPKG_DIR}/share/protobuf")
-
 list(APPEND CMAKE_PREFIX_PATH "${VCPKG_DIR}/tools/protobuf")
-
 #
 # Please fix your protobuf_generate(), okay?
 # https://stackoverflow.com/questions/52533396/cmake-cant-find-protobuf-protobuf-generate-cpp
@@ -400,14 +415,14 @@ include_directories(
 )
 
 target_link_libraries(csgo_cli_lib
-PRIVATE
-    fmt::fmt
-    #spdlog::spdlog
-    nlohmann_json::nlohmann_json
-    CURL::libcurl
-    ZLIB::ZLIB
-    ${STEAMWORKS_LIBRARY}
-    protobuf::libprotobuf
+    PRIVATE
+        fmt::fmt
+        #spdlog::spdlog
+        nlohmann_json::nlohmann_json
+        CURL::libcurl
+        ZLIB::ZLIB
+        ${STEAMWORKS_LIBRARY}
+        protobuf::libprotobuf
 )
 
 set_property(TARGET csgo_cli_lib PROPERTY
@@ -491,3 +506,10 @@ if(WIN32)
 else()
     install(FILES "${CMAKE_BINARY_DIR}/build/libsteam_api.so" DESTINATION ${CMAKE_INSTALL_BINDIR})
 endif()
+
+#-------------------------------------------------------------------
+# Display Compiler and Linker properties of Build Targets
+#-------------------------------------------------------------------
+
+show_build_target_properties(csgo_cli_lib)
+show_build_target_properties(csgo_cli)
