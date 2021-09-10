@@ -110,8 +110,8 @@ jobs:
       - name: 🙏 CMake → Build
         run: cmake --build build --config %BUILD_TYPE% -j %NUMBER_OF_PROCESSORS%
 
-      # - name: 📦 CMake ➔ Install
-      #   run: cmake --install build --config %BUILD_TYPE% --prefix install --verbose
+      - name: 📦 CMake ➔ Install
+        run: cmake --install build --config %BUILD_TYPE% --prefix install --verbose
 
       # - name: 🔼 Upload Build Artifact -> app
       #   uses: actions/upload-artifact@v2 # https://github.com/actions/upload-artifact
