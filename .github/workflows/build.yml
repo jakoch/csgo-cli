@@ -120,18 +120,18 @@ jobs:
       #     name: csgo_cli-${{ env.VCPKG_TARGET_TRIPLET }}-${{ env.COMPILER }}
       #     path: build/install/
 
-      # - name: 🔼 Upload Build Artifact -> CMakeOutput.log
-      #   uses: actions/upload-artifact@v2 # https://github.com/actions/upload-artifact
-      #   if: always()
-      #   continue-on-error: true
-      #   with:
-      #     name: CMakeOutput.log
-      #     path: build/CMakeFiles/CMakeOutput.log
+      - name: 🔼 Upload Build Artifact -> CMakeOutput.log
+        uses: actions/upload-artifact@v2 # https://github.com/actions/upload-artifact
+        if: always()
+        continue-on-error: true
+        with:
+          name: CMakeOutput.log
+          path: build/CMakeFiles/CMakeOutput.log
 
-      # - name: 🔼 Upload Build Artifact -> CMakeError.log
-      #   uses: actions/upload-artifact@v2 # https://github.com/actions/upload-artifact
-      #   if: always()
-      #   continue-on-error: true
-      #   with:
-      #     name: CMakeError.log
-      #     path: build/CMakeFiles/CMakeError.log
+      - name: 🔼 Upload Build Artifact -> CMakeError.log
+        uses: actions/upload-artifact@v2 # https://github.com/actions/upload-artifact
+        if: always()
+        continue-on-error: true
+        with:
+          name: CMakeError.log
+          path: build/CMakeFiles/CMakeError.log
