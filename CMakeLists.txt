@@ -483,6 +483,10 @@ source_group("Protobuf Protocol Files" FILES
     proto/gcsystemmsgs.proto
 )
 
+#-------------------------------------------------------------------
+# Tests
+#-------------------------------------------------------------------
+
 if(BUILD_TESTS)
     add_subdirectory(tests)
 endif()
