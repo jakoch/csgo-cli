@@ -115,13 +115,13 @@ jobs:
 
       - name: ❔ CHECK important folders, to see if everything is present (after installing)
         run: |
-          dir /S /B build\install
+          dir /S /B install
 
       - name: 🔼 Upload Build Artifact -> csgo_cli
         uses: actions/upload-artifact@v2 # https://github.com/actions/upload-artifact
         with:
           name: csgo_cli-${{ env.VCPKG_TARGET_TRIPLET }}-${{ env.COMPILER }}
-          path: ${{ github.workspace }}/build/install/bin/
+          path: ${{ github.workspace }}/install/bin/
 
       - name: 🔼 Upload Build Artifact -> CMakeOutput.log
         uses: actions/upload-artifact@v2 # https://github.com/actions/upload-artifact
