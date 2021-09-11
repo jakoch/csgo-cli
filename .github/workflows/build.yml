@@ -27,6 +27,8 @@ jobs:
       VCPKG_ROOT: C:\vcpkg
       VCPKG_TARGET_TRIPLET: x64-windows-static
       BUILD_SHARED_LIBS: OFF
+      UseMultiToolTask: true
+      EnforceProcessCountAcrossBuilds: true
 
     defaults:
       run:

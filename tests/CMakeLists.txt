@@ -10,6 +10,8 @@ include(Catch)
 # remove superflous additionaly added build targets (continous, nightly, etc.)
 set_property(GLOBAL PROPERTY CTEST_TARGETS_ADDED 1)
 
+set(CTEST_OUTPUT_ON_FAILURE TRUE)
+
 #-------------------------------------------------------------------
 # Setup CMake's CTest
 #-------------------------------------------------------------------
