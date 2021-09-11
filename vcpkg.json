@@ -2,7 +2,7 @@
   "name": "csgo-cli",
   "version": "1.4.0",
   "homepage": "https://github.com/jakoch/csgo-cli",
-  "description": "csgo-cli",
+  "description": "csgo-cli shows your CS:GO user account, stats and latest matches. It also uploads demo sharecodes to csgostats.gg. :sunglasses:",
   "maintainers": [
     "Jens A. Koch <jakoch@web.de>"
   ],
