@@ -121,7 +121,7 @@ jobs:
         uses: actions/upload-artifact@v2 # https://github.com/actions/upload-artifact
         with:
           name: csgo_cli-${{ env.VCPKG_TARGET_TRIPLET }}-${{ env.COMPILER }}
-          path: build/install/bin/
+          path: ${{ github.workspace }}/build/install/bin/
 
       - name: 🔼 Upload Build Artifact -> CMakeOutput.log
         uses: actions/upload-artifact@v2 # https://github.com/actions/upload-artifact
