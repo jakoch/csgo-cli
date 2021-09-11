@@ -59,7 +59,7 @@ if(DEFINED ENV{GITHUB_ACTIONS} AND "$ENV{GITHUB_ACTIONS}" STREQUAL "true")
   catch_discover_tests(test_suite
     REPORTER        junit
     OUTPUT_DIR      ${CMAKE_CURRENT_BINARY_DIR}
-    OUTPUT_SUFFIX   _test_report.junit.xml
+    OUTPUT_SUFFIX   test_results_${VCPKG_TARGET_TRIPLET}_${CMAKE_BUILD_TYPE}.junit.xml
   )
 else()
   # if tests are running on local machine, print test results to console
