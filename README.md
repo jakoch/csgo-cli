@@ -120,11 +120,6 @@ For testing purposes: Posting a ShareCode to csgostats.gg using cURL on the CLI
 - [Github Actions](https://docs.github.com/en/actions)
   - Github Actions is used as build and deployment service.
 
-##### Download Dependencies
-
-You might download the pre-compiled dependencies package from Appveyor.
-The package excludes the Steamworks SDK, whose source is non-redistributable.
-
 ##### Release Checklist
 
 Before releasing a new version:
