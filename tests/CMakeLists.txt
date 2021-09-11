@@ -36,6 +36,12 @@ include_directories(
 
 add_executable(test_suite ${TEST_SOURCES})
 
+if(${CMAKE_VERSION} VERSION_LESS "3.21.0")
+    target_compile_features(test_suite PUBLIC cxx_std_20)
+else()
+    target_compile_features(test_suite PUBLIC cxx_std_23)
+endif()
+
 target_link_libraries(test_suite
     PRIVATE
         Catch2::Catch2
@@ -46,4 +52,15 @@ target_link_libraries(test_suite
 # Setup Catch's Test Discovery
 #-------------------------------------------------------------------
 
-catch_discover_tests(test_suite)
+if(DEFINED ENV{GITHUB_ACTIONS} AND "$ENV{GITHUB_ACTIONS}" STREQUAL "true")
+  # running tests on CI server
+  catch_discover_tests(test_suite
+    REPORTER        junit
+    OUTPUT_DIR      ${CMAKE_CURRENT_BINARY_DIR}
+    OUTPUT_SUFFIX   _report.junit.xml
+  )
+else()
+  # running tests on local development environment
+  catch_discover_tests(test_suite REPORTER console)
+endif()
+

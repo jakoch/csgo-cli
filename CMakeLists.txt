@@ -54,9 +54,10 @@ include(setup-vcpkg)
 # Options
 # ==================================================================================================
 
-option(ENABLE_LTO      "Enable link-time optimizations if supported by the compiler"    ON)
-option(ENABLE_ASAN     "Enable address sanitizer (ASAN)"                               OFF)
-option(BUILD_TESTS     "Build tests"                                                    ON)
+option(BUILD_SHARED_LIBS  "Build shared or static libs"                                   OFF)
+option(ENABLE_LTO         "Enable link-time optimizations if supported by the compiler"    ON)
+option(ENABLE_ASAN        "Enable address sanitizer (ASAN)"                               OFF)
+option(BUILD_TESTS        "Build tests"                                                    ON)
 
 # ==================================================================================================
 # Link time optimizations (LTO)
@@ -73,10 +74,10 @@ if (ENABLE_LTO)
     check_ipo_supported(RESULT IPO_SUPPORT OUTPUT IPO_OUTPUT)
 
     if (IPO_SUPPORT)
-        message(STATUS "Link time optimizations (LTO) is enabled")
+        message(STATUS "[INFO] Link time optimizations (LTO) is ON.")
         set(CMAKE_INTERPROCEDURAL_OPTIMIZATION TRUE)
     else()
-        message(WARNING "Link time optimizations (LTO) is not supported: ${IPO_OUTPUT}")
+        message(WARNING "[INFO] Link time optimizations (LTO) is not supported: ${IPO_OUTPUT}")
     endif()
 
     if(MSVC)
@@ -90,19 +91,25 @@ endif()
 # ==================================================================================================
 
 if (WIN32)
-    set(BUILD_SHARED_LIBS OFF)
+    # Build for a Windows 10 host system.
+    set(CMAKE_SYSTEM_VERSION 10.0)
 
-    cmake_policy(SET CMP0091 NEW) # https://cmake.org/cmake/help/v3.15/variable/CMAKE_MSVC_RUNTIME_LIBRARY.html
+    message(STATUS "[INFO] BUILD_SHARED_LIBS -> '${BUILD_SHARED_LIBS}'.")
 
-    if (NOT DEFINED CMAKE_MSVC_RUNTIME_LIBRARY)
+    # When we build statically (MT):
+    if(NOT BUILD_SHARED_LIBS)
       set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
     endif()
-
 endif()
 
 # ==================================================================================================
 # Compiler flags
 # ==================================================================================================
+
+# Define C++ Standard to use
+set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_EXTENSIONS ON)
 
 if (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
 
