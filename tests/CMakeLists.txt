@@ -8,6 +8,18 @@ find_package(Catch2 CONFIG REQUIRED)
 include(Catch)
 
 #-------------------------------------------------------------------
+# Setup CMake's CTest
+#-------------------------------------------------------------------
+
+# remove superflous additionaly added build targets (continous, nightly, etc.)
+set_property(GLOBAL PROPERTY CTEST_TARGETS_ADDED 1)
+
+set(CTEST_OUTPUT_ON_FAILURE TRUE)
+
+include(CTest)
+enable_testing()
+
+#-------------------------------------------------------------------
 # Setup Test Suite                                 (app: test_suite)
 #-------------------------------------------------------------------
 
@@ -43,14 +55,14 @@ target_link_libraries(test_suite
 #-------------------------------------------------------------------
 
 if(DEFINED ENV{GITHUB_ACTIONS} AND "$ENV{GITHUB_ACTIONS}" STREQUAL "true")
-  # running tests on CI server
+  # if tests are running on CI server, create an xml test report
   catch_discover_tests(test_suite
     REPORTER        junit
     OUTPUT_DIR      ${CMAKE_CURRENT_BINARY_DIR}
-    OUTPUT_SUFFIX   _report.junit.xml
+    OUTPUT_SUFFIX   _test_report.junit.xml
   )
 else()
-  # running tests on local development environment
+  # if tests are running on local machine, print test results to console
   catch_discover_tests(test_suite REPORTER console)
 endif()
 
