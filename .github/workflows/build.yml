@@ -108,16 +108,13 @@ jobs:
       - name: ✔ ❌✔️ Test
         run: ctest -C %BUILD_TYPE%
 
-      - name: ❔ CHECK important folders, to see if everything is present (after building)
-        run: |
-          dir /S /B build
-          dir /S /B build\vcpkg_installed\${{ env.VCPKG_TARGET_TRIPLET }}
-
       - name: 📦 CMake ➔ Install
         run: cmake --install build --config %BUILD_TYPE% --prefix install --verbose
 
-      - name: ❔ CHECK important folders, to see if everything is present (after installing)
+      - name: ❔ CHECK important folders, to see if everything is present (after building & installing)
         run: |
+          dir /S /B build
+          dir /S /B build\vcpkg_installed\${{ env.VCPKG_TARGET_TRIPLET }}
           dir /S /B install
 
       - name: 🔼 Upload Build Artifact -> csgo_cli
