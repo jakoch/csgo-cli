@@ -84,8 +84,6 @@ endif()
 # set(spdlog_DIR "${VCPKG_DIR}/share/spdlog")
 # find_package(spdlog CONFIG REQUIRED)
 #
-# TODO: define VCPKG_DIR for globally installed packages (in the vcpkg root)
-#
 if(NOT DEFINED VCPKG_DIR)
     if(WIN32)
         set(VCPKG_DIR "${CMAKE_SOURCE_DIR}/vcpkg_installed/${VCPKG_TARGET_TRIPLET}")

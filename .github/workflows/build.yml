@@ -105,6 +105,9 @@ jobs:
       - name: 🙏 CMake → Build
         run: cmake --build build --config %BUILD_TYPE% -j %NUMBER_OF_PROCESSORS%
 
+      - name: ✔ ❌✔️ Test
+        run: ctest -C %BUILD_TYPE%
+
       - name: ❔ CHECK important folders, to see if everything is present (after building)
         run: |
           dir /S /B build
