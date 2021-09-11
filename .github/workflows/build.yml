@@ -6,7 +6,7 @@
 # This file is part of https://github.com/jakoch/csgo-cli
 #
 
-name: "Build"
+name: "Build on Windows"
 
 on: [push, pull_request]
 
