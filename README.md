@@ -109,17 +109,16 @@ For testing purposes: Posting a ShareCode to csgostats.gg using cURL on the CLI
 - [CS:GO Protobufs](https://github.com/SteamDatabase/Protobufs/tree/master/csgo)
   - The csgo-protobufs are provided by the [steamdb.info](https://steamdb.info/) project.
   - The Protobuf Compiler (protoc) is used during the build process to compile the csgo-protobufs to C++ objects for data access.
-- [RapidJson](http://rapidjson.org/)
-  - RapidJson is a fast JSON parser/generator for C++ with both SAX/DOM style API.
-  - It is used to parse the JSON responses from the csgostats server (error, complete, queued).
+- [nlohmann/json](https://github.com/nlohmann/json)
+  - nlohmann/json is used to parse the JSON responses from the csgostats server (error, complete, queued).
 - [ConsoleTable](https://github.com/766F6964/ConsoleTable) (inside /src)
   - ConsoleTable is used to print tables to the console.
 - [Curl](https://github.com/curl/curl)
   - libcurl is used for transferring data.
 - [CMake](https://cmake.org/)
   - CMake is used as build tool.
-- [Appveyor](https://www.appveyor.com/)
-  - Appveyor is used as build and deployment service.
+- [Github Actions](https://docs.github.com/en/actions)
+  - Github Actions is used as build and deployment service.
 
 ##### Download Dependencies
 
