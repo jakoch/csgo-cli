@@ -495,6 +495,21 @@ source_group("Protobuf Protocol Files" FILES
 #-------------------------------------------------------------------
 
 if(BUILD_TESTS)
+    #-------------------------------------------------------------------
+    # Setup CMake's CTest
+    #-------------------------------------------------------------------
+
+    # remove superflous additionaly added build targets (continous, nightly, etc.)
+    set_property(GLOBAL PROPERTY CTEST_TARGETS_ADDED 1)
+    set(CTEST_OUTPUT_ON_FAILURE TRUE)
+
+    include(CTest)
+    enable_testing()
+
+    #-------------------------------------------------------------------
+    # add tests folder
+    #-------------------------------------------------------------------
+
     add_subdirectory(tests)
 endif()
 

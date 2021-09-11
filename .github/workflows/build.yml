@@ -27,6 +27,7 @@ jobs:
       VCPKG_ROOT: C:\vcpkg
       VCPKG_TARGET_TRIPLET: x64-windows-static
       BUILD_SHARED_LIBS: OFF
+      # MSVC parallel builds: https://devblogs.microsoft.com/cppblog/improved-parallelism-in-msbuild/
       UseMultiToolTask: true
       EnforceProcessCountAcrossBuilds: true
 
