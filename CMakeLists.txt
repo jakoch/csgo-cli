@@ -495,16 +495,16 @@ include(GNUInstallDirs)
 
 install(TARGETS csgo_cli RESOURCE)
 
-install(FILES "${CMAKE_BINARY_DIR}/build/readme.txt"        DESTINATION ${CMAKE_INSTALL_BINDIR})
-install(FILES "${CMAKE_BINARY_DIR}/build/license.txt"       DESTINATION ${CMAKE_INSTALL_BINDIR})
-install(FILES "${CMAKE_BINARY_DIR}/build/update.bat"        DESTINATION ${CMAKE_INSTALL_BINDIR})
-install(FILES "${CMAKE_BINARY_DIR}/build/cacert.pem"        DESTINATION ${CMAKE_INSTALL_BINDIR})
-install(FILES "${CMAKE_BINARY_DIR}/build/steam_appid.txt"   DESTINATION ${CMAKE_INSTALL_BINDIR})
+install(FILES "${CMAKE_BINARY_DIR}/readme.txt"        DESTINATION ${CMAKE_INSTALL_BINDIR})
+install(FILES "${CMAKE_BINARY_DIR}/license.txt"       DESTINATION ${CMAKE_INSTALL_BINDIR})
+install(FILES "${CMAKE_BINARY_DIR}/update.bat"        DESTINATION ${CMAKE_INSTALL_BINDIR})
+install(FILES "${CMAKE_BINARY_DIR}/cacert.pem"        DESTINATION ${CMAKE_INSTALL_BINDIR})
+install(FILES "${CMAKE_BINARY_DIR}/steam_appid.txt"   DESTINATION ${CMAKE_INSTALL_BINDIR})
 
 if(WIN32)
-    install(FILES "${CMAKE_BINARY_DIR}/build/steam_api64.dll" DESTINATION ${CMAKE_INSTALL_BINDIR})
+    install(FILES "${CMAKE_BINARY_DIR}/steam_api64.dll" DESTINATION ${CMAKE_INSTALL_BINDIR})
 else()
-    install(FILES "${CMAKE_BINARY_DIR}/build/libsteam_api.so" DESTINATION ${CMAKE_INSTALL_BINDIR})
+    install(FILES "${CMAKE_BINARY_DIR}/libsteam_api.so" DESTINATION ${CMAKE_INSTALL_BINDIR})
 endif()
 
 #-------------------------------------------------------------------
