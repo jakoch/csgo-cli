@@ -10,7 +10,12 @@
     "zlib",
     {
       "name": "curl",
-      "features": ["http2"]
+      "default-features": false,
+      "features": [
+        "http2",
+        "winssl",
+        "ssl"
+      ]
     },
     "protobuf",
     "fmt",
