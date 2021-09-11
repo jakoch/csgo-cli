@@ -108,8 +108,15 @@ jobs:
       - name: 🙏 CMake → Build
         run: cmake --build build --config %BUILD_TYPE% -j %NUMBER_OF_PROCESSORS%
 
-      - name: ✔ ❌✔️ Test
-        run: ctest -V -C %BUILD_TYPE%
+      - name: ✔ ❌✔️ Test - Run TestSuite
+        run: |
+          cd build\tests\%BUILD_TYPE%
+          test_suite.exe
+
+      - name: ✔ ❌✔️ Test - CTest
+        run: |
+          cd build\tests
+          ctest -V -C %BUILD_TYPE%
 
       - name: 📦 CMake ➔ Install
         run: cmake --install build --config %BUILD_TYPE% --prefix install --verbose

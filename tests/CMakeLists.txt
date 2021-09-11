@@ -65,4 +65,3 @@ else()
   # if tests are running on local machine, print test results to console
   catch_discover_tests(test_suite REPORTER console)
 endif()
-

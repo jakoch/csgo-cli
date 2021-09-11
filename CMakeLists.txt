@@ -494,8 +494,6 @@ source_group("Protobuf Protocol Files" FILES
 # Tests
 #-------------------------------------------------------------------
 
-include(CTest)
-
 if(BUILD_TESTS)
     add_subdirectory(tests)
 endif()
