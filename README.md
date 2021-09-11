@@ -3,14 +3,14 @@
 This console tool enables you to output informations of your CS:GO user profile and latest matches.
 You can also use the tool to upload demo sharecodes to csgostats.gg.
 
-## Installation 
+## Installation
 
 The installation is easy. It's just a zipped folder containing the application.
 
-Download the zip file, extract it to a location of your choice and then run the app.  
+Download the zip file, extract it to a location of your choice and then run the app.
 
 - Download the lastest release of `csgo-cli-vX.Y.Z.zip` from Github: https://github.com/jakoch/csgo-cli/releases/latest
-- Extract the zip file. Switch to the "csgo_cli" folder. 
+- Extract the zip file. Switch to the "csgo_cli" folder.
 - Then run `csgo_cli` on the command-line interface or just run `update.bat` to upload your recent matches.
 
 ## Requirements
@@ -23,8 +23,8 @@ Download the zip file, extract it to a location of your choice and then run the 
 
 Display commands:
 
-    csgo_cli 
-    
+    csgo_cli
+
 Output:
 
     csgo_cli v1.0.3, https://github.com/jakoch/csgo-cli
@@ -46,21 +46,21 @@ Output:
       -h, help        Display this help message
       -v, verbose     Increase verbosity of messages
       -V, Version     Display application version
-    
+
 Fetch matches and upload to csgostats (or just use `update.bat`):
-    
+
     csgo_cli -matches -upload
-    
+
 If you encounter any issues, please use the verbose mode for debugging purposes:
 
     csgo_cli -matches -upload -verbose
-   
+
 ## How does this work internally?
 
 The tool connects to your running Steam as CS:GO game client (SteamApp 730).
 It communicates with the Steam API to request the serialized player and match infos.
 The structure of the serialized data is described by the csgo-protobufs.
-These infos are then deserialized using Protobuf and placed into 
+These infos are then deserialized using Protobuf and placed into
 iteratable objects for further processing and output.
 
 #### Automatic Upload of Demo ShareCodes to http://csgostats.gg/
@@ -105,7 +105,7 @@ For testing purposes: Posting a ShareCode to csgostats.gg using cURL on the CLI
   - The official Steamworks SDK is used for making the Steam API connection and requesting data.
 - [Google Protobuf](https://developers.google.com/protocol-buffers/)
   - A language-neutral, platform-neutral, extensible mechanism for serializing structured data.
-  - Protobuf is used for deserializing the player and match infos. 
+  - Protobuf is used for deserializing the player and match infos.
 - [CS:GO Protobufs](https://github.com/SteamDatabase/Protobufs/tree/master/csgo)
   - The csgo-protobufs are provided by the [steamdb.info](https://steamdb.info/) project.
   - The Protobuf Compiler (protoc) is used during the build process to compile the csgo-protobufs to C++ objects for data access.
@@ -123,30 +123,36 @@ For testing purposes: Posting a ShareCode to csgostats.gg using cURL on the CLI
 
 ##### Download Dependencies
 
-You might download the pre-compiled dependencies package from Appveyor. 
+You might download the pre-compiled dependencies package from Appveyor.
 The package excludes the Steamworks SDK, whose source is non-redistributable.
 
 ##### Release Checklist
 
 Before releasing a new version:
 
-- [ ] Update Version number in VersionAndConstants.h
+- [ ] Update Version number in vcpkg.json
 - [ ] Update CHANGELOG.md
 
 # Todo
 
-- [x] CI setup: appveyor.yaml
+- [x] CI setup
   - [x] cmake
-  - [x] VS15 x64
+  - [x] ~appveyor.yaml~ - switched to Github Actions @ 09/2021
+    - [x] ~VS15 x64~
+  - [x] added Github Actions (./github/workflows)
+    - [x] MSVC22 - VS17 - x64-windows-static
 - [x] vendor dependencies
   - [x] steam sdk
     - [x] encrypt
-    - [x] decrypt on appveyor via env secret
+    - [x] decrypt via env secret
   - [x] protobuf
   - [x] cs:go protobufs
     - [x] patch cs:go protobuf syntax
   - [x] curl
-  - [x] rapidjson
+  - [x] ~rapidjson~
+  - [x] nlohmann-json
+  - [x] fmt
+  - [x] spdlog
 - [x] package and deploy the application
 - [x] package and deploy the dependencies
   - [x] exclude sw_sdk (not redistributable), ship encrypted version
@@ -157,8 +163,9 @@ Before releasing a new version:
   - [x] calculate demo share-codes
 - [x] upload demo share-codes to csgostats.gg
   - [x] curl based share-code uploader
-  - [x] rapid-json based response parser
+  - [x] ~rapid-json based response parser~
+  - [x] nlohmann-json based response parser
 - [x] to avoid re-posting sharecodes (ShareCodeCache)
-- [ ] store matches locally (json, cvs, sqlite) 
+- [ ] store matches locally (json, cvs, sqlite)
 - [ ] request additional steam profile data via web-api
 - [ ] colors on the CLI (LOSS red, WIN green)
