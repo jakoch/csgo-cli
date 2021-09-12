@@ -171,7 +171,7 @@ jobs:
     # PR test results are published from the standalone workflow "publish-PR-test-results.yml".
 
     name: "Publish Tests Results"
-    needs: build-and-test
+    needs: build-on-windows-2022
     runs-on: ubuntu-latest
     if: always() && ( github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository )
 
