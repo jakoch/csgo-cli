@@ -37,7 +37,8 @@ else()
 endif()
 
 target_include_directories(test_suite
-  ${PROJECT_SOURCE_DIR}/src
+  PUBLIC
+    ${PROJECT_SOURCE_DIR}/src
 )
 
 target_link_libraries(test_suite
