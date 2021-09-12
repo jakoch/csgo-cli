@@ -28,10 +28,12 @@ string(JSON APP_VERSION GET ${VCPKG_JSON_STRING} "version")
 project(csgo_cli VERSION ${APP_VERSION} LANGUAGES CXX)
 
 # inject version data into version header
+# write to build folder (not to source folder!)
 configure_file(
     "${PROJECT_SOURCE_DIR}/src/VersionAndConstants.h.in"
-    "${PROJECT_SOURCE_DIR}/src/VersionAndConstants.h"
+    "${CMAKE_CURRENT_BINARY_DIR}/src/VersionAndConstants.h"
 )
+include_directories(${CMAKE_CURRENT_BINARY_DIR}/src)
 
 #-------------------------------------------------------------------
 # Setup CMake Includes
@@ -131,7 +133,9 @@ if (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
   add_definitions(-D_SCL_SECURE_NO_WARNINGS)
   add_definitions(-D_SILENCE_CXX20_IS_POD_DEPRECATION_WARNING) # protobuf triggers this warning
   add_definitions(-DNOMINMAX)
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /permissive-")
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /bigobj")
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /LARGEADDRESSAWARE") # Allow more than 2 GB in 32 bit application.
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /wd4146") # Warning C4146: unary minus operator applied to unsigned type, result still unsigned
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /wd4244") # Warning C4244: 'initializing': conversion from 'double' to 'int', possible loss of data
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /wd4267") # Warning C4267: 'var' : conversion from 'size_t' to 'type', possible loss of data
@@ -350,7 +354,7 @@ add_library(csgo_cli_lib
         src/ShareCode.cpp
         src/SteamId.h
         src/SteamId.cpp
-        src/VersionAndConstants.h
+        src/VersionAndConstants.h # = ${CMAKE_CURRENT_BINARY_DIR}/src/VersionAndConstants.h
         # commands
         src/commands/cmd.help.h
         src/commands/cmd.help.cpp
@@ -464,8 +468,7 @@ target_link_libraries(csgo_cli
         fmt::fmt-header-only
 )
 
-set_property(TARGET csgo_cli PROPERTY
-            MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
+set_property(TARGET csgo_cli PROPERTY MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
 
 if(${CMAKE_VERSION} VERSION_LESS "3.21.0")
     target_compile_features(csgo_cli PUBLIC cxx_std_20)
@@ -478,6 +481,8 @@ if(MSVC)
         target_compile_options(csgo_cli PUBLIC -fsanitize=address)
     endif()
 endif()
+
+target_link_options(csgo_cli INTERFACE $<IF:$<CONFIG:Debug>,/NODEFAULTLIB:LIBCMT,/DEBUG;/OPT:REF;/SUBSYSTEM:CONSOLE>)
 
 #
 # Create "source-group" folders for these files in Visual Studio

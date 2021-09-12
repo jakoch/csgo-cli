@@ -3,8 +3,13 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+- Changed things.
+
+## [1.4.0] - 2020-09-12
+
+- switched continous integration service from Appveyor to Github Actions
 - added error message for "Cloudflare Captcha" as HTML reponse to ShareCodeUploader
-  
+
 ## [1.3.0] - 2020-11-22
 
 - added rank information for wingman and dangerzone to "-user"
@@ -73,7 +78,8 @@ All notable changes to this project will be documented in this file.
 ### Added
 - Initial Release
 
-[Unreleased]: https://github.com/jakoch/csgo-cli/compare/v1.3.0...HEAD
+[Unreleased]: https://github.com/jakoch/csgo-cli/compare/v1.4.0...HEAD
+[1.4.0]: https://github.com/jakoch/csgo-cli/compare/v1.3.0...v1.4.0
 [1.3.0]: https://github.com/jakoch/csgo-cli/compare/v1.2.0...v1.3.0
 [1.2.0]: https://github.com/jakoch/csgo-cli/compare/v1.1.0...v1.2.0
 [1.1.0]: https://github.com/jakoch/csgo-cli/compare/v1.0.5...v1.1.0
