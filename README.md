@@ -132,9 +132,9 @@ Before releasing a new version:
 - [x] CI setup
   - [x] cmake
   - [x] ~appveyor.yaml~ - switched to Github Actions @ 09/2021
-    - [x] ~VS15 x64~
+    - [x] ~VC15 x64~
   - [x] added Github Actions (./github/workflows)
-    - [x] MSVC22 - VS17 - x64-windows-static
+    - [x] MSVC22 - VC17 - x64-windows-static
 - [x] vendor dependencies
   - [x] steam sdk
     - [x] encrypt
