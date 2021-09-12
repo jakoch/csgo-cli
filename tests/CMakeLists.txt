@@ -28,14 +28,6 @@ set(TEST_SOURCES
     ShareCodeUpload.tests.cpp
 )
 
-include_directories(
-    ./src
-    ./src/commands
-    ./src/csgo
-    ./src/csgostats
-    ./src/platform/windows
-)
-
 add_executable(test_suite ${TEST_SOURCES})
 
 if(${CMAKE_VERSION} VERSION_LESS "3.21.0")
@@ -44,11 +36,17 @@ else()
     target_compile_features(test_suite PUBLIC cxx_std_23)
 endif()
 
+target_include_directories(test_suite
+  ${PROJECT_SOURCE_DIR}/src
+)
+
 target_link_libraries(test_suite
     PRIVATE
         Catch2::Catch2
         csgo_cli_lib
 )
+
+show_build_target_properties(test_suite)
 
 #-------------------------------------------------------------------
 # Setup Catch's Test Discovery

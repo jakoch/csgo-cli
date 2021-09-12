@@ -212,8 +212,8 @@ message(STATUS "\n-- Dependencies:\n")
 #
 # Steamworks SDK
 #
-set(STEAMWORKS_INCLUDE_DIR "${CMAKE_SOURCE_DIR}/dependencies/sw_sdk/public")
-set(STEAMWORKS_REDISTBIN_DIR "${CMAKE_SOURCE_DIR}/dependencies/sw_sdk/redistributable_bin")
+set(STEAMWORKS_INCLUDE_DIR    "${CMAKE_SOURCE_DIR}/dependencies/sw_sdk/public")
+set(STEAMWORKS_REDISTBIN_DIR  "${CMAKE_SOURCE_DIR}/dependencies/sw_sdk/redistributable_bin")
 
 configure_file("${CMAKE_SOURCE_DIR}/resources/steam_appid.txt" "steam_appid.txt" COPYONLY)
 
@@ -418,11 +418,12 @@ add_library(csgo_cli_lib
 #    ${CMAKE_CURRENT_SOURCE_DIR}/dependencies/csgo-protobufs/csgo/cstrike15_gcmessages.proto
 #)
 
-include_directories(
-    ${STEAMWORKS_INCLUDE_DIR}
-    ${PROTOBUF_INCLUDE_DIR}
-    ${CURL_INCLUDE_DIR}
-    ${fmt_INCLUDE_DIRS}
+target_include_directories(csgo_cli_lib
+    PUBLIC
+        ${STEAMWORKS_INCLUDE_DIR}
+        ${PROTOBUF_INCLUDE_DIR}
+        ${CURL_INCLUDE_DIR}
+        ${fmt_INCLUDE_DIRS}
 )
 
 target_link_libraries(csgo_cli_lib
@@ -462,6 +463,11 @@ add_executable(csgo_cli
     src/main/main.cpp
 )
 
+target_include_directories(csgo_cli
+    PUBLIC
+        ${STEAMWORKS_INCLUDE_DIR}
+)
+
 target_link_libraries(csgo_cli
     PRIVATE
         csgo_cli_lib
@@ -482,7 +488,11 @@ if(MSVC)
     endif()
 endif()
 
-target_link_options(csgo_cli INTERFACE $<IF:$<CONFIG:Debug>,/NODEFAULTLIB:LIBCMT,/DEBUG;/OPT:REF;/SUBSYSTEM:CONSOLE>)
+target_link_options(csgo_cli
+    PRIVATE
+        $<$<CONFIG:Debug>: /NODEFAULTLIB:LIBCMTD;>
+        $<$<CONFIG:Release>: /NODEFAULTLIB:LIBCMT;>
+)
 
 #
 # Create "source-group" folders for these files in Visual Studio
