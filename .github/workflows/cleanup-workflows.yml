@@ -60,7 +60,6 @@ jobs:
 
           const workflows = [
             'build.yml',
-            'release-on-github.yml',
             'cleanup-workflows.yml',
             'publish-PR-test-results.yml'
           ]
