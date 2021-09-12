@@ -452,6 +452,13 @@ if(MSVC)
     endif()
 endif()
 
+target_link_options(csgo_cli_lib
+    PRIVATE
+        $<$<CONFIG:Debug>: /NODEFAULTLIB:LIBCMTD;>
+        #$<$<CONFIG:Release>: /NODEFAULTLIB:LIBCMT;>
+)
+
+
 #-------------------------------------------------------------------
 # Build Target: csgo_cli                                       (app)
 #-------------------------------------------------------------------
@@ -487,12 +494,6 @@ if(MSVC)
         target_compile_options(csgo_cli PUBLIC -fsanitize=address)
     endif()
 endif()
-
-target_link_options(csgo_cli
-    PRIVATE
-        #$<$<CONFIG:Debug>: /NODEFAULTLIB:LIBCMTD;>
-        $<$<CONFIG:Release>: /NODEFAULTLIB:LIBCMT;>
-)
 
 #
 # Create "source-group" folders for these files in Visual Studio
