@@ -159,3 +159,31 @@ jobs:
         with:
           name: CMakeError.log
           path: build/CMakeFiles/CMakeError.log
+
+# ---------------------------------------------------------------------------------------
+
+  publish-test-results:
+
+# ---------------------------------------------------------------------------------------
+
+    # Only publish test results, when the action runs in your repository's context.
+    # In other words: this disables publishing tests results from pull requests.
+    # PR test results are published from the standalone workflow "publish-PR-test-results.yml".
+
+    name: "Publish Tests Results"
+    needs: build-and-test
+    runs-on: ubuntu-latest
+    if: always() && ( github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository )
+
+    steps:
+
+      - name: 🔽 Download Artifacts
+        uses: actions/download-artifact@v2 # https://github.com/actions/download-artifact
+        with:
+          path: artifacts
+
+      - name: 👌 Publish Test Results
+        uses: EnricoMi/publish-unit-test-result-action@v1 # https://github.com/EnricoMi/publish-unit-test-result-action
+        if: always()
+        with:
+          files: artifacts/**/test_results*.xml
