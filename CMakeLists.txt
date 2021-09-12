@@ -490,7 +490,7 @@ endif()
 
 target_link_options(csgo_cli
     PRIVATE
-        $<$<CONFIG:Debug>: /NODEFAULTLIB:LIBCMTD;>
+        #$<$<CONFIG:Debug>: /NODEFAULTLIB:LIBCMTD;>
         $<$<CONFIG:Release>: /NODEFAULTLIB:LIBCMT;>
 )
 
