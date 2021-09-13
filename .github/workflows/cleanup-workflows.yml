@@ -1,6 +1,17 @@
-# This workflow removes old workflow runs for an entire repository.
+#
+# .github/workflows/cleanup-workflows.yml
+#
+# Copyright 2021 Ching Chow (https://github.com/chingc).
+# SPDX-License-Identifier: Public Domain
+# Origin: https://github.community/t/delete-old-workflow-results/16152/42
+# This file is part of https://github.com/jakoch/csgo-cli
+#
 
-name: Workflow Run Cleaner
+#
+# This workflow removes old workflow runs for an entire repository.
+#
+
+name: Clean Workflow Runs
 
 on:
   # This workflow runs at 00:00 daily.
@@ -10,7 +21,14 @@ on:
   workflow_dispatch:
 
 jobs:
-  prune:
+
+# ---------------------------------------------------------------------------------------
+
+  cleanup-workflows:
+
+# ---------------------------------------------------------------------------------------
+
+    name: "Cleaned up workflows..."
     runs-on: ubuntu-latest
     timeout-minutes: 10
 
