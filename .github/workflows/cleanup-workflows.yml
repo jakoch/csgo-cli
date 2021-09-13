@@ -78,7 +78,6 @@ jobs:
 
           const workflows = [
             'build.yml',
-            'cleanup-workflows.yml',
             'publish-PR-test-results.yml'
           ]
 
@@ -118,7 +117,7 @@ jobs:
           }
 
 
-    - name: ✂ Remove all runs of the cleanup workflow (this)
+    - name: ✂ Remove runs of the cleanup workflow itself
       uses: actions/github-script@v4
       with:
         github-token: ${{ secrets.GITHUB_TOKEN }}
