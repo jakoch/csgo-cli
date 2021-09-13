@@ -121,7 +121,7 @@ endif()
 #
 # Print VCPKG configuration overview
 #
-message(STATUS "[VCPKG] Configuration Overview:")
+message(STATUS "\n-- [VCPKG] Configuration Overview:\n")
 message(STATUS "[VCPKG]  - VCPKG_VERBOSE           -> '${VCPKG_VERBOSE}'")
 message(STATUS "[VCPKG]  - VCPKG_APPLOCAL_DEPS     -> '${VCPKG_APPLOCAL_DEPS}'")
 message(STATUS "[VCPKG]  - E:VCPKG_FEATURE_FLAGS   -> '$ENV{VCPKG_FEATURE_FLAGS}'")

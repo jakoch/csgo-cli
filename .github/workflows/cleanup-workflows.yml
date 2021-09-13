@@ -10,7 +10,7 @@
 #
 # This workflow removes the following workflow runs for an entire repository:
 #   - runs with status cancelled or skipped,
-#   - runs which are older than 30days,
+#   - runs of a selected set of workflows, which are older than 30days,
 #   - runs of the cleanup workflow itself.
 # Only the last run of the "Clean Workflow Runs" will remain in the list.
 #
@@ -77,12 +77,12 @@ jobs:
           const now = Date.now();
           const pages = 5;
 
-          // we don't want to prune old runs from test.yml
-          // because we track the duration of runs over time
+          // add the workflows runs to remove here
 
           const workflows = [
             'build.yml',
-            'publish-PR-test-results.yml'
+            'publish-PR-test-results.yml',
+            'check-spelling.yml'
           ]
 
           let runs_to_delete = [];
@@ -119,7 +119,6 @@ jobs:
               // ignore errors
             }
           }
-
 
     - name: ✂ Remove runs of the cleanup workflow itself
       uses: actions/github-script@v4
