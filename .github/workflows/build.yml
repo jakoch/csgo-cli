@@ -136,7 +136,7 @@ jobs:
         if: always()
         with:
           name: test-results
-          path: test_results_*.xml
+          path: build\tests\test_results_*.xml
 
       - name: 🔼 Upload Build Artifact -> csgo_cli
         uses: actions/upload-artifact@v2 # https://github.com/actions/upload-artifact
