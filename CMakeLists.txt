@@ -151,8 +151,8 @@ if (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
   # /GL:   Enables whole program optimization.
   # /Gm:   Enable minimal rebuilds; conflicts with /MP
   # /GS:   Buffers security check.
-  # /MD:   Creates a multithreaded DLL using MSVCRT.lib.
-  # /MDd:  Creates a debug multithreaded DLL using MSVCRTD.lib.
+  # /MD:   Creates a multi-threaded DLL using MSVCRT.lib.
+  # /MDd:  Creates a debug multi-threaded DLL using MSVCRTD.lib.
   # /O2:   Creates fast code.
   # /Od:   Disables optimization.
   # /Oi:   Generates intrinsic functions.
