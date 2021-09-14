@@ -108,15 +108,15 @@ jobs:
       - name: 🙏 CMake → Build
         run: cmake --build build --config %BUILD_TYPE% -j %NUMBER_OF_PROCESSORS%
 
-      - name: ✔ ❌✔️ Test - Run TestSuite
+      - name: ✔ ❌✔️ Test → Run TestSuite
         run: |
           cd build\tests\%BUILD_TYPE%
           test_suite.exe
 
-      - name: ✔ ❌✔️ Test - CTest
+      - name: ✔ ❌✔️ Test → Run CTest → Generate test_results.xml
         run: |
           cd build\tests
-          ctest -V -C %BUILD_TYPE%
+          ctest -V -C %BUILD_TYPE% --output-junit test_results_${{ env.VCPKG_TARGET_TRIPLET }}_${{ env.COMPILER }}.xml
 
       - name: 📦 CMake ➔ Install
         run: cmake --install build --config %BUILD_TYPE% --prefix install --verbose
