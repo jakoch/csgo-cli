@@ -2,17 +2,9 @@
 # .github/workflows/cleanup-workflows.yml
 #
 # Copyright 2021 Ching Chow, Jens A. Koch.
-# SPDX-License-Identifier: Public Domain
+# SPDX-License-Identifier: BSL-1.0
 # Origin: https://github.community/t/delete-old-workflow-results/16152/42
 # This file is part of https://github.com/jakoch/csgo-cli
-#
-
-#
-# This workflow removes the following workflow runs for an entire repository:
-#   - runs with status cancelled or skipped,
-#   - runs of a selected set of workflows, which are older than 30days,
-#   - runs of the cleanup workflow itself.
-# Only the last run of the "Clean Workflow Runs" will remain in the list.
 #
 
 name: Clean Workflow Runs
