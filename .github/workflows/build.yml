@@ -48,6 +48,7 @@ jobs:
           curl -V
           cmake --version
           msbuild /version
+          cl /Bv
           vcpkg version
           echo NUMBER_OF_PROCESSORS=%NUMBER_OF_PROCESSORS%
 
