@@ -73,8 +73,7 @@ jobs:
 
           const workflows = [
             'build.yml',
-            'publish-PR-test-results.yml',
-            'check-spelling.yml'
+            'publish-PR-test-results.yml'            
           ]
 
           let runs_to_delete = [];
