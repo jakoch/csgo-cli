@@ -68,7 +68,7 @@ jobs:
       - name: 🎯 Cache VCPKG
         if: always()
         id: cache-vcpkg
-        uses: actions/cache@v2.1.7 # https://github.com/actions/cache
+        uses: actions/cache@v3.0.1 # https://github.com/actions/cache
         with:
           path: ~\AppData\Local\vcpkg
           key: cache-windows-vcpkg-${{ env.VCPKG_TARGET_TRIPLET }}-${{ github.ref }}-${{ github.run_number }}
