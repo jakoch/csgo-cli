@@ -2,17 +2,9 @@
 # .github/workflows/cleanup-workflows.yml
 #
 # Copyright 2021 Ching Chow, Jens A. Koch.
-# SPDX-License-Identifier: Public Domain
+# SPDX-License-Identifier: BSL-1.0
 # Origin: https://github.community/t/delete-old-workflow-results/16152/42
 # This file is part of https://github.com/jakoch/csgo-cli
-#
-
-#
-# This workflow removes the following workflow runs for an entire repository:
-#   - runs with status cancelled or skipped,
-#   - runs of a selected set of workflows, which are older than 30days,
-#   - runs of the cleanup workflow itself.
-# Only the last run of the "Clean Workflow Runs" will remain in the list.
 #
 
 name: Clean Workflow Runs
@@ -38,7 +30,7 @@ jobs:
 
     steps:
     - name: ✂ Remove cancelled or skipped workflow runs
-      uses: actions/github-script@v4
+      uses: actions/github-script@v4 # https://github.com/actions/github-script
       with:
         github-token: ${{ secrets.GITHUB_TOKEN }}
         script: |
@@ -68,7 +60,7 @@ jobs:
           }
 
     - name: ✂ Remove 30 days old workflows runs
-      uses: actions/github-script@v4
+      uses: actions/github-script@v4 # https://github.com/actions/github-script
       with:
         github-token: ${{ secrets.GITHUB_TOKEN }}
         script: |
@@ -81,8 +73,7 @@ jobs:
 
           const workflows = [
             'build.yml',
-            'publish-PR-test-results.yml',
-            'check-spelling.yml'
+            'publish-PR-test-results.yml'            
           ]
 
           let runs_to_delete = [];
@@ -121,7 +112,7 @@ jobs:
           }
 
     - name: ✂ Remove runs of the cleanup workflow itself
-      uses: actions/github-script@v4
+      uses: actions/github-script@v4 # https://github.com/actions/github-script
       with:
         github-token: ${{ secrets.GITHUB_TOKEN }}
         script: |
