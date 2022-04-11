@@ -133,20 +133,20 @@ jobs:
       # This enables the "Unit Test Result" display to show all individual test runs of the matrix.
       # The tests are published after all matrix runs finished (from job: "publish-test-results").
       - name: 🔼 Upload Test Results
-        uses: actions/upload-artifact@v2 # https://github.com/actions/upload-artifact
+        uses: actions/upload-artifact@v3 # https://github.com/actions/upload-artifact
         if: always()
         with:
           name: test-results
           path: build\tests\test_results_*.xml
 
       - name: 🔼 Upload Build Artifact -> csgo_cli
-        uses: actions/upload-artifact@v2 # https://github.com/actions/upload-artifact
+        uses: actions/upload-artifact@v3 # https://github.com/actions/upload-artifact
         with:
           name: csgo_cli-${{ env.VCPKG_TARGET_TRIPLET }}-${{ env.COMPILER }}
           path: ${{ github.workspace }}/install/bin/
 
       - name: 🔼 Upload Build Artifact -> CMakeOutput.log
-        uses: actions/upload-artifact@v2 # https://github.com/actions/upload-artifact
+        uses: actions/upload-artifact@v3 # https://github.com/actions/upload-artifact
         if: always()
         continue-on-error: true
         with:
@@ -154,7 +154,7 @@ jobs:
           path: build/CMakeFiles/CMakeOutput.log
 
       - name: 🔼 Upload Build Artifact -> CMakeError.log
-        uses: actions/upload-artifact@v2 # https://github.com/actions/upload-artifact
+        uses: actions/upload-artifact@v3 # https://github.com/actions/upload-artifact
         if: always()
         continue-on-error: true
         with:
