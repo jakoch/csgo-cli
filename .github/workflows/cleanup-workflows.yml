@@ -64,7 +64,7 @@ jobs:
       with:
         github-token: ${{ secrets.GITHUB_TOKEN }}
         script: |
-          const days_to_expiration = 30;
+          const days_to_expiration = 14;
           const ms_in_day = 86400000;
           const now = Date.now();
           const pages = 5;
