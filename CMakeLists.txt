@@ -17,6 +17,12 @@ if(POLICY CMP0091)
     cmake_policy(SET CMP0091 NEW)
 endif()
 
+# Policy CMP0069 is required for INTERPROCEDURAL_OPTIMIZATION
+# https://cmake.org/cmake/help/git-stage/policy/CMP0069.html
+if(POLICY CMP0069)
+    cmake_policy(SET CMP0069 NEW)
+endif()
+
 #-------------------------------------------------------------------
 # CMake Project
 #-------------------------------------------------------------------
@@ -125,15 +131,14 @@ if (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
 
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /std:c++latest")
 
-  # Be quiet
-  SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /nologo")
-
   # MSVC warning suppressions
   add_definitions(-D_CRT_SECURE_NO_WARNINGS)
   add_definitions(-D_SCL_SECURE_NO_WARNINGS)
   add_definitions(-D_SILENCE_CXX20_IS_POD_DEPRECATION_WARNING) # protobuf triggers this warning
   add_definitions(-DNOMINMAX)
+
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /permissive-")
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /nologo")
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /bigobj")
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /LARGEADDRESSAWARE") # Allow more than 2 GB in 32 bit application.
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /wd4146") # Warning C4146: unary minus operator applied to unsigned type, result still unsigned
@@ -440,11 +445,7 @@ target_link_libraries(csgo_cli_lib
 set_property(TARGET csgo_cli_lib PROPERTY
             MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
 
-if(${CMAKE_VERSION} VERSION_LESS "3.21.0")
-    target_compile_features(csgo_cli_lib PUBLIC cxx_std_20)
-else()
-    target_compile_features(csgo_cli_lib PUBLIC cxx_std_23)
-endif()
+target_compile_features(csgo_cli_lib PUBLIC cxx_std_20)
 
 if(MSVC)
     if(ENABLE_ASAN)
@@ -483,11 +484,7 @@ target_link_libraries(csgo_cli
 
 set_property(TARGET csgo_cli PROPERTY MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
 
-if(${CMAKE_VERSION} VERSION_LESS "3.21.0")
-    target_compile_features(csgo_cli PUBLIC cxx_std_20)
-else()
-    target_compile_features(csgo_cli PUBLIC cxx_std_23)
-endif()
+target_compile_features(csgo_cli PUBLIC cxx_std_20)
 
 if(MSVC)
     if(ENABLE_ASAN)

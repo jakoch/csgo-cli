@@ -30,11 +30,7 @@ set(TEST_SOURCES
 
 add_executable(test_suite ${TEST_SOURCES})
 
-if(${CMAKE_VERSION} VERSION_LESS "3.21.0")
-    target_compile_features(test_suite PUBLIC cxx_std_20)
-else()
-    target_compile_features(test_suite PUBLIC cxx_std_23)
-endif()
+target_compile_features(test_suite PUBLIC cxx_std_20)
 
 target_include_directories(test_suite
   PUBLIC
