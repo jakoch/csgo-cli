@@ -2,7 +2,7 @@
 # Setup Catch Test Library
 #-------------------------------------------------------------------
 
-set(Catch2_DIR "${VCPKG_DIR}/share/catch2")
+set(Catch2_DIR "${VCPKG_DIR}/share/Catch2")
 find_package(Catch2 CONFIG REQUIRED)
 
 include(Catch)

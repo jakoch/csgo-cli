@@ -38,7 +38,7 @@ if(DEFINED ENV{X_VCPKG_APPLOCAL_DEPS_INSTALL} AND NOT DEFINED VCPKG_APPLOCAL_DEP
 endif()
 
 #
-# --  VCPKG_ROOT
+# -- Set "vcpkg.cmake" as CMAKE_TOOLCHAIN_FILE
 #
 # Please set VCPKG_ROOT on your env: export VCPKG_ROOT=/opt/vcpkg/bin
 # This avoids passing it on the configure line: -DCMAKE_TOOLCHAIN_FILE=C:\vcpkg\scripts\buildsystems\vcpkg.cmake
