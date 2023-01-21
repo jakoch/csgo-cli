@@ -68,7 +68,7 @@ jobs:
       - name: 🎯 Cache VCPKG
         if: always()
         id: cache-vcpkg
-        uses: actions/cache@v3.2.3 # https://github.com/actions/cache
+        uses: actions/cache@v3 # https://github.com/actions/cache
         with:
           path: ~\AppData\Local\vcpkg
           key: cache-windows-vcpkg-${{ env.VCPKG_TARGET_TRIPLET }}-${{ github.ref }}-${{ github.run_number }}
@@ -179,7 +179,7 @@ jobs:
     steps:
 
       - name: 🔽 Download Artifacts
-        uses: actions/download-artifact@v2 # https://github.com/actions/download-artifact
+        uses: actions/download-artifact@v3 # https://github.com/actions/download-artifact
         with:
           path: artifacts
 
