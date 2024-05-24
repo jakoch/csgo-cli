@@ -1,26 +1,24 @@
 {
   "name": "csgo-cli",
   "version": "1.4.0",
-  "homepage": "https://github.com/jakoch/csgo-cli",
+  "maintainers": "Jens A. Koch <jakoch@web.de>",
   "description": "csgo-cli shows your CS:GO user account, stats and latest matches. It also uploads demo sharecodes to csgostats.gg. :sunglasses:",
-  "maintainers": [
-    "Jens A. Koch <jakoch@web.de>"
-  ],
+  "homepage": "https://github.com/jakoch/csgo-cli",
   "dependencies": [
-    "zlib",
+    "catch2",
     {
       "name": "curl",
       "default-features": false,
       "features": [
         "http2",
-        "winssl",
-        "ssl"
+        "ssl",
+        "winssl"
       ]
     },
-    "protobuf",
     "fmt",
-    "spdlog",
     "nlohmann-json",
-    "catch2"
+    "protobuf",
+    "spdlog",
+    "zlib"
   ]
 }
