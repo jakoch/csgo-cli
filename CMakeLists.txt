@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.2 FATAL_ERROR)
+cmake_minimum_required(VERSION 3.5 FATAL_ERROR)
 
 #-------------------------------------------------------------------
 # Setup CMake Policies
@@ -179,7 +179,7 @@ if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
   add_definitions(-D_SILENCE_CXX20_IS_POD_DEPRECATION_WARNING) # protobuf triggers this warning
   add_definitions(-DNOMINMAX)
 
-  set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -stdlib=libc++ ") # -lc++abi
+  #set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -stdlib=libc++ ") # -lc++abi
 endif()
 
 # /MP: build with multiple processors
@@ -260,15 +260,20 @@ endif()
 set(Protobuf_USE_STATIC_LIBS ON)
 set(Protobuf_DIR "${VCPKG_DIR}/share/protobuf")
 list(APPEND CMAKE_PREFIX_PATH "${VCPKG_DIR}/tools/protobuf")
+
 #
 # Please fix your protobuf_generate(), okay?
 # https://stackoverflow.com/questions/52533396/cmake-cant-find-protobuf-protobuf-generate-cpp
 #
 set(protobuf_MODULE_COMPATIBLE ON CACHE BOOL "")
 
-find_package(Protobuf CONFIG REQUIRED)
+if(WIN32)
+  set(Protobuf_PROTOC_EXECUTABLE "${VCPKG_DIR}/tools/protobuf/protoc.exe")
+else()
+  set(Protobuf_PROTOC_EXECUTABLE "${VCPKG_DIR}/tools/protobuf/protoc")
+endif()
 
-set(Protobuf_PROTOC_EXECUTABLE protobuf::libprotoc)
+find_package(Protobuf CONFIG REQUIRED)
 
 #
 # Process CS:GO Protobufs
