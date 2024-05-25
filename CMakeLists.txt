@@ -271,6 +271,12 @@ list(APPEND CMAKE_PREFIX_PATH "${VCPKG_DIR}/tools/protobuf")
 #
 set(protobuf_MODULE_COMPATIBLE ON CACHE BOOL "")
 
+find_program(Protobuf_PROTOC_EXECUTABLE
+    NAMES protoc
+    DOC "Google Protocol Buffers Compiler"
+    PATHS "${VCPKG_DIR}/tools/protobuf"
+)
+
 if(WIN32)
   set(PROTOC "${VCPKG_DIR}/tools/protobuf/protoc.exe")
   set(Protobuf_PROTOC_EXECUTABLE "${VCPKG_DIR}/tools/protobuf/protoc.exe")
@@ -278,11 +284,8 @@ else()
   set(PROTOC "${VCPKG_DIR}/tools/protobuf/protoc")
   set(Protobuf_PROTOC_EXECUTABLE "${VCPKG_DIR}/tools/protobuf/protoc")
 endif()
-if(NOT Protobuf_PROTOC_EXECUTABLE)
-    set(Protobuf_PROTOC_EXECUTABLE "protobuf::protoc")
-endif()
 
-message(STATUS "Using protoc from  ${PROTOBUF_PROTOC_EXECUTABLE}")
+message(STATUS "Found protoc: ${Protobuf_PROTOC_EXECUTABLE}")
 
 find_package(Protobuf CONFIG REQUIRED)
 

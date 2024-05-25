@@ -85,10 +85,20 @@ jobs:
           dir ${{ github.workspace }}\dependencies
           dir ${{ github.workspace }}\dependencies\csgo-protobufs
 
+    #   - name: ✏ CMake ➔ Configure (including VCPKG → Install Dependencies)
+    #     run: |
+    #       cmake -G "Visual Studio 17 2022" -A x64                                              ^
+    #             -S ${{ github.workspace }} -B build                                            ^
+    #             -DCMAKE_BUILD_TYPE=${{ env.BUILD_TYPE }}                                       ^
+    #             -DCMAKE_TOOLCHAIN_FILE=${{ env.VCPKG_ROOT }}/scripts/buildsystems/vcpkg.cmake  ^
+    #             -DVCPKG_TARGET_TRIPLET=${{ env.VCPKG_TARGET_TRIPLET }}                         ^
+    #             -DBUILD_SHARED_LIBS=${{ env.BUILD_SHARED_LIBS }}                               ^
+    #             -DCMAKE_VERBOSE_MAKEFILE=ON
+
       - name: ✏ CMake ➔ Configure (including VCPKG → Install Dependencies)
         run: |
-          cmake -G "Visual Studio 17 2022" -A x64                                              ^
-                -S ${{ github.workspace }} -B build                                         ^
+            cmake -G "Ninja"                                                                   ^
+                -S ${{ github.workspace }} -B build                                            ^
                 -DCMAKE_BUILD_TYPE=${{ env.BUILD_TYPE }}                                       ^
                 -DCMAKE_TOOLCHAIN_FILE=${{ env.VCPKG_ROOT }}/scripts/buildsystems/vcpkg.cmake  ^
                 -DVCPKG_TARGET_TRIPLET=${{ env.VCPKG_TARGET_TRIPLET }}                         ^
