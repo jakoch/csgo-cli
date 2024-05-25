@@ -274,15 +274,19 @@ set(protobuf_MODULE_COMPATIBLE ON CACHE BOOL "")
 find_program(Protobuf_PROTOC_EXECUTABLE
     NAMES protoc
     DOC "Google Protocol Buffers Compiler"
-    PATHS "${VCPKG_DIR}/tools/protobuf"
+    PATHS
+      "${VCPKG_DIR}/tools/protobuf"
+      "${VCPKG_ROOT}/packages/protobuf_${VCPKG_TARGET_TRIPLET}/tools/protobuf"
 )
 
-if(WIN32)
-  set(PROTOC "${VCPKG_DIR}/tools/protobuf/protoc.exe")
-  set(Protobuf_PROTOC_EXECUTABLE "${VCPKG_DIR}/tools/protobuf/protoc.exe")
-else()
-  set(PROTOC "${VCPKG_DIR}/tools/protobuf/protoc")
-  set(Protobuf_PROTOC_EXECUTABLE "${VCPKG_DIR}/tools/protobuf/protoc")
+if(NOT Protobuf_PROTOC_EXECUTABLE)
+    if(WIN32)
+        set(PROTOC "${VCPKG_DIR}/tools/protobuf/protoc.exe")
+        set(Protobuf_PROTOC_EXECUTABLE "${VCPKG_DIR}/tools/protobuf/protoc.exe")
+    else()
+        set(PROTOC "${VCPKG_DIR}/tools/protobuf/protoc")
+        set(Protobuf_PROTOC_EXECUTABLE "${VCPKG_DIR}/tools/protobuf/protoc")
+    endif()
 endif()
 
 message(STATUS "Found protoc: ${Protobuf_PROTOC_EXECUTABLE}")
