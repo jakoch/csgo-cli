@@ -257,6 +257,10 @@ if(MSVC AND protobuf_MSVC_STATIC_RUNTIME)
     endforeach()
 endif()
 
+#
+# Protobuf is non-trivial to include
+# One would assume an automatic pickup of things build by vcpkg, e.g. the protoc executable.
+#
 set(Protobuf_USE_STATIC_LIBS ON)
 set(Protobuf_DIR "${VCPKG_DIR}/share/protobuf")
 list(APPEND CMAKE_PREFIX_PATH "${VCPKG_DIR}/tools/protobuf")
@@ -274,6 +278,11 @@ else()
 set(PROTOC "${VCPKG_DIR}/tools/protobuf/protoc")
   set(Protobuf_PROTOC_EXECUTABLE "${VCPKG_DIR}/tools/protobuf/protoc")
 endif()
+if(NOT Protobuf_PROTOC_EXECUTABLE)
+    set(Protobuf_PROTOC_EXECUTABLE protobuf::libprotoc)
+endif()
+
+message(STATUS "Using protoc from  ${PROTOBUF_PROTOC_EXECUTABLE}")
 
 find_package(Protobuf CONFIG REQUIRED)
 
