@@ -268,8 +268,10 @@ list(APPEND CMAKE_PREFIX_PATH "${VCPKG_DIR}/tools/protobuf")
 set(protobuf_MODULE_COMPATIBLE ON CACHE BOOL "")
 
 if(WIN32)
+  set(PROTOC "${VCPKG_DIR}/tools/protobuf/protoc.exe")
   set(Protobuf_PROTOC_EXECUTABLE "${VCPKG_DIR}/tools/protobuf/protoc.exe")
 else()
+set(PROTOC "${VCPKG_DIR}/tools/protobuf/protoc")
   set(Protobuf_PROTOC_EXECUTABLE "${VCPKG_DIR}/tools/protobuf/protoc")
 endif()
 
