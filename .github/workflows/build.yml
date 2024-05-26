@@ -92,8 +92,7 @@ jobs:
           dir ${{ github.workspace }}
           dir ${{ github.workspace }}\downloads
           dir ${{ github.workspace }}\dependencies
-          dir ${{ github.workspace }}\dependencies\csgo-protobufs
-          dir ${{ github.workspace }}\vcpkg_installed\${{ env.VCPKG_TARGET_TRIPLET }}
+          dir ${{ github.workspace }}\vcpkg_packages\${{ env.VCPKG_TARGET_TRIPLET }}
 
       - name: 🙏 CMake → Build
         run: cmake --build build --config %BUILD_TYPE% -j %NUMBER_OF_PROCESSORS%
@@ -114,7 +113,7 @@ jobs:
       - name: ❔ CHECK important folders, to see if everything is present (after building & installing)
         run: |
           dir /S /B build
-          dir /S /B build\vcpkg_installed\${{ env.VCPKG_TARGET_TRIPLET }}
+          dir /S /B build\vcpkg_packages\${{ env.VCPKG_TARGET_TRIPLET }}
           dir /S /B install
 
       # We upload multiple files into the same "test-results" artifact file (zip).
