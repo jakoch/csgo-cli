@@ -1,3 +1,0 @@
-[submodule "dependencies/csgo-protobufs"]
-	path = dependencies/csgo-protobufs
-	url = https://github.com/SteamDatabase/Protobufs.git

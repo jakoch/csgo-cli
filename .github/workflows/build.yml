@@ -24,12 +24,8 @@ jobs:
     env:
       COMPILER: "VC17"
       BUILD_TYPE: Release
-      VCPKG_ROOT: C:\vcpkg
       VCPKG_TARGET_TRIPLET: x64-windows-static
       BUILD_SHARED_LIBS: OFF
-      # MSVC parallel builds: https://devblogs.microsoft.com/cppblog/improved-parallelism-in-msbuild/
-      UseMultiToolTask: true
-      EnforceProcessCountAcrossBuilds: true
 
     defaults:
       run:
@@ -42,17 +38,18 @@ jobs:
           submodules: true
 
       # https://community.chocolatey.org/packages/ninja
+      # https://community.chocolatey.org/packages/cmake
       # https://community.chocolatey.org/packages/ccache
-      - name: 🔽 Install Ninja
-        run: choco install ninja
+      - name: 🔽 Install Ninja + CMake
+        run: choco install ninja cmake
 
-      # https://github.com/actions/virtual-environments/blob/main/images/win/Windows2022-Readme.md#visual-studio-enterprise-2022
+      # https://github.com/actions/runner-images/blob/main/images/windows/Windows2022-Readme.md#visual-studio-enterprise-2022
       - name: 📥 Setup VC17 Environment (→ vcvars64)
         run: call "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Auxiliary\Build\vcvars64.bat"
 
       - name: 🔽 Update VCPKG
         run: |
-          cd ${{ env.VCPKG_ROOT }}
+          cd ${{ env.VCPKG_INSTALLATION_ROOT }}
           git reset --hard
           git pull --quiet
           bootstrap-vcpkg.bat -disableMetrics
@@ -64,7 +61,7 @@ jobs:
         id: cache-vcpkg
         uses: actions/cache@v4 # https://github.com/actions/cache
         with:
-          path: ~\AppData\Local\vcpkg
+          path: ~\AppData\Local\vcpkg\archives
           key: cache-windows-vcpkg-${{ env.VCPKG_TARGET_TRIPLET }}-${{ github.ref }}-${{ github.run_number }}
           restore-keys: |
             cache-windows-vcpkg-${{ env.VCPKG_TARGET_TRIPLET }}-${{ github.ref }}
@@ -79,37 +76,23 @@ jobs:
           cd dependencies
           ren sdk sw_sdk
 
-      - name: Patch CSGO Protobufs
-        working-directory: ${{ github.workspace }}
-        run: dependencies\csgo-protobufs-patch\patch.bat
-
-    #   - name: ✏ CMake ➔ Configure (including VCPKG → Install Dependencies)
-    #     run: |
-    #       cmake -G "Visual Studio 17 2022" -A x64                                              ^
-    #             -S ${{ github.workspace }} -B build                                            ^
-    #             -DCMAKE_BUILD_TYPE=${{ env.BUILD_TYPE }}                                       ^
-    #             -DCMAKE_TOOLCHAIN_FILE=${{ env.VCPKG_ROOT }}/scripts/buildsystems/vcpkg.cmake  ^
-    #             -DVCPKG_TARGET_TRIPLET=${{ env.VCPKG_TARGET_TRIPLET }}                         ^
-    #             -DBUILD_SHARED_LIBS=${{ env.BUILD_SHARED_LIBS }}                               ^
-    #             -DCMAKE_VERBOSE_MAKEFILE=ON
-
       - name: ✏ CMake ➔ Configure (including VCPKG → Install Dependencies)
         run: |
-            cmake -G "Ninja"                                                                   ^
-                -S ${{ github.workspace }} -B build                                            ^
-                -DCMAKE_BUILD_TYPE=${{ env.BUILD_TYPE }}                                       ^
-                -DCMAKE_TOOLCHAIN_FILE=${{ env.VCPKG_ROOT }}/scripts/buildsystems/vcpkg.cmake  ^
-                -DVCPKG_TARGET_TRIPLET=${{ env.VCPKG_TARGET_TRIPLET }}                         ^
-                -DBUILD_SHARED_LIBS=${{ env.BUILD_SHARED_LIBS }}                               ^
+          cmake -G "Ninja"                                                                                  ^
+                -S ${{ github.workspace }} -B build                                                         ^
+                -DCMAKE_BUILD_TYPE=${{ env.BUILD_TYPE }}                                                    ^
+                -DCMAKE_TOOLCHAIN_FILE=${{ env.VCPKG_INSTALLATION_ROOT }}/scripts/buildsystems/vcpkg.cmake  ^
+                -DVCPKG_TARGET_TRIPLET=${{ env.VCPKG_TARGET_TRIPLET }}                                      ^
+                -DBUILD_SHARED_LIBS=${{ env.BUILD_SHARED_LIBS }}                                            ^
                 -DCMAKE_VERBOSE_MAKEFILE=ON
 
       - name: ❔ CHECK important folders, to see if everything is present (before building)
         run: |
-            dir ${{ github.workspace }}
-            dir ${{ github.workspace }}\downloads
-            dir ${{ github.workspace }}\dependencies
-            dir ${{ github.workspace }}\dependencies\csgo-protobufs
-            dir ${{ github.workspace }}\vcpkg_installed\${{ env.VCPKG_TARGET_TRIPLET }}
+          dir ${{ github.workspace }}
+          dir ${{ github.workspace }}\downloads
+          dir ${{ github.workspace }}\dependencies
+          dir ${{ github.workspace }}\dependencies\csgo-protobufs
+          dir ${{ github.workspace }}\vcpkg_installed\${{ env.VCPKG_TARGET_TRIPLET }}
 
       - name: 🙏 CMake → Build
         run: cmake --build build --config %BUILD_TYPE% -j %NUMBER_OF_PROCESSORS%

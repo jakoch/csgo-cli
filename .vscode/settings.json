@@ -83,7 +83,17 @@
         "valarray": "cpp",
         "ranges": "cpp",
         "span": "cpp",
-        "*.inc": "cpp"
+        "*.inc": "cpp",
+        "any": "cpp",
+        "bit": "cpp",
+        "bitset": "cpp",
+        "charconv": "cpp",
+        "coroutine": "cpp",
+        "resumable": "cpp",
+        "format": "cpp",
+        "queue": "cpp",
+        "source_location": "cpp",
+        "stop_token": "cpp"
     },
     "C_Cpp.clang_format_path": "E:\\tools\\LLVM\\bin\\clang-format",
     "clangd.onConfigChanged": "restart",
@@ -95,5 +105,24 @@
     "cmake.configureArgs" : [
         "-DCMAKE_INSTALL_PREFIX=D:\\install",
         "-DVCPKG_TARGET_TRIPLET=x64-windows-static"
+    ],
+    "cSpell.enableFiletypes": [
+        "!csharp",
+        "!go",
+        "!graphql",
+        "!handlebars",
+        "!haskell",
+        "!jade",
+        "!java",
+        "!javascriptreact",
+        "!jupyter",
+        "!php",
+        "!pug",
+        "!rust",
+        "!scala",
+        "!scss",
+        "!typescript",
+        "!typescriptreact",
+        "cmake"
     ]
 }

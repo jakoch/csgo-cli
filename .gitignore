@@ -3,4 +3,4 @@ out/
 build/
 dependencies/sw_sdk
 downloads
-vcpkg_installed/
+vcpkg_packages/

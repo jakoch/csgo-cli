@@ -11,7 +11,7 @@ void quotientAndRemainder(uint64_t &a0, uint64_t &a1, uint16_t &a2, uint16_t m, 
 /**
  * Generate a demo share code from its object data and return its string representation.
  * Required fields should come from a CDataGCCStrike15_v2_MatchInfo protobuf message.
- * https://github.com/SteamRE/SteamKit/blob/master/Resources/Protobufs/csgo/cstrike15_gcmessages.proto#L773
+ * https://github.com/SteamDatabase/Protobufs/blob/3a112d8ece0baa8facf6b503cccb0ad6af826b8f/csgo/cstrike15_gcmessages.proto#L942
  *
  * Steps to generate the share code:
  *

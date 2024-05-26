@@ -43,25 +43,33 @@ endif()
 # Please set VCPKG_ROOT on your env: export VCPKG_ROOT=/opt/vcpkg/bin
 # This avoids passing it on the configure line: -DCMAKE_TOOLCHAIN_FILE=C:\vcpkg\scripts\buildsystems\vcpkg.cmake
 #
-if(DEFINED ENV{VCPKG_ROOT} AND NOT DEFINED CMAKE_TOOLCHAIN_FILE)
-    set(CMAKE_TOOLCHAIN_FILE "$ENV{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake" CACHE STRING "")
-endif()
+if(NOT DEFINED CMAKE_TOOLCHAIN_FILE)
 
-#
-# -- VCPKG_FEATURE_FLAGS
-#
-# This env var can be set to a comma-separated list of off-by-default features in vcpkg.
-#
-# Available features are: manifests, binarycaching.
-#
-# manifests     -> use the project-local manifest file "vcpkg.json" to build dependencies
-# binarycaching -> use prebuild packages from cache to avoid rebuilds
-#
-# https://vcpkg.readthedocs.io/en/latest/specifications/manifests/
-# https://vcpkg.readthedocs.io/en/latest/specifications/binarycaching/
-#
-if(NOT DEFINED ENV{VCPKG_FEATURE_FLAGS})
-    set(ENV{VCPKG_FEATURE_FLAGS} "manifests")
+    # VCPKG_ROOT
+    if(DEFINED VCPKG_ROOT AND EXISTS ${VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake)
+        message(STATUS "[VCPKG] Using system vcpkg at ${VCPKG_ROOT}: ${VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake")
+        set(vcpkg_toolchain_file "${VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake" CACHE STRING "")
+
+    # ENV.VCPKG_ROOT
+    elseif(DEFINED ENV{VCPKG_ROOT} AND EXISTS $ENV{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake)
+        message(STATUS "[VCPKG] Using system vcpkg at ENV{VCPKG_ROOT}: $ENV{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake")
+        set(vcpkg_toolchain_file "$ENV{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake" CACHE STRING "")
+
+    # VCPKG_INSTALLATION_ROOT is defined on Github Actions CI
+    elseif (DEFINED ENV{VCPKG_INSTALLATION_ROOT} AND EXISTS $ENV{VCPKG_INSTALLATION_ROOT}/scripts/buildsystems/vcpkg.cmake)
+    message(STATUS "[VCPKG] Using system vcpkg at Github Action VCPKG_INSTALLATION_ROOT: $ENV{VCPKG_INSTALLATION_ROOT}")
+        set(vcpkg_toolchain_file $ENV{VCPKG_INSTALLATION_ROOT}/scripts/buildsystems/vcpkg.cmake)
+
+    # otherwise VCPKG is missing and we install VCPKG from Github
+    #else()
+    #    message(STATUS "[vcpkg] Fetching latest VCPKG from Github...")
+    #    include(FetchContent)
+    #    FetchContent_Declare(vcpkg GIT_REPOSITORY https://github.com/microsoft/vcpkg.git)
+    #    FetchContent_MakeAvailable(vcpkg)
+    #    set(vcpkg_toolchain_file ${vcpkg_SOURCE_DIR}/scripts/buildsystems/vcpkg.cmake)
+    endif()
+
+    set(CMAKE_TOOLCHAIN_FILE ${vcpkg_toolchain_file})
 endif()
 
 #
@@ -75,8 +83,8 @@ endif()
 # -- VCPKG_DIR
 #
 # VCPKG_DIR is the root folder for all compiled packages, e.g.
-# the local /project/vcpkg_installed/x64-windows
-# or the global /opt/vcpkg/installed/x64-windows.
+# the local /project/vcpkg_packages/x64-windows
+# or the global /opt/vcpkg/packages/x64-windows.
 #
 # Because finding dependencies automatically is still on the todo list of vcpkg, we need to guide it.
 #
@@ -86,9 +94,9 @@ endif()
 #
 if(NOT DEFINED VCPKG_DIR)
     if(WIN32)
-        set(VCPKG_DIR "${CMAKE_SOURCE_DIR}/vcpkg_installed/${VCPKG_TARGET_TRIPLET}")
+        set(VCPKG_DIR "${CMAKE_SOURCE_DIR}/vcpkg_packages/${VCPKG_TARGET_TRIPLET}")
     else()
-        set(VCPKG_DIR "${CMAKE_SOURCE_DIR}/build/${CMAKE_BUILD_TYPE}/vcpkg_installed/${VCPKG_TARGET_TRIPLET}")
+        set(VCPKG_DIR "${CMAKE_SOURCE_DIR}/build/${CMAKE_BUILD_TYPE}/vcpkg_packages/${VCPKG_TARGET_TRIPLET}")
     endif()
 endif()
 
@@ -122,11 +130,12 @@ endif()
 # Print VCPKG configuration overview
 #
 message(STATUS "\n-- [VCPKG] Configuration Overview:\n")
-message(STATUS "[VCPKG]  - VCPKG_VERBOSE           -> '${VCPKG_VERBOSE}'")
-message(STATUS "[VCPKG]  - VCPKG_APPLOCAL_DEPS     -> '${VCPKG_APPLOCAL_DEPS}'")
-message(STATUS "[VCPKG]  - E:VCPKG_FEATURE_FLAGS   -> '$ENV{VCPKG_FEATURE_FLAGS}'")
-message(STATUS "[VCPKG]  - E:VCPKG_ROOT            -> '$ENV{VCPKG_ROOT}'")
-message(STATUS "[VCPKG]  - CMAKE_TOOLCHAIN_FILE    -> '${CMAKE_TOOLCHAIN_FILE}'")
-message(STATUS "[VCPKG]  - VCPKG_MANIFEST_FILE     -> '${VCPKG_MANIFEST_FILE}'")
-message(STATUS "[VCPKG]  - VCPKG_TARGET_TRIPLET    -> '${VCPKG_TARGET_TRIPLET}'")
-message(STATUS "[VCPKG]  - VCPKG_DIR               -> '${VCPKG_DIR}'")
+message(STATUS "[VCPKG]  - VCPKG_VERBOSE             -> '${VCPKG_VERBOSE}'")
+message(STATUS "[VCPKG]  - VCPKG_APPLOCAL_DEPS       -> '${VCPKG_APPLOCAL_DEPS}'")
+message(STATUS "[VCPKG]  - E:VCPKG_FEATURE_FLAGS     -> '$ENV{VCPKG_FEATURE_FLAGS}'")
+message(STATUS "[VCPKG]  - E:VCPKG_ROOT              -> '$ENV{VCPKG_ROOT}'")
+message(STATUS "[VCPKG]  - E:VCPKG_INSTALLATION_ROOT -> '$ENV{VCPKG_INSTALLATION_ROOT}'")
+message(STATUS "[VCPKG]  - CMAKE_TOOLCHAIN_FILE      -> '${CMAKE_TOOLCHAIN_FILE}'")
+message(STATUS "[VCPKG]  - VCPKG_MANIFEST_FILE       -> '${VCPKG_MANIFEST_FILE}'")
+message(STATUS "[VCPKG]  - VCPKG_TARGET_TRIPLET      -> '${VCPKG_TARGET_TRIPLET}'")
+message(STATUS "[VCPKG]  - VCPKG_DIR                 -> '${VCPKG_DIR}'")

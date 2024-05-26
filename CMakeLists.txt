@@ -258,8 +258,7 @@ if(MSVC AND protobuf_MSVC_STATIC_RUNTIME)
 endif()
 
 #
-# Protobuf is non-trivial to include
-# One would assume an automatic pickup of things build by vcpkg, e.g. the protoc executable.
+# Protobuf is non-trivial to include.
 #
 set(Protobuf_USE_STATIC_LIBS ON)
 set(Protobuf_DIR "${VCPKG_DIR}/share/protobuf")
@@ -291,31 +290,47 @@ endif()
 
 message(STATUS "Found protoc: ${Protobuf_PROTOC_EXECUTABLE}")
 
+# Find Protobuf package
 find_package(Protobuf CONFIG REQUIRED)
 
 #
-# Process CS:GO Protobufs
+# SteamDatabase Protobufs Data Files
 #
-# dependencies/csgo-protobufs/csgo/engine_gcmessages.proto
-# dependencies/csgo-protobufs/csgo/cstrike15_gcmessages.proto
-# dependencies/csgo-protobufs/csgo/steammessages.proto
-# dependencies/csgo-protobufs/csgo/gcsdk_gcmessages.proto
-# dependencies/csgo-protobufs/csgo/gcsystemmsgs.proto
+include(FetchContent)
 
+# Define the repository and the destination directory
+FetchContent_Declare(steamdatabase_protobufs
+    GIT_REPOSITORY "https://github.com/SteamDatabase/Protobufs.git"
+    GIT_TAG "origin/master"
+)
+FetchContent_MakeAvailable(steamdatabase_protobufs)
+message("--[CSGO Protobuf] Fetched SteamDatabase Protobufs Data Files to steamdatabase_protobufs_SOURCE_DIR: ${steamdatabase_protobufs_SOURCE_DIR}")
+
+# Patch CSGO Protobufs
+# After patch was applied ${Protobuf_INCLUDE_DIRS} should contain the file "patch_applied_marker".
+include(PatchCsGoProtobufs)
+patch_csgo_protobufs()
+
+# let the custom target depend on the patching run
+add_custom_target(patch_steamdatabase_csgo_protobufs ALL DEPENDS "${steamdatabase_protobufs_SOURCE_DIR}/csgo/patch_applied_marker")
+
+#
+# Compile CS:GO Protobufs (proto -> cpp)
+#
 protobuf_generate_cpp(PROTO_ENGINE_GCMESSAGES_SRC PROTO_ENGINE_GCMESSAGES_HDR
-    ${CMAKE_CURRENT_SOURCE_DIR}/dependencies/csgo-protobufs/csgo/engine_gcmessages.proto
+    ${steamdatabase_protobufs_SOURCE_DIR}/csgo/engine_gcmessages.proto
 )
 protobuf_generate_cpp(PROTO_CSTRIKE15_GCMESSAGES_SRC PROTO_CSTRIKE15_GCMESSAGES_HDR
-    ${CMAKE_CURRENT_SOURCE_DIR}/dependencies/csgo-protobufs/csgo/cstrike15_gcmessages.proto
+    ${steamdatabase_protobufs_SOURCE_DIR}/csgo/cstrike15_gcmessages.proto
 )
 protobuf_generate_cpp(PROTO_STEAMMESSAGES_SRC PROTO_STEAMMESSAGES_HDR
-    ${CMAKE_CURRENT_SOURCE_DIR}/dependencies/csgo-protobufs/csgo/steammessages.proto
+    ${steamdatabase_protobufs_SOURCE_DIR}/csgo/steammessages.proto
 )
 protobuf_generate_cpp(PROTO_GCSDK_GCMESSAGES_SRC PROTO_GCSDK_GCMESSAGES_HDR
-    ${CMAKE_CURRENT_SOURCE_DIR}/dependencies/csgo-protobufs/csgo/gcsdk_gcmessages.proto
+    ${steamdatabase_protobufs_SOURCE_DIR}/csgo/gcsdk_gcmessages.proto
 )
 protobuf_generate_cpp(PROTO_GCSYSTEMMSGS_SRC PROTO_GCSYSTEMMSGS_HDR
-    ${CMAKE_CURRENT_SOURCE_DIR}/dependencies/csgo-protobufs/csgo/gcsystemmsgs.proto
+    ${steamdatabase_protobufs_SOURCE_DIR}/csgo/gcsystemmsgs.proto
 )
 
 #
@@ -431,6 +446,9 @@ add_library(csgo_cli_lib
         ${PROTO_GCSYSTEMMSGS_HDR}
 )
 
+# Ensure that any targets that depend on the patched protobufs are built after the patching is done
+add_dependencies(csgo_cli_lib patch_steamdatabase_csgo_protobufs)
+
 #
 # Process CS:GO Protobufs
 # See comment above @ "protobuf_MODULE_COMPATIBLE"
@@ -439,11 +457,11 @@ add_library(csgo_cli_lib
 #    LANGUAGE cpp
 #    TARGET csgo_cli_lib
 #    PROTOS
-#    ${CMAKE_CURRENT_SOURCE_DIR}/dependencies/csgo-protobufs/csgo/steammessages.proto
-#    ${CMAKE_CURRENT_SOURCE_DIR}/dependencies/csgo-protobufs/csgo/gcsdk_gcmessages.proto
-#    ${CMAKE_CURRENT_SOURCE_DIR}/dependencies/csgo-protobufs/csgo/gcsystemmsgs.proto
-#    ${CMAKE_CURRENT_SOURCE_DIR}/dependencies/csgo-protobufs/csgo/engine_gcmessages.proto
-#    ${CMAKE_CURRENT_SOURCE_DIR}/dependencies/csgo-protobufs/csgo/cstrike15_gcmessages.proto
+#    ${SteamDatabase_Protobufs_SOURCE_DIR}/csgo/steammessages.proto
+#    ${SteamDatabase_Protobufs_SOURCE_DIR}/csgo/gcsdk_gcmessages.proto
+#    ${SteamDatabase_Protobufs_SOURCE_DIR}/csgo/gcsystemmsgs.proto
+#    ${SteamDatabase_Protobufs_SOURCE_DIR}/csgo/engine_gcmessages.proto
+#    ${SteamDatabase_Protobufs_SOURCE_DIR}/csgo/cstrike15_gcmessages.proto
 #)
 
 target_include_directories(csgo_cli_lib
@@ -518,13 +536,13 @@ endif()
 #
 # Create "source-group" folders for these files in Visual Studio
 #
-source_group("Protobuf Protocol Files" FILES
-    proto/engine_gcmessages.proto
-    proto/cstrike15_gcmessages.proto
-    proto/steammessages.proto
-    proto/gcsdk_gcmessages.proto
-    proto/gcsystemmsgs.proto
-)
+# source_group("CSGO Protobuf Protocol Files" FILES
+#     proto/engine_gcmessages.proto
+#     proto/cstrike15_gcmessages.proto
+#     proto/steammessages.proto
+#     proto/gcsdk_gcmessages.proto
+#     proto/gcsystemmsgs.proto
+# )
 
 #-------------------------------------------------------------------
 # Tests
