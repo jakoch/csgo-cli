@@ -2,6 +2,7 @@
 #define SteamID_H
 
 #include <sstream>
+#include <cmath>
 #include <steam/steamtypes.h>
 
 // 76561197960493477 -> 113874
