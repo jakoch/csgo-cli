@@ -309,7 +309,11 @@ message("--[CSGO Protobuf] Fetched SteamDatabase Protobufs Data Files to steamda
 # Patch CSGO Protobufs
 # After patch was applied ${Protobuf_INCLUDE_DIRS} should contain the file "patch_applied_marker".
 include(PatchCsGoProtobufs)
-patch_csgo_protobufs()
+if(NOT EXISTS "${steamdatabase_protobufs_SOURCE_DIR}/csgo/patch_applied_marker")
+    patch_csgo_protobufs()
+else()
+    message("--[CSGO Protobuf] Already patched. Skipping.")
+endif()
 
 # let the custom target depend on the patching run
 add_custom_target(patch_steamdatabase_csgo_protobufs ALL DEPENDS "${steamdatabase_protobufs_SOURCE_DIR}/csgo/patch_applied_marker")

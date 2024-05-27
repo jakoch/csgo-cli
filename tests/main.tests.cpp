@@ -8,7 +8,7 @@ int main( int argc, char* argv[] )
 {
   SetConsoleOutputCP(CP_UTF8);
   WinCliColors::enableConsoleColor(true);
-  std::cout << "csgo_cli ♥ TestSuite\n" << std::endl;
+  std::cout << "csgo_cli TestSuite\n" << std::endl;
 
   Catch::Session session; // There must be exactly one instance
 
