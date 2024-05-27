@@ -350,6 +350,14 @@ set(CURL_DIR "${VCPKG_DIR}/share/curl")
 find_package(CURL CONFIG REQUIRED)
 
 #
+# Download "cacert.pem" for Curl -> "curl-ca-bundle.crt"
+#
+if(NOT EXISTS "${CMAKE_BINARY_DIR}/curl-ca-bundle.crt")
+    message(STATUS "Downloading: https://curl.haxx.se/ca/cacert.pem -> curl-ca-bundle.crt")
+    file(DOWNLOAD "https://curl.haxx.se/ca/cacert.pem" "${CMAKE_BINARY_DIR}/curl-ca-bundle.crt" TLS_VERIFY ON)
+endif()
+
+#
 # FMT
 #
 set(fmt_DIR "${VCPKG_DIR}/share/fmt")
@@ -373,7 +381,6 @@ find_package(spdlog CONFIG REQUIRED)
 configure_file("${CMAKE_SOURCE_DIR}/README.md"                      "readme.txt"  COPYONLY)
 configure_file("${CMAKE_SOURCE_DIR}/LICENSE"                        "license.txt" COPYONLY)
 configure_file("${CMAKE_SOURCE_DIR}/resources/update.bat"           "update.bat"  COPYONLY)
-configure_file("${CMAKE_SOURCE_DIR}/dependencies/curl/cacert.pem"   "cacert.pem"  COPYONLY)
 
 #
 # Add Resources to Executable
@@ -564,11 +571,11 @@ include(GNUInstallDirs)
 
 install(TARGETS csgo_cli RESOURCE)
 
-install(FILES "${CMAKE_BINARY_DIR}/readme.txt"        DESTINATION ${CMAKE_INSTALL_BINDIR})
-install(FILES "${CMAKE_BINARY_DIR}/license.txt"       DESTINATION ${CMAKE_INSTALL_BINDIR})
-install(FILES "${CMAKE_BINARY_DIR}/update.bat"        DESTINATION ${CMAKE_INSTALL_BINDIR})
-install(FILES "${CMAKE_BINARY_DIR}/cacert.pem"        DESTINATION ${CMAKE_INSTALL_BINDIR})
-install(FILES "${CMAKE_BINARY_DIR}/steam_appid.txt"   DESTINATION ${CMAKE_INSTALL_BINDIR})
+install(FILES "${CMAKE_BINARY_DIR}/readme.txt"         DESTINATION ${CMAKE_INSTALL_BINDIR})
+install(FILES "${CMAKE_BINARY_DIR}/license.txt"        DESTINATION ${CMAKE_INSTALL_BINDIR})
+install(FILES "${CMAKE_BINARY_DIR}/update.bat"         DESTINATION ${CMAKE_INSTALL_BINDIR})
+install(FILES "${CMAKE_BINARY_DIR}/curl-ca-bundle.crt" DESTINATION ${CMAKE_INSTALL_BINDIR})
+install(FILES "${CMAKE_BINARY_DIR}/steam_appid.txt"    DESTINATION ${CMAKE_INSTALL_BINDIR})
 
 if(WIN32)
     install(FILES "${CMAKE_BINARY_DIR}/steam_api64.dll" DESTINATION ${CMAKE_INSTALL_BINDIR})

@@ -88,7 +88,7 @@ int ShareCodeUpload::uploadShareCode(std::string shareCode, std::string &respons
     curl_easy_setopt(curl, CURLOPT_CONNECTTIMEOUT, 10L);
 
     // 6. SSL
-    curl_easy_setopt(curl, CURLOPT_CAINFO, "cacert.pem");
+    curl_easy_setopt(curl, CURLOPT_CAINFO, "curl-ca-bundle.crt");
     curl_easy_setopt(curl, CURLOPT_SSL_VERIFYPEER, 1L); // only for https
 
     // 7. setup method to handle the response data

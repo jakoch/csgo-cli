@@ -9,6 +9,9 @@ All notable changes to this project will be documented in this file.
 
 - switched continous integration service from Appveyor to Github Actions
 - added error message for "Cloudflare Captcha" as HTML reponse to ShareCodeUploader
+- removed batch based csgo-protobuf patch util, wrote new PatchCsGoProtobufs.cmake
+- fixed vcpkg issues on Github Actions
+- removed cacert.pem from dependencies, downloaded on-the-fly during cmake as curl-ca-bundle.crt
 
 ## [1.3.0] - 2020-11-22
 
