@@ -1,7 +1,7 @@
 # csgo-cli [![Build](https://github.com/jakoch/csgo-cli/actions/workflows/build.yml/badge.svg?branch=main)](https://github.com/jakoch/csgo-cli/actions/workflows/build.yml) [![Version](https://img.shields.io/badge/dynamic/json?url=https://raw.githubusercontent.com/jakoch/csgo-cli/main/vcpkg.json&label=Latest%20Version&query=$[%27version%27]&color=blue)](https://github.com/jakoch/csgo-cli/releases/latest) [![License](https://img.shields.io/github/license/jakoch/csgo-cli.svg)](https://github.com/jakoch/csgo-cli/blob/main/LICENSE)
 
 This console tool enables you to output informations of your CS:GO user profile and latest matches.
-You can also use the tool to upload demo sharecodes to csgostats.gg.
+You can also use the tool to upload demo sharecodes to https://csstats.gg/ (formerly csgostats.gg).
 
 ## Installation
 
