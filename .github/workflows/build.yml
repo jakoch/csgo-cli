@@ -37,12 +37,18 @@ jobs:
         uses: actions/checkout@v4 # https://github.com/actions/checkout
         with:
           submodules: true
+            
+      # https://community.chocolatey.org/packages/ccache
+      #- name: 🔽 Install ccache
+      #  run: choco install ccache
 
       # https://community.chocolatey.org/packages/ninja
+      - name: 🔽 Install Ninja
+        run: choco install ninja
+
       # https://community.chocolatey.org/packages/cmake
-      # https://community.chocolatey.org/packages/ccache
-      - name: 🔽 Install Ninja + CMake
-        run: choco install ninja cmake
+      - name: 🔽 Install CMake
+        run: choco install cmake --installargs 'ADD_CMAKE_TO_PATH=System'
 
       # https://github.com/actions/runner-images/blob/main/images/windows/Windows2022-Readme.md#visual-studio-enterprise-2022
       - name: 📥 Setup VC17 Environment (→ vcvars64)
