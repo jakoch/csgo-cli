@@ -1,7 +1,9 @@
 accountid
 APIKEY
+appveyor
 BINARYNAME
 bitnum
+cloudflare
 cmake
 commentpermission
 communityvisibilitystate
@@ -61,6 +63,7 @@ sharecode
 sharecodes
 Sharecodes
 spdlog
+sqlite
 steamapi
 steamdb
 STEAMGAMECOORDINATOR

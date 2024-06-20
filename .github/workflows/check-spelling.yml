@@ -25,5 +25,5 @@ jobs:
 
       - name: 🙏 Check Spelling using cspell
         run: |
-          export CSPELL_OUTPUT=$(sudo cspell -c cspell.json --no-summary .)
+          export CSPELL_OUTPUT=$(sudo cspell lint --no-summary --no-progress .)
           if [ -n "$CSPELL_OUTPUT" ]; then echo "$CSPELL_OUTPUT" && exit 1; fi;

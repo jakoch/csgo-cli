@@ -1,0 +1,68 @@
+{
+    "$schema": "https://raw.githubusercontent.com/streetsidesoftware/cspell/main/cspell.schema.json",
+    "version": "0.2",
+    "id": "csgo-cli-cspell-config",
+    "name": "csgo-cli cspell Config",
+    "language": "en-US,de-DE",
+    "globRoot": "../../",
+    "files": [
+        "*.md",
+        "docs/**/*.md",
+        "src/**/*.h",
+        "src/**/*.cpp",
+        "tests/**/*.h",
+        "tests/**/*.cpp"
+    ],
+    "ignorePaths": [
+        ".git/*/**",
+        ".git/!(COMMIT_EDITMSG)",
+         ".vscode/**",
+        ".clang-format",
+        "*.lock",
+        "*.log",
+        "*.json",
+        "*.cmake",
+        "*.bat",
+        "Changelog.md",
+        "CMakeLists.txt",
+        "cspell.json",
+        "cspell*.{json,yaml}",
+        "node_modules/**",
+        "build-tools/**",
+        "cmake/**",
+        "dependencies/**",
+        "downloads/**",
+        "out/**",
+        "resources/**",
+        "vcpkg_packages/**",
+        "src/ShareCode.cpp",
+        "src/ShareCode.h",
+        "tests/ShareCodeUpload.tests.cpp",
+        "src/steamapi/steamapi.cpp",
+        "/src/VersionAndConstants.h.in"
+    ],
+    "dictionaryDefinitions": [
+        {
+            "name": "repo-words",
+            "addWords": true,
+            "scope": [
+                "workspace"
+            ],
+            "path": "./repo-words.txt",
+            "description": "A list of words related to this repository."
+        }
+    ],
+    "dictionaries": [
+        "repo-words"
+    ],
+    "languageSettings": [
+        {
+            "languageId": "*",
+            "allowCompoundWords": false
+        },
+        {
+            "languageId": "markdown",
+            "caseSensitive": true
+        }
+    ]
+}

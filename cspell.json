@@ -1,5 +1,5 @@
 {
     "import": [
-        "build-tools/cspell/cspell.config.yml"
+        "build-tools/cspell/cspell.config.json"
     ]
 }
