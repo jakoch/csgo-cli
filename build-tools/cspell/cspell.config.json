@@ -70,9 +70,18 @@
     {
       "name": "src-csgo-headers",
       "pattern": "SRC_CSGO_[A-Z]+_H_"
+    },
+    {
+      "name": "src-csgostats-headers",
+      "pattern": "SRC_CSGOSTATS_[A-Z]+_H_"
+    },
+    {
+      "name": "src-headers",
+      "pattern": "SRC_[A-Z]+_H_"
     }
+
   ],
   "ignoreRegExpList": [
-    "src-csgo-headers"
+    "src-headers", "src-csgo-headers", "src-csgostats-headers"
   ]
 }
