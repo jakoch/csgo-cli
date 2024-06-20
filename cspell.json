@@ -1,0 +1,5 @@
+{
+    "import": [
+        "build-tools/cspell/cspell.config.yml"
+    ]
+}
