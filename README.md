@@ -1,9 +1,11 @@
-# csgo-cli
-
-[![Build](https://github.com/jakoch/csgo-cli/actions/workflows/build.yml/badge.svg?branch=main)](https://github.com/jakoch/csgo-cli/actions/workflows/build.yml) ![GitHub Release](https://img.shields.io/github/v/release/jakoch/csgo-cli?style=flat-square&label=Latest%20Release) [![Version](https://img.shields.io/badge/dynamic/json?url=https://raw.githubusercontent.com/jakoch/csgo-cli/main/vcpkg.json&label=Dev%20Version%20(main)&query=$[%27version%27]&color=blue)](https://github.com/jakoch/csgo-cli/releases/latest) [![License](https://img.shields.io/github/license/jakoch/csgo-cli.svg)](https://github.com/jakoch/csgo-cli/blob/main/LICENSE) [![C++ Quality](https://github.com/jakoch/csgo-cli/actions/workflows/cpp-quality.yml/badge.svg)](https://github.com/jakoch/csgo-cli/actions/workflows/cpp-quality.yml) [![Spell Check](https://github.com/jakoch/csgo-cli/actions/workflows/check-spelling.yml/badge.svg)](https://github.com/jakoch/csgo-cli/actions/workflows/check-spelling.yml)
+# csgo-cli ![GitHub Release](https://img.shields.io/github/v/release/jakoch/csgo-cli?style=flat-square&label=Latest%20Release) [![License](https://img.shields.io/github/license/jakoch/csgo-cli.svg)](https://github.com/jakoch/csgo-cli/blob/main/LICENSE)
 
 This console tool enables you to output pieces of information about your CS:GO user profile and latest matches.
 You can also use the tool to upload demo sharecodes to https://csstats.gg/ (formerly csgostats.gg).
+
+| Branch | CI | Code Quality | Spell Check |
+|--------|----|--------------|-------------|
+| [![Version](https://img.shields.io/badge/dynamic/json?url=https://raw.githubusercontent.com/jakoch/csgo-cli/main/vcpkg.json&label=Dev%20Version%20(main)&query=$[%27version%27]&color=blue)](https://github.com/jakoch/csgo-cli/releases/latest) | [![Build](https://github.com/jakoch/csgo-cli/actions/workflows/build.yml/badge.svg?branch=main)](https://github.com/jakoch/csgo-cli/actions/workflows/build.yml) | [![C++ Quality](https://github.com/jakoch/csgo-cli/actions/workflows/cpp-quality.yml/badge.svg)](https://github.com/jakoch/csgo-cli/actions/workflows/cpp-quality.yml) | [![Spell Check](https://github.com/jakoch/csgo-cli/actions/workflows/check-spelling.yml/badge.svg)](https://github.com/jakoch/csgo-cli/actions/workflows/check-spelling.yml)
 
 ## Installation
 
