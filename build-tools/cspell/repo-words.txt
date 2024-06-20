@@ -24,6 +24,7 @@ hellothread
 HWND
 ikbi
 infos
+jakoch
 Jens
 libcurl
 mapgroup
