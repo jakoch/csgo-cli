@@ -8,7 +8,7 @@ ignorePaths:
   - .git/*/**
   - .git/!(COMMIT_EDITMSG)
   - .vscode
-  - .clangformat
+  - .clang-format
   - vcpkg.json
   - '*.lock'
   - '*.log'
@@ -16,10 +16,12 @@ ignorePaths:
   - cspell.json
   - cspell*.{json,yaml}
   - /build-tools
+  - /cmake
   - /dependencies
   - /vcpkg_packages
-  - /src/ShareCode.cpp
-  - /src/steamapi/steamapi.cpp
+  - ./src/ShareCode.cpp
+  - ./src/steamapi/steamapi.cpp
+  - ./tests/ShareCodeUpload.tests.cpp
 dictionaryDefinitions:
   - name: repo-words
     addWords: true

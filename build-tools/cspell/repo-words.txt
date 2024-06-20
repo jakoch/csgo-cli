@@ -6,6 +6,7 @@ cmake
 commentpermission
 communityvisibilitystate
 complete
+cout
 csgo
 CSGOMM
 csgostats
@@ -21,8 +22,10 @@ hellothread
 HWND
 ikbi
 infos
+Jens
 libcurl
 mapgroup
+mapnames
 matchid
 matchinfo
 matchlist
@@ -32,6 +35,7 @@ Minorly
 MINV
 mlocati
 mmhello
+MPIR
 MSVC
 mvps
 nlohmann

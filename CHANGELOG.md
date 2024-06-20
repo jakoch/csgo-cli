@@ -7,8 +7,8 @@ All notable changes to this project will be documented in this file.
 
 ## [1.4.0] - 2020-09-12
 
-- switched continous integration service from Appveyor to Github Actions
-- added error message for "Cloudflare Captcha" as HTML reponse to ShareCodeUploader
+- switched continuos integration service from Appveyor to Github Actions
+- added error message for "Cloudflare Captcha" as HTML response to ShareCodeUploader
 - removed batch based csgo-protobuf patch util, wrote new PatchCsGoProtobufs.cmake
 - fixed vcpkg issues on Github Actions
 - removed cacert.pem from dependencies, downloaded on-the-fly during cmake as curl-ca-bundle.crt
@@ -26,14 +26,14 @@ All notable changes to this project will be documented in this file.
 - added display of "clan_name" and "clan_tag" to "-user"
 - fixed the calculation and display of "current_player_xp"
 - fixed crash after printing "-matches"
-- renamed all occurances of "demo" to "replay"
+- renamed all occurrences of "demo" to "replay"
 - added fmt to dependencies
   - added cli color support
   - switch output printing from std::cout to fmt::print/fmt::format
 
 ## [1.2.0] - 2020-11-05
 
-- added dns cache prepopulation to curl request handling
+- added curl request handling with prepopulated dns cache
 - refactored uploadShareCode function to do a single POST request
 - changed compilation triplet from "x64-windows-dynamic" to "x64-windows-static"
   - all 3th-party dependencies are now baked-in

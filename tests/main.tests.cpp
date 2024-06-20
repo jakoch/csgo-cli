@@ -25,7 +25,7 @@ int main( int argc, char* argv[] )
 
   int numFailed = session.run();
 
-  // numFailed is clamped to 255 as some unices only use the lower 8 bits.
+  // numFailed is clamped to 255 as some unixes only use the lower 8 bits.
   // This clamping has already been applied, so just return it here
   // You can also do any post run clean-up here
   return numFailed;
