@@ -31,8 +31,6 @@
 // Includes needed for _setmode() (+io.h)
 #include <fcntl.h>
 
-using WinCliColors;
-
 void initSteamAPI(bool& verbose)
 {
     if (verbose)
@@ -180,7 +178,7 @@ int main(int argc, char** argv)
             printHelp();
             return 0;
         } else if (option == "-V" || option == "--V" || option == "-version") {
-            fmt::print("{} version {}\n", formatLightGreen(CSGO_CLI_BINARYNAME), formatYellow(CSGO_CLI_VERSION));
+            fmt::print("{} version {}\n", WinCliColors::formatLightGreen(CSGO_CLI_BINARYNAME), WinCliColors::formatYellow(CSGO_CLI_VERSION));
             return 0;
         } else if (option == "-v" || option == "--v" || option == "-verbose") {
             paramVerbose = true;

@@ -14,7 +14,7 @@ static inline void uploadShareCode(std::string& sharecode, ShareCodeCache* match
 
     std::string jsonResponse;
 
-    fmt::print(" Uploading ShareCode: {}\n", formatTerminalYellow(sharecode));
+    fmt::print(" Uploading ShareCode: {}\n", WinCliColors::formatTerminalYellow(sharecode));
 
     if (codeUpload->uploadShareCode(sharecode, jsonResponse) == 0) {
         int upload_status = codeUpload->processJsonResponse(jsonResponse);
@@ -33,7 +33,7 @@ static inline void uploadShareCode(std::string& sharecode, ShareCodeCache* match
 void uploadReplayShareCodes(DataObject& data, bool& verbose)
 {
     if (!data.has_matches_played) {
-        printRed(" No replay sharecodes to upload.\n");
+        WinCliColors::printRed(" No replay sharecodes to upload.\n");
         return;
     }
 
@@ -50,7 +50,7 @@ void uploadReplayShareCodes(DataObject& data, bool& verbose)
 
 void uploadSingleShareCode(std::string& sharecode, bool& verbose)
 {
-    printTerminalYellow("\n Uploading Single Replay ShareCode to https://csgostats.gg/: \n\n");
+    WinCliColors::printTerminalYellow("\n Uploading Single Replay ShareCode to https://csgostats.gg/: \n\n");
 
     ShareCodeCache* matchCache  = new ShareCodeCache(verbose);
     ShareCodeUpload* codeUpload = new ShareCodeUpload(verbose);

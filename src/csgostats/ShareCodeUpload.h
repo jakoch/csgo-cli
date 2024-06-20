@@ -18,8 +18,6 @@
 #include <sstream>
 #include <stdio.h>
 
-using WinCliColors;
-
 class ShareCodeUpload
 {
 public:

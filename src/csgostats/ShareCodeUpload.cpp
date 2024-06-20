@@ -76,7 +76,7 @@ int ShareCodeUpload::uploadShareCode(std::string shareCode, std::string& respons
 
     // prepare user-agent identifier
     char ua_ident[100];
-    snprintf(ua_ident, "User-Agent: Mozilla/5.0 (compatible; %s)", CSGO_CLI_USERAGENT_ID);
+    printf(ua_ident, "User-Agent: Mozilla/5.0 (compatible; %s)", CSGO_CLI_USERAGENT_ID);
 
     // 4. set headers
     struct curl_slist* headers = NULL;
@@ -197,7 +197,7 @@ int ShareCodeUpload::processJsonResponse(std::string& jsonResponse)
         std::string const msg = data["msg"].get<std::string>();
 
         auto const result = fmt::format(" Result: {} -> {}. \n", status, msg);
-        printRed(result);
+        WinCliColors::printRed(result);
 
         return 3;
     }
@@ -220,7 +220,7 @@ int ShareCodeUpload::processJsonResponse(std::string& jsonResponse)
         std::string const url = data["url"].get<std::string>();
 
         auto const result = fmt::format(" Result: {} -> {} | {} \n", status, url, newMsg);
-        printDarkOrange(result);
+        WinCliColors::printDarkOrange(result);
 
         return 4;
     }
@@ -229,7 +229,7 @@ int ShareCodeUpload::processJsonResponse(std::string& jsonResponse)
         std::string const url = data["url"].get<std::string>();
 
         auto const result = fmt::format(" Result: {} -> {} \n", status, url);
-        printGreen(result);
+        WinCliColors::printGreen(result);
 
         return 5;
     }

@@ -16,13 +16,18 @@ std::string getYear()
 std::string getDateTime(time_t const & time, char const * time_format)
 {
     std::stringstream ss;
-    ss << std::put_time(localtime_r(&time), time_format);
+    ss << std::put_time(std::localtime(&time), time_format);
     return ss.str();
 }
 
 std::string format_duration_get_minutes(int msecs)
 {
-    using std::chrono;
+    using std::chrono::milliseconds;
+    using std::chrono::seconds;
+    using std::chrono::minutes;
+    using std::chrono::hours;
+    using std::chrono::duration_cast;
+
     auto ms   = milliseconds(msecs);
     auto secs = duration_cast<seconds>(ms);
     ms -= duration_cast<milliseconds>(secs);
