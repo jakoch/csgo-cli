@@ -17,15 +17,15 @@ namespace WinCliColors
 
         if (rlGetVersion == NULL) { return false; }
 
-        RTL_OSVERSIONINFOW rovi  = {0};
-        rovi.dwOSVersionInfoSize = sizeof(rovi);
+        RTL_OSVERSIONINFOW version_info  = {0};
+        version_info.dwOSVersionInfoSize = sizeof(version_info);
 
-        if (rlGetVersion(&rovi) != 0) { return false; }
+        if (rlGetVersion(&version_info) != 0) { return false; }
 
-        if (rovi.dwMajorVersion > MINV_MAJOR ||
-            (rovi.dwMajorVersion == MINV_MAJOR &&
-             (rovi.dwMinorVersion > MINV_MINOR ||
-              (rovi.dwMinorVersion == MINV_MINOR && rovi.dwBuildNumber >= MINV_BUILD)))) {
+        if (version_info.dwMajorVersion > MINV_MAJOR ||
+            (version_info.dwMajorVersion == MINV_MAJOR &&
+             (version_info.dwMinorVersion > MINV_MINOR ||
+              (version_info.dwMinorVersion == MINV_MINOR && version_info.dwBuildNumber >= MINV_BUILD)))) {
             return true;
         }
 

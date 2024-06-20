@@ -6,7 +6,7 @@
 #include <steam/isteamgamecoordinator.h>
 #include <steam/steam_api.h>
 
-// CSGO Protobufs
+// CSGO Protobuf's
 #include "cstrike15_gcmessages.pb.h"
 #include "engine_gcmessages.pb.h"
 #include "gcsdk_gcmessages.pb.h"
@@ -49,7 +49,7 @@ public:
     void RegisterHandler(uint32 msgId, IGCMsgHandler *handler);
 
     /**
-     * Removes a gc probouf msg handler
+     * Removes a gc protobuf msg handler
      */
     void RemoveHandler(uint32 msgId, IGCMsgHandler *handler);
 

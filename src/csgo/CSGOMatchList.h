@@ -20,7 +20,7 @@ public:
     const std::vector<CDataGCCStrike15_v2_MatchInfo> &Matches() const;
 
     int getOwnIndex(const CMsgGCCStrike15_v2_MatchmakingServerRoundStats &roundStats) const;
-    int getPlayerIndex(uint32 accid, const CMsgGCCStrike15_v2_MatchmakingServerRoundStats &roundStats) const;
+    int getPlayerIndex(uint32 accountId, const CMsgGCCStrike15_v2_MatchmakingServerRoundStats &roundStats) const;
     std::string getMatchResult(const CMsgGCCStrike15_v2_MatchmakingServerRoundStats &roundStats) const;
     int getMatchResultNum(const CMsgGCCStrike15_v2_MatchmakingServerRoundStats &roundStats) const;
 

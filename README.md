@@ -1,6 +1,6 @@
 # csgo-cli [![Build](https://github.com/jakoch/csgo-cli/actions/workflows/build.yml/badge.svg?branch=main)](https://github.com/jakoch/csgo-cli/actions/workflows/build.yml) [![Version](https://img.shields.io/badge/dynamic/json?url=https://raw.githubusercontent.com/jakoch/csgo-cli/main/vcpkg.json&label=Latest%20Version&query=$[%27version%27]&color=blue)](https://github.com/jakoch/csgo-cli/releases/latest) [![License](https://img.shields.io/github/license/jakoch/csgo-cli.svg)](https://github.com/jakoch/csgo-cli/blob/main/LICENSE)
 
-This console tool enables you to output informations of your CS:GO user profile and latest matches.
+This console tool enables you to output pieces of information about your CS:GO user profile and latest matches.
 You can also use the tool to upload demo sharecodes to https://csstats.gg/ (formerly csgostats.gg).
 
 ## Installation
@@ -9,7 +9,7 @@ The installation is easy. It's just a zipped folder containing the application.
 
 Download the zip file, extract it to a location of your choice and then run the app.
 
-- Download the lastest release of `csgo-cli-vX.Y.Z.zip` from Github: https://github.com/jakoch/csgo-cli/releases/latest
+- Download the latest release of `csgo-cli-vX.Y.Z.zip` from Github: https://github.com/jakoch/csgo-cli/releases/latest
 - Extract the zip file. Switch to the "csgo_cli" folder.
 - Then run `csgo_cli` on the command-line interface or just run `update.bat` to upload your recent matches.
 
@@ -23,37 +23,45 @@ Download the zip file, extract it to a location of your choice and then run the 
 
 Display commands:
 
-    csgo_cli
+```bash
+csgo_cli
+```
 
 Output:
 
-    csgo_cli v1.0.3, https://github.com/jakoch/csgo-cli
-    Copyright (c) 2018-2019 Jens A. Koch.
+```bash
+csgo_cli v1.0.3, https://github.com/jakoch/csgo-cli
+Copyright (c) 2018-2019 Jens A. Koch.
 
-     CS:GO Console shows your user account, stats and latest matches.
-     You can also use the tool to upload demo sharecodes to csgostats.gg.
+    CS:GO Console shows your user account, stats and latest matches.
+    You can also use the tool to upload demo sharecodes to csgostats.gg.
 
-    Usage:
-      command [options] [arguments]
+Usage:
+    command [options] [arguments]
 
-    Available commands:
-      -user           Show your profile (SteamID, AccountID, MM-Rank, Likes, VAC-Status)
-      -matches        Show your past matches in table form
-      -upload         Upload your past matches to csgostats.gg
-      -s, sharecode   Upload a demo sharecode to csgostats.gg
+Available commands:
+    -user           Show your profile (SteamID, AccountID, MM-Rank, Likes, VAC-Status)
+    -matches        Show your past matches in table form
+    -upload         Upload your past matches to csgostats.gg
+    -s, sharecode   Upload a demo sharecode to csgostats.gg
 
-    Options:
-      -h, help        Display this help message
-      -v, verbose     Increase verbosity of messages
-      -V, Version     Display application version
+Options:
+    -h, help        Display this help message
+    -v, verbose     Increase verbosity of messages
+    -V, Version     Display application version
+```
 
 Fetch matches and upload to csgostats (or just use `update.bat`):
 
-    csgo_cli -matches -upload
+```bash
+csgo_cli -matches -upload
+```
 
 If you encounter any issues, please use the verbose mode for debugging purposes:
 
-    csgo_cli -matches -upload -verbose
+```bash
+csgo_cli -matches -upload -verbose
+```
 
 ## How does this work internally?
 
@@ -61,7 +69,7 @@ The tool connects to your running Steam as CS:GO game client (SteamApp 730).
 It communicates with the Steam API to request the serialized player and match infos.
 The structure of the serialized data is described by the csgo-protobufs.
 These infos are then deserialized using Protobuf and placed into
-iteratable objects for further processing and output.
+iterable objects for further processing and output.
 
 #### Automatic Upload of Demo ShareCodes to http://csgostats.gg/
 
@@ -85,14 +93,14 @@ https://csgostats.gg/getting-the-sharecode
 The file containing the logic for uploading the ShareCode is ShareCodeUpload.cpp.
 
 uploadShareCode() uses cURL to POST the ShareCode.
-Posting data to csgostats.gg is difficult, because the server is Cloudflare protected.
-Even normal browsing behaviour can trigger a cloudflare redirect to a captcha page or a website ban.
+Posting data to csgostats.gg is difficult because the server is Cloudflare protected.
+Even normal browsing behavior can trigger a cloudflare redirect to a captcha page or a website ban.
 
 Before we can POST one or multiple sharecodes, a GET request to csgostats.gg is needed to get a cURL connection handle, including all relevant cookies.
 The cURL handle is then re-used for one or more POST requests (sending the cookies as header data and the sharecode(s) as post data).
 
-The reponse is then parsed by processJsonResponse().
-There are 4 response possibilites:
+The response is then parsed by processJsonResponse().
+There are 4 response possibilities:
 There is a HTML response by Cloudflare, the HTML captcha page.
 There are 3 JSON response types by csgostats.gg: error, queued, complete. See testProcessJsonResponse()
 
