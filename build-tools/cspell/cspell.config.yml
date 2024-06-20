@@ -4,12 +4,18 @@ $schema: https://raw.githubusercontent.com/streetsidesoftware/cspell/main/cspell
 version: "0.2"
 language: en-US,de-DE
 
+files:
+  - '*.md'
+  - docs/*.md
+  - src/**/*.h
+  - src/**/*.cpp
+  - tests/**/*.h
+  - tests/**/*.cpp
 ignorePaths:
   - .git/*/**
   - .git/!(COMMIT_EDITMSG)
   - .vscode
   - .clang-format
-  - vcpkg.json
   - '*.lock'
   - '*.log'
   - '*.json'
@@ -17,7 +23,6 @@ ignorePaths:
   - cspell.json
   - cspell*.{json,yaml}
   - CMakeLists.txt
-  - ./CMakeLists.txt
   - /build-tools
   - /cmake
   - /dependencies
@@ -37,3 +42,5 @@ dictionaries:
 languageSettings:
   - languageId: '*'
     allowCompoundWords: false
+  - languageId: 'markdown'
+    caseSensitive: true
