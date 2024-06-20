@@ -1,9 +1,12 @@
+// SPDX-FileCopyrightText: Copyright © 2018-present Jens A. Koch
+// SPDX-License-Identifier: GPL-3.0-or-later
+
 #include "SteamId.h"
 
 // 76561197960493477 -> 113874
 uint32 calcSteamID32(uint64 steamID64)
 {
-    const uint64 steamID64Base = 76561197960265728;
+    uint64 const steamID64Base = 76561197960265728;
     uint32 iSteamID32          = (steamID64 - steamID64Base);
     return iSteamID32;
 }

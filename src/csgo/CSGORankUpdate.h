@@ -1,9 +1,13 @@
-#ifndef CSGORankUpdate_H
-#define CSGORankUpdate_H
+// SPDX-FileCopyrightText: Copyright © 2018-present Jens A. Koch
+// SPDX-License-Identifier: GPL-3.0-or-later
+
+#ifndef SRC_CSGO_CSGORANKUPDATE_H_
+#define SRC_CSGO_CSGORANKUPDATE_H_
 
 #include "CSGOClient.h"
 
 #include <condition_variable>
+#include <vector>
 
 class CSGORankUpdate
 {
@@ -20,7 +24,7 @@ public:
     std::vector<CMsgGCCStrike15_v2_ClientGCRankUpdate> data;
 
 private:
-    void OnRankUpdate(const CMsgGCCStrike15_v2_ClientGCRankUpdate &msg);
+    void OnRankUpdate(CMsgGCCStrike15_v2_ClientGCRankUpdate const & msg);
 
 private:
     bool m_updateComplete = false;
@@ -29,4 +33,4 @@ private:
     GCMsgHandler<CMsgGCCStrike15_v2_ClientGCRankUpdate> m_rankUpdateHandler;
 };
 
-#endif
+#endif  // SRC_CSGO_CSGORANKUPDATE_H_

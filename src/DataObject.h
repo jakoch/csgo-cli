@@ -1,18 +1,22 @@
-#ifndef DataObject_H
-#define DataObject_H
+// SPDX-FileCopyrightText: Copyright © 2018-present Jens A. Koch
+// SPDX-License-Identifier: GPL-3.0-or-later
+
+#ifndef SRC_DATAOBJECT_H_
+#define SRC_DATAOBJECT_H_
 
 #include "DateTimeUtils.h"
 #include "csgo/CSGOMatchData.h" // for vector<MatchData> matches
 #include "cstrike15_gcmessages.pb.h"
 
 #include <ostream>
+#include <string>
 #include <steam/steamtypes.h>
 #include <vector>
 
 class DataObject
 {
 private:
-    const std::vector<std::string> ranks = {
+    std::vector<std::string> const ranks = {
         "Not Ranked",
         "Silver 1",
         "Silver 2",
@@ -34,7 +38,7 @@ private:
         "Global Elite",                  // big globe
     };
 
-    const std::vector<std::string> levels = {
+    std::vector<std::string> const levels = {
         "Not Recruited",      "Recruit",           "Private I",          "Private II",
         "Private III",        "Corporal I",        "Corporal II",        "Corporal III",
         "Corporal IV",        "Sergeant I",        "Sergeant II",        "Sergeant III",
@@ -47,7 +51,7 @@ private:
         "Brigadier General",  "Major General",     "Lieutenant General", "General",
         "Global General"};
 
-    const std::vector<std::string> dangerzone_ranks = {
+    std::vector<std::string> const dangerzone_ranks = {
         "Hidden",
         "Lab Rat I",
         "Lab Rat II",
@@ -65,7 +69,7 @@ private:
         "Wildfire Wolf",
         "The Howling Alpha"};
 
-    const std::vector<std::string> penalty_reasons_long = {
+    std::vector<std::string> const penalty_reasons_long = {
         "Temporary Matchmaking Cooldown (No reason)",
         "You have been kicked from your last matchmaking game.",
         "You killed too many teammates.",
@@ -87,7 +91,7 @@ private:
         "Your account is under skill placement calibration.",
         "A server using your game server token has been banned."};
 
-    const std::vector<std::string> penalty_reasons_short = {
+    std::vector<std::string> const penalty_reasons_short = {
         "CooldownNone"
         "Kicked"
         "KilledMate"
@@ -109,12 +113,12 @@ private:
         "NewbieCooldown"
         "GameServerBanned"};
 
-    const std::string steam_profile_url_base = "https://steamcommunity.com/profiles/";
+    std::string const steam_profile_url_base = "https://steamcommunity.com/profiles/";
 
-    // TODO
-    const std::string tpl_url_wingman_replays = "https://steamcommunity.com/id/{}/gcpd/730/?tab=matchhistorywingman";
+    // TODO(jakoch): add wingman.
+    std::string const tpl_url_wingman_replays = "https://steamcommunity.com/id/{}/gcpd/730/?tab=matchhistorywingman";
 
-    const int calcPlayerXpBase() const;
+    int const calcPlayerXpBase() const;
 
 public:
     std::string getSteamId();
@@ -122,7 +126,7 @@ public:
     std::string getPlayerLevel();
     std::string getPlayerRank(int rank_type_id);
     std::string getPlayerXp();
-    const float getPlayerXpPercentage();
+    float const getPlayerXpPercentage();
     std::string getVacStatus();
     std::string getLevelName(int i);
     std::string getRankName(int i);
@@ -160,9 +164,9 @@ public:
     uint32 cmd_leader   = 0;
 
     // player level
-    int32 player_level  = 0;
-    int32 player_cur_xp = 0; // starts at 327680000 (level % = (player_cur_xp - 327680000) / 5000)
-    int32 player_xp_bonus_flags = 0; // TODO
+    int32 player_level          = 0;
+    int32 player_cur_xp         = 0; // starts at 327680000 (level % = (player_cur_xp - 327680000) / 5000)
+    int32 player_xp_bonus_flags = 0; // TODO(jakoch): add bonus flag.
 
     // medals
     uint32 medals_arms   = 0;
@@ -200,4 +204,4 @@ public:
     };
     GlobalStats global_stats;
 };
-#endif
+#endif  // SRC_DATAOBJECT_H_

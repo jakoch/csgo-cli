@@ -1,8 +1,12 @@
-#ifndef CSGOMatchPlayerScore_H
-#define CSGOMatchPlayerScore_H
+// SPDX-FileCopyrightText: Copyright © 2018-present Jens A. Koch
+// SPDX-License-Identifier: GPL-3.0-or-later
+
+#ifndef SRC_CSGO_CSGOMATCHPLAYERSCORE_H_
+#define SRC_CSGO_CSGOMATCHPLAYERSCORE_H_
 
 #include "CSGOClient.h"
 #include <fmt/format.h>
+#include <string>
 
 /**
  * This struct represents the PlayerScoreboard.
@@ -31,4 +35,4 @@ public:
     std::string getScore() const;
 };
 
-#endif
+#endif  // SRC_CSGO_CSGOMATCHPLAYERSCORE_H_

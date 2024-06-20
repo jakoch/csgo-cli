@@ -1,5 +1,8 @@
-#ifndef CSGOMMHello_H
-#define CSGOMMHello_H
+// SPDX-FileCopyrightText: Copyright © 2018-present Jens A. Koch
+// SPDX-License-Identifier: GPL-3.0-or-later
+
+#ifndef SRC_CSGO_CSGOMMHELLO_H_
+#define SRC_CSGO_CSGOMMHELLO_H_
 
 #include "CSGOClient.h"
 
@@ -17,7 +20,7 @@ public:
     CMsgGCCStrike15_v2_MatchmakingGC2ClientHello data;
 
 private:
-    void OnMMHello(const CMsgGCCStrike15_v2_MatchmakingGC2ClientHello &msg);
+    void OnMMHello(CMsgGCCStrike15_v2_MatchmakingGC2ClientHello const & msg);
 
 private:
     bool m_updateComplete = false;
@@ -26,4 +29,4 @@ private:
     GCMsgHandler<CMsgGCCStrike15_v2_MatchmakingGC2ClientHello> m_mmhelloHandler;
 };
 
-#endif
+#endif  // SRC_CSGO_CSGOMMHELLO_H_

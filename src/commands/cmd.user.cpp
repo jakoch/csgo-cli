@@ -1,9 +1,13 @@
+// SPDX-FileCopyrightText: Copyright © 2018-present Jens A. Koch
+// SPDX-License-Identifier: GPL-3.0-or-later
+
 #include "cmd.user.h"
 #include "cstrike15_gcmessages.pb.h"
 
-bool requestPlayersProfile(DataObject &data, bool &verbose)
+bool requestPlayersProfile(DataObject& data, bool& verbose)
 {
-    if (verbose) spdlog::info("[ Start ] [ Thread ] getUserInfo");
+    if (verbose)
+        spdlog::info("[ Start ] [ Thread ] getUserInfo");
 
     bool result = false;
 
@@ -12,13 +16,17 @@ bool requestPlayersProfile(DataObject &data, bool &verbose)
             std::this_thread::sleep_for(std::chrono::milliseconds(CSGO_CLI_STEAM_HELLO_DELAY));
 
             CSGOMMHello mmhello;
-            if (verbose) spdlog::info("          Requesting: Hello");
+            if (verbose)
+                spdlog::info("          Requesting: Hello");
             mmhello.RefreshWait();
-            if (verbose) spdlog::info("          Got Hello");
+            if (verbose)
+                spdlog::info("          Got Hello");
 
             result = true;
 
-            if (verbose) { spdlog::debug("mmhello.data.DebugString {}", mmhello.data.DebugString()); }
+            if (verbose) {
+                spdlog::debug("mmhello.data.DebugString {}", mmhello.data.DebugString());
+            }
 
             // player level
             data.player_level          = mmhello.data.player_level();
@@ -57,11 +65,12 @@ bool requestPlayersProfile(DataObject &data, bool &verbose)
         } catch (CSGO_CLI_TimeoutException) {
             printError("Warning", "Timeout on receiving UserInfo.");
             result = false;
-        } catch (ExceptionHandler &e) {
+        } catch (ExceptionHandler& e) {
             printError("Fatal error", e.what());
             result = false;
         }
-        if (verbose) spdlog::info("[ End   ] [ Thread ] getUserInfo");
+        if (verbose)
+            spdlog::info("[ End   ] [ Thread ] getUserInfo");
         return 0;
     });
 
@@ -70,9 +79,10 @@ bool requestPlayersProfile(DataObject &data, bool &verbose)
     return result;
 }
 
-bool requestPlayersRankInfo(DataObject &data, bool &verbose)
+bool requestPlayersRankInfo(DataObject& data, bool& verbose)
 {
-    if (verbose) spdlog::info("[ Start ] [ Thread ] requestPlayersRankInfo");
+    if (verbose)
+        spdlog::info("[ Start ] [ Thread ] requestPlayersRankInfo");
 
     bool result = false;
 
@@ -82,15 +92,19 @@ bool requestPlayersRankInfo(DataObject &data, bool &verbose)
 
             CSGORankUpdate rankUpdate;
 
-            if (verbose) spdlog::info("          Requesting: rankUpdate for Wingman");
+            if (verbose)
+                spdlog::info("          Requesting: rankUpdate for Wingman");
             rankUpdate.RefreshWaitWingmanRank();
-            if (verbose) spdlog::info("          Got rankUpdate for Wingman");
+            if (verbose)
+                spdlog::info("          Got rankUpdate for Wingman");
 
             std::this_thread::sleep_for(std::chrono::milliseconds(500));
 
-            if (verbose) spdlog::info("          Requesting: rankUpdate for DangerZone");
+            if (verbose)
+                spdlog::info("          Requesting: rankUpdate for DangerZone");
             rankUpdate.RefreshWaitDangerZoneRank();
-            if (verbose) spdlog::info("          Got rankUpdate for DangerZone");
+            if (verbose)
+                spdlog::info("          Got rankUpdate for DangerZone");
 
             result = true;
 
@@ -122,11 +136,12 @@ bool requestPlayersRankInfo(DataObject &data, bool &verbose)
         } catch (CSGO_CLI_TimeoutException) {
             printError("Warning", "Timeout on receiving RankUpdate.");
             result = false;
-        } catch (ExceptionHandler &e) {
+        } catch (ExceptionHandler& e) {
             printError("Fatal error", e.what());
             result = false;
         }
-        if (verbose) spdlog::info("[ End   ] [ Thread ] rankUpdate");
+        if (verbose)
+            spdlog::info("[ End   ] [ Thread ] rankUpdate");
         return 0;
     });
 
@@ -135,7 +150,7 @@ bool requestPlayersRankInfo(DataObject &data, bool &verbose)
     return result;
 }
 
-void printPlayersProfile(DataObject &data)
+void printPlayersProfile(DataObject& data)
 {
     // ---------- Format Output Strings
 
@@ -168,13 +183,13 @@ void printPlayersProfile(DataObject &data)
 
     std::string dangerzone_rank = fmt::format("{} ({}/18) ({} wins)", dz_rank_name, dz_ranks.id, dz_ranks.wins);
 
-    // TODO how to access medals data?
+    // @todo(jakoch): how to access medals data?
     // auto medals = fmt::format("{} x arms, {} x combat, {} x global, {} x team, {} x weapon",
     //    data.medals_arms, data.medals_combat, data.medals_global, data.medals_team, data.medals_weapon);
 
     // ---------- Output Table
 
-    const auto printAligned{[=](const std::string &a, const std::string &b = "") {
+    auto const printAligned{[=](std::string const & a, std::string const & b = "") {
         return fmt::print(" {0:<18} {1}\n", a, b);
     }};
 

@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: Copyright © 2018-present Jens A. Koch
+// SPDX-License-Identifier: GPL-3.0-or-later
+
 #include <fmt/color.h>
 #include <fmt/format.h>
 #include <spdlog/spdlog.h>
@@ -5,15 +8,15 @@
 
 #include "../ErrorHandler.h"
 #include "../ExceptionHandler.h"
-#include "../VersionAndConstants.h"
 #include "../platform/windows/WinCliColors.h"
+#include "../VersionAndConstants.h"
 
+#include "../commands/cmd.globalstats.h"
 #include "../commands/cmd.help.h"
 #include "../commands/cmd.matches.h"
 #include "../commands/cmd.scoreboard.h"
 #include "../commands/cmd.upload.h"
 #include "../commands/cmd.user.h"
-#include "../commands/cmd.globalstats.h"
 
 #ifdef _WIN32
 #include <io.h>
@@ -28,13 +31,16 @@
 // Includes needed for _setmode() (+io.h)
 #include <fcntl.h>
 
-using namespace WinCliColors;
+using WinCliColors;
 
-void initSteamAPI(bool &verbose)
+void initSteamAPI(bool& verbose)
 {
-    if (verbose) spdlog::info("[ Start ] STEAM_INIT");
+    if (verbose)
+        spdlog::info("[ Start ] STEAM_INIT");
 
-    if (SteamAPI_RestartAppIfNecessary(k_uAppIdInvalid)) { exit(1); }
+    if (SteamAPI_RestartAppIfNecessary(k_uAppIdInvalid)) {
+        exit(1);
+    }
 
 #ifdef _WIN32
     int savedStderr;
@@ -63,55 +69,66 @@ void initSteamAPI(bool &verbose)
         exit(1);
     }
 
-    // TODO
-    // setPersonaState(Invisible) 7
+    // TODO(my_username): setPersonaState(Invisible) 7
 
-    if (verbose) { spdlog::info("[ End   ] STEAM_INIT"); }
+    if (verbose) {
+        spdlog::info("[ End   ] STEAM_INIT");
+    }
 }
 
-std::thread createCallbackThread(bool &running, bool &verbose)
+std::thread createCallbackThread(bool& running, bool& verbose)
 {
-    if (verbose) { spdlog::info("[ Start ] CallbackThread & Steam_RunCallbacks"); }
+    if (verbose) {
+        spdlog::info("[ Start ] CallbackThread & Steam_RunCallbacks");
+    }
 
     auto CallbackThread = std::thread([&running]() {
         while (running) {
             try {
                 std::this_thread::sleep_for(std::chrono::milliseconds(CSGO_CLI_STEAM_CALLBACK_INTERVAL));
                 SteamAPI_RunCallbacks();
-            } catch (ExceptionHandler &e) {
+            } catch (ExceptionHandler& e) {
                 printError("Fatal Error", e.what());
                 exit(1);
             }
-        };
+        }
     });
 
-    if (verbose) { spdlog::info("[ End   ] CallbackThread & Steam_RunCallbacks"); }
+    if (verbose) {
+        spdlog::info("[ End   ] CallbackThread & Steam_RunCallbacks");
+    }
 
     return CallbackThread;
 }
 
-void initGameClientConnection(DataObject &data, bool &verbose)
+void initGameClientConnection(DataObject& data, bool& verbose)
 {
-    if (verbose) { spdlog::info("[ Start ] Trying to establish a GameClient Connection"); }
+    if (verbose) {
+        spdlog::info("[ Start ] Trying to establish a GameClient Connection");
+    }
 
     bool result = false;
     try {
         // make sure we are connected to the GameClient
-        if (verbose) { spdlog::info("          -> Requesting: GameClient Connection"); }
+        if (verbose) {
+            spdlog::info("          -> Requesting: GameClient Connection");
+        }
         CSGOClient::GetInstance()->WaitForGameClientConnect();
-        if (verbose) { spdlog::info("          -> Successful: GameClient connected!"); }
+        if (verbose) {
+            spdlog::info("          -> Successful: GameClient connected!");
+        }
         result = true;
 
         data.account_id         = SteamUser()->GetSteamID().GetAccountID();
         data.steam_id           = SteamUser()->GetSteamID().ConvertToUint64();
         data.steam_player_level = SteamUser()->GetPlayerSteamLevel();
         // this is a "const char*" UTF data narrowing to std::string
-        data.playername = reinterpret_cast<const char *>(SteamFriends()->GetPersonaName());
+        data.playername = reinterpret_cast<char const *>(SteamFriends()->GetPersonaName());
 
         CSteamID clan_id = SteamFriends()->GetClanByIndex(0);
         data.clan_name   = SteamFriends()->GetClanName(clan_id);
         data.clan_tag    = SteamFriends()->GetClanTag(clan_id);
-    } catch (ExceptionHandler &e) {
+    } catch (ExceptionHandler& e) {
         printError("Fatal error", e.what());
         result = false;
     }
@@ -121,7 +138,9 @@ void initGameClientConnection(DataObject &data, bool &verbose)
         exit(1);
     }
 
-    if (verbose) { spdlog::info("[ End   ] Trying to establish a GameClient Connection"); }
+    if (verbose) {
+        spdlog::info("[ End   ] Trying to establish a GameClient Connection");
+    }
 }
 
 void exitIfGameIsRunning()
@@ -135,7 +154,7 @@ void exitIfGameIsRunning()
 #endif
 }
 
-int main(int argc, char **argv)
+int main(int argc, char** argv)
 {
     SetConsoleOutputCP(CP_UTF8);
     WinCliColors::enableConsoleColor(true);
@@ -190,8 +209,8 @@ int main(int argc, char **argv)
         }
     }
 
-    if (paramVerbose && !paramPrintUser && !paramPrintGlobalStats && !paramPrintMatches && !paramPrintScoreboard && !paramUploadShareCode &&
-        !paramUploadShareCodes) {
+    if (paramVerbose && !paramPrintUser && !paramPrintGlobalStats && !paramPrintMatches && !paramPrintScoreboard &&
+        !paramUploadShareCode && !paramUploadShareCodes) {
         printError("ERROR", "You are using (-v|-verbose) without any other command.");
         fmt::print("Please check: '{} -help'\n", CSGO_CLI_BINARYNAME);
         return 1;
@@ -247,15 +266,25 @@ int main(int argc, char **argv)
 
     // OUTPUT
 
-    if (paramPrintUser) { printPlayersProfile(data); }
+    if (paramPrintUser) {
+        printPlayersProfile(data);
+    }
 
-    if (paramPrintGlobalStats) { printGlobalStats(data); }
+    if (paramPrintGlobalStats) {
+        printGlobalStats(data);
+    }
 
-    if (paramPrintMatches) { printMatches(data); }
+    if (paramPrintMatches) {
+        printMatches(data);
+    }
 
-    if (paramPrintScoreboard) { printScoreboard(data); }
+    if (paramPrintScoreboard) {
+        printScoreboard(data);
+    }
 
-    if (paramUploadShareCodes) { uploadReplayShareCodes(data, paramVerbose); }
+    if (paramUploadShareCodes) {
+        uploadReplayShareCodes(data, paramVerbose);
+    }
 
     // SHUTDOWN
 

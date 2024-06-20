@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: Copyright © 2018-present Jens A. Koch
+// SPDX-License-Identifier: GPL-3.0-or-later
+
 #include "CSGOMatchPlayerScore.h"
 
 std::string CSGOMatchPlayerScore::getKillDeathRatio() const

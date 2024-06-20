@@ -1,13 +1,16 @@
+// SPDX-FileCopyrightText: Copyright © 2018-present Jens A. Koch
+// SPDX-License-Identifier: GPL-3.0-or-later
+
 #include "ShareCode.h"
 
-void quotientAndRemainder(uint64_t &a0, uint64_t &a1, uint16_t &a2, uint16_t m, uint16_t &r)
+void quotientAndRemainder(uint64_t& a0, uint64_t& a1, uint16_t& a2, uint16_t m, uint16_t& r)
 {
     r                             = 0;
     uint64_t q0                   = 0;
     uint64_t q1                   = 0;
     uint16_t q2                   = 0;
-    const unsigned int ull_bitnum = sizeof(uint64_t) * 8;
-    const unsigned int us_bitnum  = sizeof(uint16_t) * 8;
+    unsigned int const ull_bitnum = sizeof(uint64_t) * 8;
+    unsigned int const us_bitnum  = sizeof(uint16_t) * 8;
 
     for (int i = 2 * ull_bitnum + us_bitnum - 1; i >= 0; --i) {
         r <<= 1;
@@ -61,12 +64,12 @@ void quotientAndRemainder(uint64_t &a0, uint64_t &a1, uint16_t &a2, uint16_t m, 
 std::string getShareCode(uint64_t matchid, uint64_t reservationid, uint32_t tvport)
 {
     // charset for base57
-    const std::string dictionary = "ABCDEFGHJKLMNOPQRSTUVWXYZabcdefhijkmnopqrstuvwxyz23456789";
+    std::string const dictionary = "ABCDEFGHJKLMNOPQRSTUVWXYZabcdefhijkmnopqrstuvwxyz23456789";
 
     std::string code;
     uint64_t matchid_reversed       = _byteswap_uint64(matchid);
     uint64_t reservationid_reversed = _byteswap_uint64(reservationid);
-    uint16_t tvport_reversed        = _byteswap_ushort(*(uint16_t *)(&tvport));
+    uint16_t tvport_reversed        = _byteswap_ushort(*reinterpret_cast<uint16_t*>(&tvport));
     uint16_t r                      = 0;
     uint16_t dl                     = dictionary.length();
 
@@ -79,8 +82,9 @@ std::string getShareCode(uint64_t matchid, uint64_t reservationid, uint32_t tvpo
     // example: "CSGO-GADqf-jjyJ8-cSP2r-smZRo-TO2xK"
     char shareCode[35];
 
-    sprintf(
+    snprintf(
         shareCode,
+        sizeof(shareCode),
         "CSGO-%s-%s-%s-%s-%s",
         code.substr(0, 5).c_str(),
         code.substr(5, 5).c_str(),

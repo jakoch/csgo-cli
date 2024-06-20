@@ -1,5 +1,5 @@
 # A complete list of style options can be found at:
-# http://clang.llvm.org/docs/ClangFormatStyleOptions.html
+# https://clang.llvm.org/docs/ClangFormatStyleOptions.html
 #
 # Google C++ Style Guide
 # https://google.github.io/styleguide/cppguide.html
@@ -13,11 +13,19 @@
 # void formatted_code_again;
 #
 
+Language: Cpp
+
+# Basic indentation and spacing rules:
+IndentWidth: 4
+ContinuationIndentWidth: 4
+UseCRLF: false
+Standard: c++20
+UseTab: Never
+MaxEmptyLinesToKeep: 1
+
 AccessModifierOffset: -4
-ConstructorInitializerIndentWidth: 4
 AlignAfterOpenBracket: AlwaysBreak
 AlignConsecutiveAssignments: true
-#AlignConsecutiveBitFields: true
 AlignConsecutiveDeclarations: false
 AlignConsecutiveMacros: true
 AlignEscapedNewlinesLeft: true
@@ -26,7 +34,7 @@ AlignTrailingComments: true
 AllowAllParametersOfDeclarationOnNextLine: true
 AllowShortFunctionsOnASingleLine: Empty
 AllowShortBlocksOnASingleLine: true
-AllowShortIfStatementsOnASingleLine: true
+AllowShortIfStatementsOnASingleLine: false
 AllowShortLoopsOnASingleLine: false
 AllowShortLambdasOnASingleLine: Empty
 AllowShortCaseLabelsOnASingleLine: false
@@ -59,10 +67,8 @@ ColumnLimit: 120
 CompactNamespaces: true
 ConstructorInitializerAllOnOneLineOrOnePerLine: true
 ConstructorInitializerIndentWidth: 4
-ContinuationIndentWidth: 4
 Cpp11BracedListStyle: true
 DeriveLineEnding: true
-DerivePointerAlignment: false
 ExperimentalAutoDetectBinPacking: true
 FixNamespaceComments: true
 IncludeBlocks: Preserve
@@ -70,8 +76,6 @@ IndentCaseLabels: false
 IndentGotoLabels: false
 IndentPPDirectives: None
 IndentFunctionDeclarationAfterType: false
-IndentWidth: 4
-MaxEmptyLinesToKeep: 1
 NamespaceIndentation: All
 ObjCSpaceBeforeProtocolList: false
 PenaltyBreakBeforeFirstCallParameter: 10
@@ -80,8 +84,6 @@ PenaltyBreakFirstLessLess: 20
 PenaltyBreakString: 1000
 PenaltyExcessCharacter: 1000000
 PenaltyReturnTypeOnItsOwnLine: 200
-PointerAlignment: Right
-PointerBindsToType: true
 SortIncludes: false
 SpaceAfterControlStatementKeyword: true
 SpaceBeforeParens: ControlStatements
@@ -97,6 +99,12 @@ SpacesInConditionalStatement: false
 SpacesInContainerLiterals: false
 SpacesInParentheses: false
 SpacesInSquareBrackets: false
-Standard: c++20
-TabWidth: 4
-UseTab: Never
+
+# int* value instead of int *value
+DerivePointerAlignment: false
+PointerAlignment: Left
+PointerBindsToType: true
+SpaceAroundPointerQualifiers: After
+
+# Prefer "east const", placing `const` after the type: int const instead of const int
+QualifierAlignment: Right

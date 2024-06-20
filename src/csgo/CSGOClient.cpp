@@ -1,15 +1,18 @@
+// SPDX-FileCopyrightText: Copyright © 2018-present Jens A. Koch
+// SPDX-License-Identifier: GPL-3.0-or-later
+
 #include "CSGOClient.h"
 
-static const uint32_t ProtobufFlag = (1 << 31);
-CSGOClient *CSGOClient::m_instance = nullptr;
+static uint32_t const ProtobufFlag = (1 << 31);
+CSGOClient* CSGOClient::m_instance = nullptr;
 
 CSGOClient::CSGOClient() :
     m_welcomeHandler(this, &CSGOClient::OnClientWelcome),
     m_availableCb(this, &CSGOClient::OnMessageAvailable),
     m_failedCb(this, &CSGOClient::OnMessageFailed)
 {
-    m_gameCoordinator = (ISteamGameCoordinator *)SteamClient()->GetISteamGenericInterface(
-        SteamAPI_GetHSteamUser(), SteamAPI_GetHSteamPipe(), STEAMGAMECOORDINATOR_INTERFACE_VERSION);
+    m_gameCoordinator = reinterpret_cast<ISteamGameCoordinator*>(SteamClient()->GetISteamGenericInterface(
+    SteamAPI_GetHSteamUser(), SteamAPI_GetHSteamPipe(), STEAMGAMECOORDINATOR_INTERFACE_VERSION));
 
     RegisterHandler(k_EMsgGCClientWelcome, &m_welcomeHandler);
 
@@ -21,7 +24,7 @@ CSGOClient::CSGOClient() :
     }
 }
 
-EGCResults CSGOClient::SendGCMessage(uint32_t uMsgType, google::protobuf::Message *msg)
+EGCResults CSGOClient::SendGCMessage(uint32_t uMsgType, google::protobuf::Message* msg)
 {
     std::lock_guard<std::mutex> lock(m_sendMutex);
 
@@ -33,24 +36,28 @@ EGCResults CSGOClient::SendGCMessage(uint32_t uMsgType, google::protobuf::Messag
 
     auto size = body_size + 2 * sizeof(uint32_t);
 
-    if (m_msgBuffer.size() < size) { m_msgBuffer.resize(size); }
+    if (m_msgBuffer.size() < size) {
+        m_msgBuffer.resize(size);
+    }
 
     uMsgType |= ProtobufFlag;
 
-    ((uint32_t *)m_msgBuffer.data())[0] = uMsgType;
-    ((uint32_t *)m_msgBuffer.data())[1] = 0;
+    reinterpret_cast<uint32_t*>(m_msgBuffer.data())[0] = uMsgType;
+    reinterpret_cast<uint32_t*>(m_msgBuffer.data())[1] = 0;
 
     msg->SerializeToArray(m_msgBuffer.data() + 2 * sizeof(uint32_t), m_msgBuffer.size() - 2 * sizeof(uint32_t));
 
     return m_gameCoordinator->SendMessage(uMsgType, m_msgBuffer.data(), size);
 }
 
-void CSGOClient::OnMessageAvailable(GCMessageAvailable_t *msg)
+void CSGOClient::OnMessageAvailable(GCMessageAvailable_t* msg)
 {
     std::lock_guard<std::mutex> lock(m_recvMutex);
     std::lock_guard<std::mutex> lock2(m_handlerMutex);
 
-    if (m_recvBuffer.size() < msg->m_nMessageSize) { m_recvBuffer.resize(msg->m_nMessageSize); }
+    if (m_recvBuffer.size() < msg->m_nMessageSize) {
+        m_recvBuffer.resize(msg->m_nMessageSize);
+    }
 
     uint32_t msgType;
     uint32_t msgSize;
@@ -68,18 +75,18 @@ void CSGOClient::OnMessageAvailable(GCMessageAvailable_t *msg)
     }
 }
 
-void CSGOClient::OnMessageFailed(GCMessageFailed_t *msg)
+void CSGOClient::OnMessageFailed(GCMessageFailed_t* msg)
 {
     throw ExceptionHandler("Failed to deliver GC message");
 }
 
-void CSGOClient::RegisterHandler(uint32 msgId, IGCMsgHandler *handler)
+void CSGOClient::RegisterHandler(uint32 msgId, IGCMsgHandler* handler)
 {
     std::lock_guard<std::mutex> lock(m_handlerMutex);
     m_msgHandler.insert({msgId, handler});
 }
 
-void CSGOClient::RemoveHandler(uint32 msgId, IGCMsgHandler *handler)
+void CSGOClient::RemoveHandler(uint32 msgId, IGCMsgHandler* handler)
 {
     std::lock_guard<std::mutex> lock(m_handlerMutex);
 
@@ -93,9 +100,11 @@ void CSGOClient::RemoveHandler(uint32 msgId, IGCMsgHandler *handler)
     }
 }
 
-CSGOClient *CSGOClient::GetInstance()
+CSGOClient* CSGOClient::GetInstance()
 {
-    if (!m_instance) { m_instance = new CSGOClient(); }
+    if (!m_instance) {
+        m_instance = new CSGOClient();
+    }
 
     return m_instance;
 }
@@ -108,7 +117,9 @@ void CSGOClient::Destroy()
 
 void CSGOClient::WaitForGameClientConnect()
 {
-    if (m_connectedToGameClient) { return; }
+    if (m_connectedToGameClient) {
+        return;
+    }
 
     std::unique_lock<std::mutex> lock(m_connectedMutex);
     // if this takes longer than 10 seconds we are already connected to the gc
@@ -116,7 +127,7 @@ void CSGOClient::WaitForGameClientConnect()
     m_connectedToGameClient = true;
 }
 
-void CSGOClient::OnClientWelcome(const CMsgClientWelcome &msg)
+void CSGOClient::OnClientWelcome(CMsgClientWelcome const & msg)
 {
     // printf("Received welcome CS:GO Game Coordinator version %s (Connected to %s).",
     //  std::to_string(msg.version()).c_str(), msg.location().country().c_str());

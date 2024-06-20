@@ -1,6 +1,9 @@
+// SPDX-FileCopyrightText: Copyright © 2018-present Jens A. Koch
+// SPDX-License-Identifier: GPL-3.0-or-later
+
 #include "cmd.upload.h"
 
-static inline void uploadShareCode(std::string &sharecode, ShareCodeCache *matchCache, ShareCodeUpload *codeUpload)
+static inline void uploadShareCode(std::string& sharecode, ShareCodeCache* matchCache, ShareCodeUpload* codeUpload)
 {
     if (matchCache->find(sharecode)) {
         auto msg1 = fmt::format(fmt::fg(fmt::color::indian_red), "Skipped.");
@@ -27,7 +30,7 @@ static inline void uploadShareCode(std::string &sharecode, ShareCodeCache *match
     }
 }
 
-void uploadReplayShareCodes(DataObject &data, bool &verbose)
+void uploadReplayShareCodes(DataObject& data, bool& verbose)
 {
     if (!data.has_matches_played) {
         printRed(" No replay sharecodes to upload.\n");
@@ -37,20 +40,20 @@ void uploadReplayShareCodes(DataObject &data, bool &verbose)
     fmt::print(
         "\n Uploading Replay ShareCode{} to https://csgostats.gg/: \n\n", (data.num_matches_played == 1) ? "" : "s");
 
-    ShareCodeCache *matchCache  = new ShareCodeCache(verbose);
-    ShareCodeUpload *codeUpload = new ShareCodeUpload(verbose);
+    ShareCodeCache* matchCache  = new ShareCodeCache(verbose);
+    ShareCodeUpload* codeUpload = new ShareCodeUpload(verbose);
 
-    for (auto &match : data.matches) {
+    for (auto& match : data.matches) {
         uploadShareCode(match.sharecode, matchCache, codeUpload);
     }
 }
 
-void uploadSingleShareCode(std::string &sharecode, bool &verbose)
+void uploadSingleShareCode(std::string& sharecode, bool& verbose)
 {
     printTerminalYellow("\n Uploading Single Replay ShareCode to https://csgostats.gg/: \n\n");
 
-    ShareCodeCache *matchCache  = new ShareCodeCache(verbose);
-    ShareCodeUpload *codeUpload = new ShareCodeUpload(verbose);
+    ShareCodeCache* matchCache  = new ShareCodeCache(verbose);
+    ShareCodeUpload* codeUpload = new ShareCodeUpload(verbose);
 
     uploadShareCode(sharecode, matchCache, codeUpload);
 }

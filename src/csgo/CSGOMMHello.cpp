@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: Copyright © 2018-present Jens A. Koch
+// SPDX-License-Identifier: GPL-3.0-or-later
+
 #include "CSGOMMHello.h"
 #include "../ExceptionHandler.h"
 #include "../VersionAndConstants.h"
@@ -14,7 +17,7 @@ CSGOMMHello::~CSGOMMHello()
     CSGOClient::GetInstance()->RemoveHandler(k_EMsgGCCStrike15_v2_MatchmakingGC2ClientHello, &m_mmhelloHandler);
 }
 
-void CSGOMMHello::OnMMHello(const CMsgGCCStrike15_v2_MatchmakingGC2ClientHello &msg)
+void CSGOMMHello::OnMMHello(CMsgGCCStrike15_v2_MatchmakingGC2ClientHello const & msg)
 {
     std::unique_lock<std::mutex> lock(m_mmhelloMutex);
     data             = msg;
@@ -40,5 +43,7 @@ void CSGOMMHello::RefreshWait()
 
     m_updateCv.wait_for(lock, std::chrono::milliseconds(CSGO_CLI_STEAM_CMSG_TIMEOUT));
 
-    if (!m_updateComplete) { throw CSGO_CLI_TimeoutException(); }
+    if (!m_updateComplete) {
+        throw CSGO_CLI_TimeoutException();
+    }
 }

@@ -1,10 +1,15 @@
-#ifndef WinCliColors_H
-#define WinCliColors_H
+// SPDX-FileCopyrightText: Copyright © 2018-present Jens A. Koch
+// SPDX-License-Identifier: GPL-3.0-or-later
+
+#ifndef SRC_PLATFORM_WINDOWS_WINCLICOLORS_H_
+#define SRC_PLATFORM_WINDOWS_WINCLICOLORS_H_
 
 #include <fmt/color.h>
 #include <fmt/format.h>
 
 #include "Windows.h"
+
+#include <string>
 
 namespace WinCliColors
 {
@@ -26,4 +31,4 @@ namespace WinCliColors
 
 } // namespace WinCliColors
 
-#endif
+#endif  // SRC_PLATFORM_WINDOWS_WINCLICOLORS_H_

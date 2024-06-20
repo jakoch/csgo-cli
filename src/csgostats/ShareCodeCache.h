@@ -1,5 +1,8 @@
-#ifndef ShareCodeCache_H
-#define ShareCodeCache_H
+// SPDX-FileCopyrightText: Copyright © 2018-present Jens A. Koch
+// SPDX-License-Identifier: GPL-3.0-or-later
+
+#ifndef SRC_CSGOSTATS_SHARECODECACHE_H_
+#define SRC_CSGOSTATS_SHARECODECACHE_H_
 
 #include <filesystem>
 #include <fstream>
@@ -11,19 +14,19 @@
 class ShareCodeCache
 {
 public:
-    ShareCodeCache(bool verboseMode);
+    explicit ShareCodeCache(bool verboseMode);
     ~ShareCodeCache();
 
     bool find(std::string sharecode);
     bool insert(std::string sharecode);
 
 private:
-    const std::string csvFile = "sharecode.db";
+    std::string const csvFile = "sharecode.db";
     std::fstream matchDbFile;
 
     std::vector<std::string> sharecodeCache;
 
-    std::vector<std::string> read(std::istream &input);
+    std::vector<std::string> read(std::istream& input);
 };
 
-#endif
+#endif  // SRC_CSGOSTATS_SHARECODECACHE_H_

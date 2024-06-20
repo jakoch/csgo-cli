@@ -1,9 +1,12 @@
+// SPDX-FileCopyrightText: Copyright © 2018-present Jens A. Koch
+// SPDX-License-Identifier: GPL-3.0-or-later
+
 #include "cmd.help.h"
 
 void printHelp()
 {
-    const std::string binary  = WinCliColors::formatLightGreen(CSGO_CLI_BINARYNAME);
-    const std::string version = WinCliColors::formatYellow(CSGO_CLI_VERSION);
+    std::string const binary  = WinCliColors::formatLightGreen(CSGO_CLI_BINARYNAME);
+    std::string const version = WinCliColors::formatYellow(CSGO_CLI_VERSION);
 
     fmt::print("{} v{}, {}\n", binary, version, CSGO_CLI_WEBSITE);
     fmt::print("Copyright (c) 2018-{} Jens A. Koch.\n", getYear());

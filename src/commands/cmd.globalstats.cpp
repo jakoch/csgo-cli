@@ -1,6 +1,9 @@
+// SPDX-FileCopyrightText: Copyright © 2018-present Jens A. Koch
+// SPDX-License-Identifier: GPL-3.0-or-later
+
 #include "cmd.globalstats.h"
 
-bool requestGlobalStats(DataObject &data, bool &verbose)
+bool requestGlobalStats(DataObject& data, bool& verbose)
 {
 
     if (verbose) {
@@ -15,13 +18,17 @@ bool requestGlobalStats(DataObject &data, bool &verbose)
             std::this_thread::sleep_for(std::chrono::milliseconds(CSGO_CLI_STEAM_HELLO_DELAY));
 
             CSGOMMHello mmhello;
-            if (verbose) spdlog::info("          Requesting: Hello");
+            if (verbose)
+                spdlog::info("          Requesting: Hello");
             mmhello.RefreshWait();
-            if (verbose) spdlog::info("          Got Hello");
+            if (verbose)
+                spdlog::info("          Got Hello");
 
             result = true;
 
-            if (verbose) { spdlog::debug("mmhello.data.DebugString {}", mmhello.data.DebugString()); }
+            if (verbose) {
+                spdlog::debug("mmhello.data.DebugString {}", mmhello.data.DebugString());
+            }
 
             data.global_stats.ongoing_matches   = mmhello.data.global_stats().ongoing_matches();
             data.global_stats.players_online    = mmhello.data.global_stats().players_online();
@@ -31,16 +38,17 @@ bool requestGlobalStats(DataObject &data, bool &verbose)
             data.global_stats.search_time_avg   = mmhello.data.global_stats().search_time_avg();
 
             // Detailed Search Statistics (players searching per game_type)
-            //data.global_stats.                  mmhello.data.global_stats().search_statistics();
+            // data.global_stats.                  mmhello.data.global_stats().search_statistics();
 
         } catch (CSGO_CLI_TimeoutException) {
             printError("Warning", "Timeout on receiving UserInfo.");
             result = false;
-        } catch (ExceptionHandler &e) {
+        } catch (ExceptionHandler& e) {
             printError("Fatal error", e.what());
             result = false;
         }
-        if (verbose) spdlog::info("[ End   ] [ Thread ] getUserInfo");
+        if (verbose)
+            spdlog::info("[ End   ] [ Thread ] getUserInfo");
         return 0;
     });
 
@@ -49,13 +57,13 @@ bool requestGlobalStats(DataObject &data, bool &verbose)
     return result;
 }
 
-void printGlobalStats(DataObject &data)
+void printGlobalStats(DataObject& data)
 {
     // ---------- Format Output Strings
 
     // ---------- Output Table
 
-    const auto printAligned{[=](const std::string &a, const std::string &b = "") {
+    auto const printAligned{[=](std::string const & a, std::string const & b = "") {
         return fmt::print(" {0:<23} {1}\n", a, b);
     }};
 

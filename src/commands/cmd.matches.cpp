@@ -1,10 +1,15 @@
+// SPDX-FileCopyrightText: Copyright © 2018-present Jens A. Koch
+// SPDX-License-Identifier: GPL-3.0-or-later
+
 #include "cmd.matches.h"
 #include "spdlog/common.h"
 #include "spdlog/spdlog.h"
 
-bool requestRecentMatches(DataObject &data, bool &verbose)
+bool requestRecentMatches(DataObject& data, bool& verbose)
 {
-    if (verbose) { spdlog::info("[ Start ] [ Thread ] MatchList"); }
+    if (verbose) {
+        spdlog::info("[ Start ] [ Thread ] MatchList");
+    }
 
     bool result = false;
 
@@ -15,13 +20,19 @@ bool requestRecentMatches(DataObject &data, bool &verbose)
             // refresh match list
             CSGOMatchList matchList;
 
-            if (verbose) { spdlog::info("          -> requesting MatchList"); }
+            if (verbose) {
+                spdlog::info("          -> requesting MatchList");
+            }
             matchList.RefreshWait();
-            if (verbose) { spdlog::info("          -> got MatchList"); }
+            if (verbose) {
+                spdlog::info("          -> got MatchList");
+            }
 
             result = true;
 
-            if (verbose) { spdlog::info("[ Start ] processing MatchList"); }
+            if (verbose) {
+                spdlog::info("[ Start ] processing MatchList");
+            }
 
             // empty match history
             if (matchList.Matches().size() == 0) {
@@ -32,9 +43,11 @@ bool requestRecentMatches(DataObject &data, bool &verbose)
 
                 int matches_num = 1;
 
-                for (auto &match : matchList.Matches()) {
+                for (auto& match : matchList.Matches()) {
 
-                    if (verbose) { spdlog::info("[ Start ] processing Match #{}", matches_num); }
+                    if (verbose) {
+                        spdlog::info("[ Start ] processing Match #{}", matches_num);
+                    }
 
                     CSGOMatchData parsedMatch;
                     parsedMatch.matchid       = match.matchid();
@@ -48,7 +61,9 @@ bool requestRecentMatches(DataObject &data, bool &verbose)
                     parsedMatch.mapgroup  = match.watchablematchinfo().game_mapgroup();
                     parsedMatch.game_type = match.watchablematchinfo().game_type(); // this is nowadays 0
 
-                    if (verbose) { spdlog::info("{}", match.DebugString()); }
+                    if (verbose) {
+                        spdlog::info("{}", match.DebugString());
+                    }
 
                     // iterate roundstats
                     CMsgGCCStrike15_v2_MatchmakingServerRoundStats roundStats;
@@ -66,7 +81,7 @@ bool requestRecentMatches(DataObject &data, bool &verbose)
                         }
 
                         // ROUNDSTATS per player
-                        for (auto &account_id : roundStats.reservation().account_ids()) {
+                        for (auto& account_id : roundStats.reservation().account_ids()) {
 
                             CSGOMatchPlayerScore player;
                             player.index      = matchList.getPlayerIndex(account_id, roundStats);
@@ -82,7 +97,9 @@ bool requestRecentMatches(DataObject &data, bool &verbose)
 
                             parsedMatch.scoreboard.push_back(player);
 
-                            if (verbose) { spdlog::info("[ End   ] Match-Player"); }
+                            if (verbose) {
+                                spdlog::info("[ End   ] Match-Player");
+                            }
                         }
 
                         if (verbose) {
@@ -112,20 +129,26 @@ bool requestRecentMatches(DataObject &data, bool &verbose)
 
                     data.matches.push_back(parsedMatch);
 
-                    if (verbose) { spdlog::info("[ End   ] processing Match #{}", matches_num); }
+                    if (verbose) {
+                        spdlog::info("[ End   ] processing Match #{}", matches_num);
+                    }
                     matches_num++;
                 }
             }
-            if (verbose) { spdlog::info("[ End   ] processing MatchList"); }
+            if (verbose) {
+                spdlog::info("[ End   ] processing MatchList");
+            }
         } catch (CSGO_CLI_TimeoutException) {
             printError("Warning", "Timeout on receiving MatchList.");
             result = false;
-        } catch (ExceptionHandler &e) {
+        } catch (ExceptionHandler& e) {
             printError("Fatal Error", e.what());
             result = false;
         }
 
-        if (verbose) { spdlog::info("[ End   ] [ Thread ] MatchList"); }
+        if (verbose) {
+            spdlog::info("[ End   ] [ Thread ] MatchList");
+        }
 
         return 0;
     });
@@ -135,7 +158,7 @@ bool requestRecentMatches(DataObject &data, bool &verbose)
     return result;
 }
 
-void printMatches(DataObject &data)
+void printMatches(DataObject& data)
 {
     fmt::print("\n Hello {}!\n\n", data.playername);
 
@@ -150,19 +173,19 @@ void printMatches(DataObject &data)
         fmt::print(" Here are your {} latest matches:\n\n", data.num_matches_played);
     }
 
-    const auto printRow{[=](const std::string &s1,
-                            const std::string &s2,
-                            const std::string &s3,
-                            const std::string &s4,
-                            const std::string &s5,
-                            const std::string &s6) {
+    auto const printRow{[=](std::string const & s1,
+                            std::string const & s2,
+                            std::string const & s3,
+                            std::string const & s4,
+                            std::string const & s5,
+                            std::string const & s6) {
         return fmt::print("{0:^3} {1:<20} {2:^8} {3:^13} {4:^8} {5:^6} \n", s1, s2, s3, s4, s5, s6);
     }};
 
     printRow("#", "Match Played", "Duration", "Map", "Score", "Result\n");
 
     int i = 1;
-    for (const auto &match : data.matches) {
+    for (auto const & match : data.matches) {
         printRow(
             std::to_string(i),
             match.matchtime_str,

@@ -1,11 +1,20 @@
+// SPDX-FileCopyrightText: Copyright © 2018-present Jens A. Koch
+// SPDX-License-Identifier: GPL-3.0-or-later
+
 #include "DataObject.h"
 
 std::string DataObject::getPlayerRank(int rank_type_id)
 {
     int rank_id;
-    if (rank_type_id == 6) { rank_id = rankings.at(0).id; }
-    if (rank_type_id == 7) { rank_id = rankings.at(1).id; }
-    if (rank_type_id == 10) { rank_id = rankings.at(2).id; }
+    if (rank_type_id == 6) {
+        rank_id = rankings.at(0).id;
+    }
+    if (rank_type_id == 7) {
+        rank_id = rankings.at(1).id;
+    }
+    if (rank_type_id == 10) {
+        rank_id = rankings.at(2).id;
+    }
 
     int rank = (rank_id < 0) ? rank_id - 1 : rank_id;
 
@@ -19,7 +28,7 @@ std::string DataObject::getPlayerLevel()
     return getLevelName(level);
 }
 
-const int DataObject::calcPlayerXpBase() const
+int const DataObject::calcPlayerXpBase() const
 {
     return player_cur_xp - 327680000; // xp minus base value, gives normalized player xp
 }
@@ -29,9 +38,9 @@ std::string DataObject::getPlayerXp()
     return std::to_string(calcPlayerXpBase());
 }
 
-const float DataObject::getPlayerXpPercentage()
+float const DataObject::getPlayerXpPercentage()
 {
-    return ((float)calcPlayerXpBase() / 5000) * 100;
+    return (static_cast<float>(calcPlayerXpBase()) / 5000) * 100;
 }
 
 std::string DataObject::getVacStatus()
@@ -51,9 +60,15 @@ std::string DataObject::getRankName(int i)
 
 std::string DataObject::getRankType(int i)
 {
-    if (i == 6) { return "MatchMaking"; }
-    if (i == 7) { return "Wingman"; }
-    if (i == 10) { return "DangerZone"; }
+    if (i == 6) {
+        return "MatchMaking";
+    }
+    if (i == 7) {
+        return "Wingman";
+    }
+    if (i == 10) {
+        return "DangerZone";
+    }
     return "Unknown RankType";
 }
 
@@ -74,11 +89,15 @@ std::string DataObject::getSteamProfileUrl()
 std::string DataObject::getCanDoOverwatch()
 {
     RankingInfo matchmaking_rank = rankings.at(0);
-    int rank_id = matchmaking_rank.id;
-    int rank_wins = matchmaking_rank.wins;
+    int rank_id                  = matchmaking_rank.id;
+    int rank_wins                = matchmaking_rank.wins;
 
-    if (rank_id < 7) { return "Your rank is too low. " + getRankName(7) + " required."; }
-    if (rank_wins < 150) { return "You don't have enough wins: 150 required."; }
+    if (rank_id < 7) {
+        return "Your rank is too low. " + getRankName(7) + " required.";
+    }
+    if (rank_wins < 150) {
+        return "You don't have enough wins: 150 required.";
+    }
     return "Qualified to request replays.";
 }
 std::string DataObject::getAverageSearchTime()

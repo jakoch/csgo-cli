@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: Copyright © 2018-present Jens A. Koch
+// SPDX-License-Identifier: GPL-3.0-or-later
+
 #include "ShareCodeUpload.h"
 #include "../VersionAndConstants.h"
 
@@ -21,21 +24,21 @@ ShareCodeUpload::~ShareCodeUpload()
     curl_easy_cleanup(curl);
 }
 
-size_t CurlWrite_CallbackFunc_StdString(void *contents, size_t size, size_t nmemb, std::string *s)
+size_t CurlWrite_CallbackFunc_StdString(void* contents, size_t size, size_t nmemb, std::string* s)
 {
     size_t newLength = size * nmemb;
     size_t oldLength = s->size();
 
     try {
         s->resize(oldLength + newLength);
-    } catch (std::bad_alloc &e) {
+    } catch (std::bad_alloc& e) {
         // cast to void (formerly self-assign) to avoid unused/unreferenced variable e
         static_cast<void>(e);
         // handle memory problem
         return 0;
     }
 
-    std::copy((char *)contents, (char *)contents + newLength, s->begin() + oldLength);
+    std::copy(reinterpret_cast<char*>(contents), reinterpret_cast<char*>(contents) + newLength, s->begin() + oldLength);
 
     return size * nmemb;
 }
@@ -43,7 +46,7 @@ size_t CurlWrite_CallbackFunc_StdString(void *contents, size_t size, size_t nmem
 /*
   POST the CSGO Demo Sharecode to csgostats.gg
 */
-int ShareCodeUpload::uploadShareCode(std::string shareCode, std::string &responseContent)
+int ShareCodeUpload::uploadShareCode(std::string shareCode, std::string& responseContent)
 {
     CURLcode res;
 
@@ -66,16 +69,17 @@ int ShareCodeUpload::uploadShareCode(std::string shareCode, std::string &respons
     postData.append("&index=0");
 
     // 3. set data to POST
-    const char *data = postData.c_str();
-    curl_easy_setopt(curl, CURLOPT_POSTFIELDSIZE, (long)strlen(data));
+    char const * data = postData.c_str();
+    //curl_easy_setopt(curl, CURLOPT_POSTFIELDSIZE, (long)strlen(data));
+    curl_easy_setopt(curl, CURLOPT_POSTFIELDSIZE, static_cast<int64_t>(strlen(data)));
     curl_easy_setopt(curl, CURLOPT_POSTFIELDS, data);
 
     // prepare user-agent identifier
     char ua_ident[100];
-    sprintf(ua_ident, "User-Agent: Mozilla/5.0 (compatible; %s)", CSGO_CLI_USERAGENT_ID);
+    snprintf(ua_ident, "User-Agent: Mozilla/5.0 (compatible; %s)", CSGO_CLI_USERAGENT_ID);
 
     // 4. set headers
-    struct curl_slist *headers = NULL;
+    struct curl_slist* headers = NULL;
     headers                    = curl_slist_append(headers, "Accept: application/json, text/javascript, */*; q=0.01");
     headers                    = curl_slist_append(headers, "Accept-Language: en-US;q=0.8,en;q=0.7");
     headers                    = curl_slist_append(headers, ua_ident);
@@ -96,7 +100,9 @@ int ShareCodeUpload::uploadShareCode(std::string shareCode, std::string &respons
     curl_easy_setopt(curl, CURLOPT_WRITEDATA, &responseContent);
 
     // 8. enable verbose mode
-    if (verbose) { curl_easy_setopt(curl, CURLOPT_VERBOSE, 1L); }
+    if (verbose) {
+        curl_easy_setopt(curl, CURLOPT_VERBOSE, 1L);
+    }
 
     // perform the request
     res = curl_easy_perform(curl);
@@ -144,7 +150,7 @@ int ShareCodeUpload::uploadShareCode(std::string shareCode, std::string &respons
  * 4. Server-Side: Match queued / processing demo file
  * 5. Server-Side: complete
  */
-int ShareCodeUpload::processJsonResponse(std::string &jsonResponse)
+int ShareCodeUpload::processJsonResponse(std::string& jsonResponse)
 {
     // response empty?
     if (jsonResponse.empty()) {
@@ -167,8 +173,8 @@ int ShareCodeUpload::processJsonResponse(std::string &jsonResponse)
     nlohmann::json json;
     try {
         json = nlohmann::json::parse(jsonResponse);
-    } catch (nlohmann::json::parse_error &e) {
-        const auto msg = fmt::format(
+    } catch (nlohmann::json::parse_error& e) {
+        auto const msg = fmt::format(
             "Message: {}\n Exception Id: {}\n Byte position of parsing error: {}\n", e.what(), e.id, e.byte);
         printError("JsonParsingError", msg.c_str());
         return 2;
@@ -180,49 +186,49 @@ int ShareCodeUpload::processJsonResponse(std::string &jsonResponse)
         printError("Error", "Json Response does not contain the keys \"status\" and \"data\".");
         return 2;
     }
-    const auto status = json["status"].get<std::string>();
-    const auto data   = json["data"];
+    auto const status = json["status"].get<std::string>();
+    auto const data   = json["data"];
 
     /*
        csgostats.gg has 4 json responses to a sharecode POST request: error, queued, retrying, complete.
     */
 
     if (status == "error") {
-        const std::string msg = data["msg"].get<std::string>();
+        std::string const msg = data["msg"].get<std::string>();
 
-        const auto result = fmt::format(" Result: {} -> {}. \n", status, msg);
+        auto const result = fmt::format(" Result: {} -> {}. \n", status, msg);
         printRed(result);
 
         return 3;
     }
 
     if (status == "queued" || status == "retrying") {
-        const std::string msg = data["msg"].get<std::string>();
+        std::string const msg = data["msg"].get<std::string>();
 
         // msg contains HTML crap, let's cut that out
         std::string msgHtml = msg;
         std::string newMsg(" ");
 
         // get the "in queue #X" part (start of value (char 0) to char "<"span)
-        const std::string queuedString = msgHtml.substr(0, msgHtml.find("<"));
+        std::string const queuedString = msgHtml.substr(0, msgHtml.find("<"));
         newMsg.append(queuedString);
 
         // get the "time remaining part (start of value (char "~" + 1) to end)
-        const std::string timeString = msgHtml.substr(msgHtml.find("~") + 1, -1);
+        std::string const timeString = msgHtml.substr(msgHtml.find("~") + 1, -1);
         newMsg.append(timeString);
 
-        const std::string url = data["url"].get<std::string>();
+        std::string const url = data["url"].get<std::string>();
 
-        const auto result = fmt::format(" Result: {} -> {} | {} \n", status, url, newMsg);
+        auto const result = fmt::format(" Result: {} -> {} | {} \n", status, url, newMsg);
         printDarkOrange(result);
 
         return 4;
     }
 
     if (status == "complete") {
-        const std::string url = data["url"].get<std::string>();
+        std::string const url = data["url"].get<std::string>();
 
-        const auto result = fmt::format(" Result: {} -> {} \n", status, url);
+        auto const result = fmt::format(" Result: {} -> {} \n", status, url);
         printGreen(result);
 
         return 5;

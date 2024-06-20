@@ -1,5 +1,8 @@
-#ifndef VersionAndConstants_H
-#define VersionAndConstants_H
+// SPDX-FileCopyrightText: Copyright © 2018-present Jens A. Koch
+// SPDX-License-Identifier: GPL-3.0-or-later
+
+#ifndef SRC_VERSIONANDCONSTANTS_H_
+#define SRC_VERSIONANDCONSTANTS_H_
 
 // Application Name
 #define CSGO_CLI_BINARYNAME "csgo_cli"
@@ -25,4 +28,4 @@ struct CSGO_CLI_TimeoutException
 {
 };
 
-#endif
+#endif  // SRC_VERSIONANDCONSTANTS_H_

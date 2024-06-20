@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: Copyright © 2018-present Jens A. Koch
+// SPDX-License-Identifier: GPL-3.0-or-later
+
 #include "ShareCodeCache.h"
 
 ShareCodeCache::ShareCodeCache(bool verboseMode)
@@ -15,7 +18,7 @@ ShareCodeCache::ShareCodeCache(bool verboseMode)
     if (verboseMode) {
         // debug print sharecode cache
         printf(" Cached Sharecodes: %zd \n", sharecodeCache.size());
-        for (auto const &sharecode : sharecodeCache) {
+        for (auto const & sharecode : sharecodeCache) {
             printf(" \"%s\" \n", sharecode.c_str());
         }
         printf("\n");
@@ -30,8 +33,10 @@ ShareCodeCache::ShareCodeCache(bool verboseMode)
 
 bool ShareCodeCache::find(std::string sharecode)
 {
-    for (auto const &sharecodeFromCache : sharecodeCache) {
-        if (sharecode.compare(sharecodeFromCache.c_str()) == 0) { return true; }
+    for (auto const & sharecodeFromCache : sharecodeCache) {
+        if (sharecode.compare(sharecodeFromCache.c_str()) == 0) {
+            return true;
+        }
     }
     return false;
 }
@@ -47,7 +52,7 @@ bool ShareCodeCache::insert(std::string sharecode)
     return false;
 }
 
-std::vector<std::string> ShareCodeCache::read(std::istream &is)
+std::vector<std::string> ShareCodeCache::read(std::istream& is)
 {
     std::vector<std::string> tokens;
     std::string token;

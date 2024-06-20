@@ -1,5 +1,8 @@
-#ifndef CSGOMatchData_H
-#define CSGOMatchData_H
+// SPDX-FileCopyrightText: Copyright © 2018-present Jens A. Koch
+// SPDX-License-Identifier: GPL-3.0-or-later
+
+#ifndef SRC_CSGO_CSGOMATCHDATA_H_
+#define SRC_CSGO_CSGOMATCHDATA_H_
 
 #include <fmt/color.h>
 #include <fmt/format.h>
@@ -13,7 +16,7 @@
 struct CSGOMatchData
 {
 private:
-    // TODO find out, if this is correct?
+    // TODO(jakoch): find out, if this is correct?
     // the idea is that "lastRound.reservation.game_type" is the "map_name"
     enum GameTypes
     {
@@ -59,7 +62,7 @@ private:
         case GameTypes::de_workout:
             return "de_workout";
             // omit default case to trigger compiler warning for missing cases
-        };
+        }
         return std::to_string(static_cast<std::uint32_t>(game_type));
     };
 
@@ -98,7 +101,7 @@ public:
         return fmt::format("{:02} : {:02}", score_ally, score_enemy);
     }
 
-    // TODO how to get mapname?
+    // @todo(jakoch): how to get mapname?
     std::string getMapname() const
     {
         return (map.empty() ? "? " : map);
@@ -121,4 +124,4 @@ public:
     }
 };
 
-#endif
+#endif  // SRC_CSGO_CSGOMATCHDATA_H_

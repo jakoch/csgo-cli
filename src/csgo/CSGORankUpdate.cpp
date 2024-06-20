@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: Copyright © 2018-present Jens A. Koch
+// SPDX-License-Identifier: GPL-3.0-or-later
+
 #include "CSGORankUpdate.h"
 #include "../ExceptionHandler.h"
 #include "../VersionAndConstants.h"
@@ -14,7 +17,7 @@ CSGORankUpdate::~CSGORankUpdate()
     CSGOClient::GetInstance()->RemoveHandler(k_EMsgGCCStrike15_v2_ClientGCRankUpdate, &m_rankUpdateHandler);
 }
 
-void CSGORankUpdate::OnRankUpdate(const CMsgGCCStrike15_v2_ClientGCRankUpdate &msg)
+void CSGORankUpdate::OnRankUpdate(CMsgGCCStrike15_v2_ClientGCRankUpdate const & msg)
 {
     std::unique_lock<std::mutex> lock(m_rankUpdateMutex);
     data.push_back(msg);
@@ -51,7 +54,9 @@ void CSGORankUpdate::RefreshWaitWingmanRank()
 
     m_updateCv.wait_for(lock, std::chrono::milliseconds(CSGO_CLI_STEAM_CMSG_TIMEOUT + 10000));
 
-    if (!m_updateComplete) { throw CSGO_CLI_TimeoutException(); }
+    if (!m_updateComplete) {
+        throw CSGO_CLI_TimeoutException();
+    }
 }
 
 void CSGORankUpdate::RefreshWaitDangerZoneRank()
@@ -62,5 +67,7 @@ void CSGORankUpdate::RefreshWaitDangerZoneRank()
 
     m_updateCv.wait_for(lock, std::chrono::milliseconds(CSGO_CLI_STEAM_CMSG_TIMEOUT + 10000));
 
-    if (!m_updateComplete) { throw CSGO_CLI_TimeoutException(); }
+    if (!m_updateComplete) {
+        throw CSGO_CLI_TimeoutException();
+    }
 }

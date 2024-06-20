@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: Copyright © 2018-present Jens A. Koch
+// SPDX-License-Identifier: GPL-3.0-or-later
+
 #include "DateTimeUtils.h"
 
 std::string getYear()
@@ -10,17 +13,17 @@ std::string getYear()
     return ss.str();
 }
 
-std::string getDateTime(const time_t &time, const char *time_format)
+std::string getDateTime(time_t const & time, char const * time_format)
 {
     std::stringstream ss;
-    ss << std::put_time(localtime(&time), time_format);
+    ss << std::put_time(localtime_r(&time), time_format);
     return ss.str();
 }
 
 std::string format_duration_get_minutes(int msecs)
 {
-    using namespace std::chrono;
-    auto ms = milliseconds(msecs);
+    using std::chrono;
+    auto ms   = milliseconds(msecs);
     auto secs = duration_cast<seconds>(ms);
     ms -= duration_cast<milliseconds>(secs);
     auto mins = duration_cast<minutes>(secs);

@@ -1,12 +1,16 @@
-#ifndef ShareCode_H
-#define ShareCode_H
+// SPDX-FileCopyrightText: Copyright © 2018-present Jens A. Koch
+// SPDX-License-Identifier: GPL-3.0-or-later
+
+#ifndef SRC_SHARECODE_H_
+#define SRC_SHARECODE_H_
 
 #include <intrin.h>
 #include <iostream>
 #include <ostream>
 #include <regex>
+#include <string>
 
-void quotientAndRemainder(uint64_t &a0, uint64_t &a1, uint16_t &a2, uint16_t m, uint16_t &r);
+void quotientAndRemainder(uint64_t& a0, uint64_t& a1, uint16_t& a2, uint16_t m, uint16_t& r);
 
 /**
  * Generate a demo share code from its object data and return its string representation.
@@ -36,4 +40,4 @@ std::string getShareCode(uint64_t matchid, uint64_t reservationid, uint32_t tvpo
 std::string fromDemoShareCode(std::string sharecode);
 */
 
-#endif
+#endif  // SRC_SHARECODE_H_
