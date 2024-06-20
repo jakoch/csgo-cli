@@ -20,9 +20,9 @@ ignorePaths:
   - /cmake
   - /dependencies
   - /vcpkg_packages
-  - ./src/ShareCode.cpp
-  - ./src/steamapi/steamapi.cpp
-  - ./tests/ShareCodeUpload.tests.cpp
+  - /src/ShareCode.cpp
+  - /src/steamapi/steamapi.cpp
+  - /tests/ShareCodeUpload.tests.cpp
 dictionaryDefinitions:
   - name: repo-words
     addWords: true
