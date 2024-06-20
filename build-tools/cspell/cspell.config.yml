@@ -15,6 +15,7 @@ ignorePaths:
   - '*.json'
   - cspell.json
   - cspell*.{json,yaml}
+  - CMakeLists.txt
   - /build-tools
   - /cmake
   - /dependencies
