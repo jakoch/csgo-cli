@@ -13,16 +13,18 @@ ignorePaths:
   - '*.lock'
   - '*.log'
   - '*.json'
+  - '*.cmake'
   - cspell.json
   - cspell*.{json,yaml}
   - CMakeLists.txt
+  - ./CMakeLists.txt
   - /build-tools
   - /cmake
   - /dependencies
   - /vcpkg_packages
-  - /src/ShareCode.cpp
-  - /src/steamapi/steamapi.cpp
-  - /tests/ShareCodeUpload.tests.cpp
+  - ./src/ShareCode.cpp
+  - ./src/ShareCode.h
+  - ./tests/ShareCodeUpload.tests.cpp
 dictionaryDefinitions:
   - name: repo-words
     addWords: true
