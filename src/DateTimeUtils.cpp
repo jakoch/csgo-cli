@@ -22,11 +22,11 @@ std::string getDateTime(time_t const & time, char const * time_format)
 
 std::string format_duration_get_minutes(int msecs)
 {
-    using std::chrono::milliseconds;
-    using std::chrono::seconds;
-    using std::chrono::minutes;
-    using std::chrono::hours;
     using std::chrono::duration_cast;
+    using std::chrono::hours;
+    using std::chrono::milliseconds;
+    using std::chrono::minutes;
+    using std::chrono::seconds;
 
     auto ms   = milliseconds(msecs);
     auto secs = duration_cast<seconds>(ms);
