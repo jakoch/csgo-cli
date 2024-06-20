@@ -78,10 +78,13 @@
     {
       "name": "src-headers",
       "pattern": "SRC_[A-Z]+_H_"
+    },
+    {
+      "name": "src-platform-windows-headers",
+      "pattern": "SRC_PLATFORM_WINDOWS_[A-Z]+_H_"
     }
-
   ],
   "ignoreRegExpList": [
-    "src-headers", "src-csgo-headers", "src-csgostats-headers"
+    "src-headers", "src-csgo-headers", "src-csgostats-headers", "src-platform-windows-headers"
   ]
 }
