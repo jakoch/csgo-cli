@@ -12,4 +12,4 @@ static inline void printError(char const * title, char const * text)
     fprintf(stdout, "\x1B[91m%s:\033[0m %s\n", title, text);
 }
 
-#endif  // SRC_ERRORHANDLER_H_
+#endif // SRC_ERRORHANDLER_H_

@@ -40,4 +40,4 @@ std::string getShareCode(uint64_t matchid, uint64_t reservationid, uint32_t tvpo
 std::string fromDemoShareCode(std::string sharecode);
 */
 
-#endif  // SRC_SHARECODE_H_
+#endif // SRC_SHARECODE_H_

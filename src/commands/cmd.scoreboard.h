@@ -10,4 +10,4 @@
 
 void printScoreboard(DataObject& data);
 
-#endif  // SRC_COMMANDS_CMD_SCOREBOARD_H_
+#endif // SRC_COMMANDS_CMD_SCOREBOARD_H_

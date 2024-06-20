@@ -103,4 +103,4 @@ private:
     std::multimap<uint32, IGCMsgHandler*> m_msgHandler;
 };
 
-#endif  // SRC_CSGO_CSGOCLIENT_H_
+#endif // SRC_CSGO_CSGOCLIENT_H_

@@ -13,4 +13,4 @@
 
 void printHelp();
 
-#endif  // SRC_COMMANDS_CMD_HELP_H_
+#endif // SRC_COMMANDS_CMD_HELP_H_

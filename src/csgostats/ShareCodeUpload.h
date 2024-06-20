@@ -40,4 +40,4 @@ private:
     CURL* initCurlConnection();
 };
 
-#endif  // SRC_CSGOSTATS_SHARECODEUPLOAD_H_
+#endif // SRC_CSGOSTATS_SHARECODEUPLOAD_H_

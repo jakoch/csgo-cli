@@ -17,4 +17,4 @@ private:
     std::string m_what;
 };
 
-#endif  // SRC_EXCEPTIONHANDLER_H_
+#endif // SRC_EXCEPTIONHANDLER_H_

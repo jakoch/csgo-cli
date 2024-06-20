@@ -29,4 +29,4 @@ private:
     GCMsgHandler<CMsgGCCStrike15_v2_MatchmakingGC2ClientHello> m_mmhelloHandler;
 };
 
-#endif  // SRC_CSGO_CSGOMMHELLO_H_
+#endif // SRC_CSGO_CSGOMMHELLO_H_

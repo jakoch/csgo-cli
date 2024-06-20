@@ -42,4 +42,4 @@ private:
     GCMsgHandler<CMsgGCCStrike15_v2_MatchList> m_matchListHandler;
 };
 
-#endif  // SRC_CSGO_CSGOMATCHLIST_H_
+#endif // SRC_CSGO_CSGOMATCHLIST_H_

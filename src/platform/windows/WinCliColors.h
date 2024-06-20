@@ -31,4 +31,4 @@ namespace WinCliColors
 
 } // namespace WinCliColors
 
-#endif  // SRC_PLATFORM_WINDOWS_WINCLICOLORS_H_
+#endif // SRC_PLATFORM_WINDOWS_WINCLICOLORS_H_

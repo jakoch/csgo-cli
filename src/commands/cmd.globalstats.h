@@ -14,4 +14,4 @@
 bool requestGlobalStats(DataObject& data, bool& verbose);
 void printGlobalStats(DataObject& data);
 
-#endif  // SRC_COMMANDS_CMD_GLOBALSTATS_H_
+#endif // SRC_COMMANDS_CMD_GLOBALSTATS_H_

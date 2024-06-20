@@ -204,4 +204,4 @@ public:
     };
     GlobalStats global_stats;
 };
-#endif  // SRC_DATAOBJECT_H_
+#endif // SRC_DATAOBJECT_H_

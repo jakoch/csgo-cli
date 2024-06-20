@@ -33,4 +33,4 @@ private:
     GCMsgHandler<CMsgGCCStrike15_v2_ClientGCRankUpdate> m_rankUpdateHandler;
 };
 
-#endif  // SRC_CSGO_CSGORANKUPDATE_H_
+#endif // SRC_CSGO_CSGORANKUPDATE_H_

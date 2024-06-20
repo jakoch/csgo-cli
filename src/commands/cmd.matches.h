@@ -18,4 +18,4 @@
 bool requestRecentMatches(DataObject& data, bool& verbose);
 void printMatches(DataObject& data);
 
-#endif  // SRC_COMMANDS_CMD_MATCHES_H_
+#endif // SRC_COMMANDS_CMD_MATCHES_H_

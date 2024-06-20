@@ -29,4 +29,4 @@ private:
     std::vector<std::string> read(std::istream& input);
 };
 
-#endif  // SRC_CSGOSTATS_SHARECODECACHE_H_
+#endif // SRC_CSGOSTATS_SHARECODECACHE_H_

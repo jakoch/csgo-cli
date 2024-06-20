@@ -12,7 +12,7 @@ CSGOClient::CSGOClient() :
     m_failedCb(this, &CSGOClient::OnMessageFailed)
 {
     m_gameCoordinator = reinterpret_cast<ISteamGameCoordinator*>(SteamClient()->GetISteamGenericInterface(
-    SteamAPI_GetHSteamUser(), SteamAPI_GetHSteamPipe(), STEAMGAMECOORDINATOR_INTERFACE_VERSION));
+        SteamAPI_GetHSteamUser(), SteamAPI_GetHSteamPipe(), STEAMGAMECOORDINATOR_INTERFACE_VERSION));
 
     RegisterHandler(k_EMsgGCClientWelcome, &m_welcomeHandler);
 

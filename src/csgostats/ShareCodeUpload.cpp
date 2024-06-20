@@ -70,7 +70,7 @@ int ShareCodeUpload::uploadShareCode(std::string shareCode, std::string& respons
 
     // 3. set data to POST
     char const * data = postData.c_str();
-    //curl_easy_setopt(curl, CURLOPT_POSTFIELDSIZE, (long)strlen(data));
+    // curl_easy_setopt(curl, CURLOPT_POSTFIELDSIZE, (long)strlen(data));
     curl_easy_setopt(curl, CURLOPT_POSTFIELDSIZE, static_cast<int64_t>(strlen(data)));
     curl_easy_setopt(curl, CURLOPT_POSTFIELDS, data);
 

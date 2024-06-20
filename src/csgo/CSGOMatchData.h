@@ -124,4 +124,4 @@ public:
     }
 };
 
-#endif  // SRC_CSGO_CSGOMATCHDATA_H_
+#endif // SRC_CSGO_CSGOMATCHDATA_H_

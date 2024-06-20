@@ -51,4 +51,4 @@ private:
     CallbackThread m_handler;
 };
 
-#endif  // SRC_CSGO_GCMSGHANDLER_H_
+#endif // SRC_CSGO_GCMSGHANDLER_H_

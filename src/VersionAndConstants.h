@@ -28,4 +28,4 @@ struct CSGO_CLI_TimeoutException
 {
 };
 
-#endif  // SRC_VERSIONANDCONSTANTS_H_
+#endif // SRC_VERSIONANDCONSTANTS_H_

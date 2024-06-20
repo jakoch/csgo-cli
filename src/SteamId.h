@@ -9,7 +9,6 @@
 #include <sstream>
 #include <cmath>
 
-
 // 76561197960493477 -> 113874
 uint32 calcSteamID32(uint64 steamID64);
 
@@ -19,4 +18,4 @@ std::string toSteamID32(uint64 steamID64);
 // steamID32: STEAM_0:1:113874
 std::string toSteamIDClassic(uint64 steamID64);
 
-#endif  // SRC_STEAMID_H_
+#endif // SRC_STEAMID_H_

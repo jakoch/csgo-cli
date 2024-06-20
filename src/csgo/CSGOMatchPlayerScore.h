@@ -35,4 +35,4 @@ public:
     std::string getScore() const;
 };
 
-#endif  // SRC_CSGO_CSGOMATCHPLAYERSCORE_H_
+#endif // SRC_CSGO_CSGOMATCHPLAYERSCORE_H_
