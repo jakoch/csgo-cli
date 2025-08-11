@@ -136,7 +136,7 @@ if (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
   message(STATUS "MSVC_TOOLSET_VERSION: 		${MSVC_TOOLSET_VERSION}")
   message(STATUS "CMAKE_MSVC_RUNTIME_LIBRARY: 	${CMAKE_MSVC_RUNTIME_LIBRARY}")
 
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /std:c++latest")
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /std:c++latest /utf-8")
 
   # MSVC warning suppressions
   add_definitions(-D_CRT_SECURE_NO_WARNINGS)
