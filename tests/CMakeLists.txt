@@ -32,6 +32,10 @@ add_executable(test_suite ${TEST_SOURCES})
 
 target_compile_features(test_suite PUBLIC cxx_std_20)
 
+if(MSVC)
+    target_compile_options(test_suite PUBLIC /utf-8)
+endif()
+
 target_include_directories(test_suite
   PUBLIC
     ${PROJECT_SOURCE_DIR}/src
