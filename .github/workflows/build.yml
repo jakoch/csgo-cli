@@ -19,6 +19,7 @@ jobs:
 # ---------------------------------------------------------------------------------------
 
     name: "Windows VC17"
+    # https://github.com/actions/runner-images
     runs-on: windows-2022
 
     env:

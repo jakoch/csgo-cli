@@ -35,7 +35,7 @@
     "node_modules/**",
     "out/**",
     "resources/**",
-    "vcpkg_packages/**",
+    "vcpkg_installed/**",
     "src/ShareCode.cpp",
     "src/ShareCode.h",
     "src/steamapi/steamapi.cpp",
