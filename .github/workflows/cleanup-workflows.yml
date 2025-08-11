@@ -69,7 +69,9 @@ jobs:
           // add the workflows runs to remove here
           const workflows = [
             'build.yml',
-            'publish-PR-test-results.yml'            
+            'check-spelling.yml',
+            'cpp-quality.yml',
+            'publish-PR-test-results.yml'
           ]
           let runs_to_delete = [];
           for (const workflow of workflows) {
@@ -128,6 +130,60 @@ jobs:
             console.log(`[Deleting] Run id ${run[0]} of '${run[1]}'.`);
             try {
               await github.actions.deleteWorkflowRun({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                run_id: run[0]
+              });
+            } catch (error) {
+              // ignore errors
+            }
+          }
+
+    - name: ✂ Remove Dependabot workflow runs
+      uses: actions/github-script@v7 # https://github.com/actions/github-script
+      with:
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+        script: |
+          const pages = 5;
+          let runs_to_delete = [];
+          // Get all workflows
+          const { data: workflowsData } = await github.rest.actions.listRepoWorkflows({
+            owner: context.repo.owner,
+            repo: context.repo.repo
+          });
+          // Find workflow by name
+          const workflowName = "Dependabot Updates";
+          const workflow = workflowsData.workflows.find(w => w.name === workflowName);
+          if (!workflow) {
+            console.log(`❌ No workflow named ${workflowName} found.`);
+            return;
+          }
+          const workflowId = workflow.id;
+          console.log(`✅ Found workflow ID: ${workflowId}`);
+          // Fetch workflow runs
+          for (let page = 0; page < pages; page += 1) {
+            const response = await github.rest.actions.listWorkflowRuns({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              workflow_id: workflowId, // Use dynamically fetched ID
+              page: page,
+              per_page: 50,
+            });
+            if (response.data.workflow_runs.length === 0) break;
+            if (response.data.workflow_runs.length > 0) {
+              for (const run of response.data.workflow_runs) {
+                if (run.triggering_actor?.login === 'dependabot[bot]') {
+                  runs_to_delete.push([run.id, run.name]);
+                }
+              }
+            }
+            if (response.data.workflow_runs.length < 50) break;
+          }
+          // Delete workflow runs
+          for (const run of runs_to_delete) {
+            console.log(`[Deleting] Run id ${run[0]} of '${run[1]}'.`);
+            try {
+              await github.rest.actions.deleteWorkflowRun({
                 owner: context.repo.owner,
                 repo: context.repo.repo,
                 run_id: run[0]
