@@ -23,13 +23,14 @@
 #include <windows.h>
 #endif
 
-#include <string>
 #include <cstdio>
 #include <iomanip>
 #include <iostream>
 #include <ostream>
 #include <sstream>
+#include <string>
 #include <thread>
+
 // Includes needed for _setmode() (+io.h)
 #include <fcntl.h>
 

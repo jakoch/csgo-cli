@@ -3,6 +3,8 @@
 
 #include "WinCliColors.h"
 
+#include <string>
+
 // console color heck by mlocati: https://gist.github.com/mlocati/21a9233ac83f7d3d7837535bc109b3b7
 typedef NTSTATUS(WINAPI* RtlGetVersionPtr)(PRTL_OSVERSIONINFOW);
 

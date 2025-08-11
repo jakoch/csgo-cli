@@ -4,8 +4,8 @@
 #ifndef SRC_ERRORHANDLER_H_
 #define SRC_ERRORHANDLER_H_
 
-#include <iostream>
 #include <cstdio>
+#include <iostream>
 #include <spdlog/spdlog.h>
 
 static inline void printError(char const * title, char const * text)
