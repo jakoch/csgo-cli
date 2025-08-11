@@ -298,7 +298,7 @@ endif()
 message(STATUS "Found protoc: ${Protobuf_PROTOC_EXECUTABLE}")
 
 # Find Protobuf package
-find_package(Protobuf 29.5.0 CONFIG REQUIRED)
+find_package(Protobuf CONFIG REQUIRED)
 
 #
 # SteamDatabase Protobufs Data Files
