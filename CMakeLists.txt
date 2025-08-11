@@ -1,6 +1,17 @@
 cmake_minimum_required(VERSION 3.30 FATAL_ERROR)
 
 #-------------------------------------------------------------------
+# Setup CMake
+#-------------------------------------------------------------------
+
+set(CMAKE_FIND_LIBRARY_PREFIXES ";")
+set(CMAKE_FIND_LIBRARY_SUFFIXES ";")
+
+# Generate CompilationDatabase in `compile_commands.json`.
+# The file is used by build tools and IntelliSense (VSCode, YouCompleteMe, etc).
+set(CMAKE_EXPORT_COMPILE_COMMANDS 1)
+
+#-------------------------------------------------------------------
 # Setup CMake Policies
 #-------------------------------------------------------------------
 
@@ -24,17 +35,23 @@ if(POLICY CMP0069)
 endif()
 
 #-------------------------------------------------------------------
-# CMake Project
+# Get Versioning Data
 #-------------------------------------------------------------------
 
 # vcpkg.json is the primary source for version data
 file(READ ${CMAKE_SOURCE_DIR}/vcpkg.json VCPKG_JSON_STRING)
 string(JSON APP_VERSION GET ${VCPKG_JSON_STRING} "version")
 
+#-------------------------------------------------------------------
+# Project
+#-------------------------------------------------------------------
+
 project(csgo_cli VERSION ${APP_VERSION} LANGUAGES CXX)
 
-# inject version data into version header
-# write to build folder (not to source folder!)
+#-------------------------------------------------------------------
+# Versioning
+#-------------------------------------------------------------------
+
 configure_file(
     "${PROJECT_SOURCE_DIR}/src/VersionAndConstants.h.in"
     "${CMAKE_CURRENT_BINARY_DIR}/src/VersionAndConstants.h"
@@ -49,14 +66,9 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake")
 
 include(FindPackageHandleStandardArgs)
 include(ShowBuildTargetProperties)
+include(SetupVcpkg)
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
-
-#-------------------------------------------------------------------
-# Setup Dependency Manager: VCPKG
-#-------------------------------------------------------------------
-
-include(setup-vcpkg)
 
 # ==================================================================================================
 # Options
@@ -119,10 +131,10 @@ if (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
   message(STATUS "\n-- Compiler and platform toolset:\n")
 
   # Report compiler and platform toolset
-  message(STATUS "USING COMPILER: ${CMAKE_CXX_COMPILER_ID}")
-  message(STATUS "MSVC_VERSION: ${MSVC_VERSION}")
-  message(STATUS "MSVC_TOOLSET_VERSION: ${MSVC_TOOLSET_VERSION}")
-  message(STATUS "CMAKE_MSVC_RUNTIME_LIBRARY: ${CMAKE_MSVC_RUNTIME_LIBRARY}")
+  message(STATUS "USING COMPILER: 				${CMAKE_CXX_COMPILER_ID}")
+  message(STATUS "MSVC_VERSION: 				${MSVC_VERSION}")
+  message(STATUS "MSVC_TOOLSET_VERSION: 		${MSVC_TOOLSET_VERSION}")
+  message(STATUS "CMAKE_MSVC_RUNTIME_LIBRARY: 	${CMAKE_MSVC_RUNTIME_LIBRARY}")
 
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /std:c++latest")
 
@@ -286,7 +298,7 @@ endif()
 message(STATUS "Found protoc: ${Protobuf_PROTOC_EXECUTABLE}")
 
 # Find Protobuf package
-find_package(Protobuf CONFIG REQUIRED)
+find_package(Protobuf 29.5.0 CONFIG REQUIRED)
 
 #
 # SteamDatabase Protobufs Data Files
