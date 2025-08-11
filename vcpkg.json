@@ -12,7 +12,7 @@
       "features": [
         "http2",
         "ssl",
-        "winssl"
+        "schannel"
       ]
     },
     "fmt",
