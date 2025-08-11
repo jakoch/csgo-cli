@@ -6,6 +6,9 @@
 
 #include <iostream>
 #include <thread>
+#include <algorithm>
+#include <cstdio>
+#include <string>
 
 ShareCodeUpload::ShareCodeUpload(bool verboseMode)
 {

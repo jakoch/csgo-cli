@@ -3,6 +3,8 @@
 
 #include "cmd.help.h"
 
+#include <string>
+
 void printHelp()
 {
     std::string const binary  = WinCliColors::formatLightGreen(CSGO_CLI_BINARYNAME);

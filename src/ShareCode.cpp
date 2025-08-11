@@ -3,6 +3,8 @@
 
 #include "ShareCode.h"
 
+#include <string>
+
 void quotientAndRemainder(uint64_t& a0, uint64_t& a1, uint16_t& a2, uint16_t m, uint16_t& r)
 {
     r                             = 0;

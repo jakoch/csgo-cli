@@ -3,6 +3,8 @@
 
 #include "DateTimeUtils.h"
 
+#include <string>
+
 std::string getYear()
 {
     auto now       = std::chrono::system_clock::now();

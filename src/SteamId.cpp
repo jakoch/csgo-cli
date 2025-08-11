@@ -3,6 +3,8 @@
 
 #include "SteamId.h"
 
+#include <string>
+
 // 76561197960493477 -> 113874
 uint32 calcSteamID32(uint64 steamID64)
 {

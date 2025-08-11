@@ -3,6 +3,8 @@
 
 #include "cmd.scoreboard.h"
 
+#include <string>
+
 void printScoreboard(DataObject& data)
 {
     if (!data.has_matches_played) {

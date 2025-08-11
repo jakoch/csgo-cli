@@ -4,6 +4,8 @@
 #include "cmd.user.h"
 #include "cstrike15_gcmessages.pb.h"
 
+#include <string>
+
 bool requestPlayersProfile(DataObject& data, bool& verbose)
 {
     if (verbose)

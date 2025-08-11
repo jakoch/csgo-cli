@@ -3,6 +3,8 @@
 
 #include "ExceptionHandler.h"
 
+#include <string>
+
 ExceptionHandler::ExceptionHandler(std::string const & what) : m_what(what) { }
 
 char const * ExceptionHandler::what() const throw()

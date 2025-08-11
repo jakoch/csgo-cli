@@ -3,6 +3,8 @@
 
 #include "cmd.globalstats.h"
 
+#include <string>
+
 bool requestGlobalStats(DataObject& data, bool& verbose)
 {
 

@@ -3,6 +3,8 @@
 
 #include "DataObject.h"
 
+#include <string>
+
 std::string DataObject::getPlayerRank(int rank_type_id)
 {
     int rank_id;

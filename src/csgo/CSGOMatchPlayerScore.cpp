@@ -3,6 +3,8 @@
 
 #include "CSGOMatchPlayerScore.h"
 
+#include <string>
+
 std::string CSGOMatchPlayerScore::getKillDeathRatio() const
 {
     return fmt::format("{}", kills / deaths);

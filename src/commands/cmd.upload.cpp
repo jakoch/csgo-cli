@@ -3,6 +3,8 @@
 
 #include "cmd.upload.h"
 
+#include <string>
+
 static inline void uploadShareCode(std::string& sharecode, ShareCodeCache* matchCache, ShareCodeUpload* codeUpload)
 {
     if (matchCache->find(sharecode)) {

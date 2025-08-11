@@ -5,6 +5,7 @@
 #define SRC_ERRORHANDLER_H_
 
 #include <iostream>
+#include <cstdio>
 #include <spdlog/spdlog.h>
 
 static inline void printError(char const * title, char const * text)

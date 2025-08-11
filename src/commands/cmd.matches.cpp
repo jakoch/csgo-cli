@@ -5,6 +5,8 @@
 #include "spdlog/common.h"
 #include "spdlog/spdlog.h"
 
+#include <string>
+
 bool requestRecentMatches(DataObject& data, bool& verbose)
 {
     if (verbose) {

@@ -3,6 +3,10 @@
 
 #include "ShareCodeCache.h"
 
+#include <cstdio>
+#include <vector>
+#include <string>
+
 ShareCodeCache::ShareCodeCache(bool verboseMode)
 {
     // create file, if not exists

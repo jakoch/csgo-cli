@@ -23,6 +23,8 @@
 #include <windows.h>
 #endif
 
+#include <string>
+#include <cstdio>
 #include <iomanip>
 #include <iostream>
 #include <ostream>
