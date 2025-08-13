@@ -24,11 +24,14 @@ jobs:
 
     name: "Publish Test Results"
     runs-on: ubuntu-latest
+    # Do not publish tests:
+    # - when the "Build on Windows" workflow has status failure, cancelled, or skipped (not success),
+    # - when the run was triggered by dependabot,
+    # - when the run was triggered by a workflow from a forked repository.
     if: >
-      github.event.workflow_run.conclusion != 'skipped' && (
-        github.event.sender.login != 'dependabot[bot]' ||
-        github.event.workflow_run.head_repository.full_name != github.repository
-      )
+      github.event.workflow_run.conclusion == 'success' &&
+      github.event.sender.login != 'dependabot[bot]' &&
+      github.event.workflow_run.head_repository.full_name != github.repository
 
     steps:
       - name: 🔽 Download Artifacts
