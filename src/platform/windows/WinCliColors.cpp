@@ -12,6 +12,8 @@ namespace WinCliColors
 {
     bool consoleHasColorSupport()
     {
+        // Check for Windows 10 (build 10586, from 2015).
+        // This build added ANSI Escape Sequence support.
         constexpr DWORD MINV_MAJOR = 10;
         constexpr DWORD MINV_MINOR = 0;
         constexpr DWORD MINV_BUILD = 10586;
