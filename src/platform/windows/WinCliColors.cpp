@@ -12,32 +12,36 @@ namespace WinCliColors
 {
     bool consoleHasColorSupport()
     {
-        const DWORD MINV_MAJOR = 10, MINV_MINOR = 0, MINV_BUILD = 10586;
+        constexpr DWORD MINV_MAJOR = 10;
+        constexpr DWORD MINV_MINOR = 0;
+        constexpr DWORD MINV_BUILD = 10586;
 
-        HMODULE hMod = GetModuleHandle(TEXT("ntdll.dll"));
-
+        HMODULE hMod = GetModuleHandleW(L"ntdll.dll");
         if (!hMod) {
             return false;
         }
 
-        RtlGetVersionPtr rlGetVersion = (RtlGetVersionPtr)GetProcAddress(hMod, "RtlGetVersion");
-
-        if (rlGetVersion == NULL) {
+        auto rlGetVersion = reinterpret_cast<RtlGetVersionPtr>(GetProcAddress(hMod, "RtlGetVersion"));
+        if (!rlGetVersion) {
             return false;
         }
 
-        RTL_OSVERSIONINFOW version_info  = {0};
+        RTL_OSVERSIONINFOW version_info{};
         version_info.dwOSVersionInfoSize = sizeof(version_info);
-
         if (rlGetVersion(&version_info) != 0) {
             return false;
         }
 
-        if (version_info.dwMajorVersion > MINV_MAJOR ||
-            (version_info.dwMajorVersion == MINV_MAJOR &&
-             (version_info.dwMinorVersion > MINV_MINOR ||
-              (version_info.dwMinorVersion == MINV_MINOR && version_info.dwBuildNumber >= MINV_BUILD)))) {
+        if (version_info.dwMajorVersion > MINV_MAJOR) {
             return true;
+        }
+        if (version_info.dwMajorVersion == MINV_MAJOR) {
+            if (version_info.dwMinorVersion > MINV_MINOR) {
+                return true;
+            }
+            if (version_info.dwMinorVersion == MINV_MINOR && version_info.dwBuildNumber >= MINV_BUILD) {
+                return true;
+            }
         }
 
         return false;
@@ -49,10 +53,8 @@ namespace WinCliColors
             return false;
         }
 
-        HANDLE hStdOut;
-        hStdOut = GetStdHandle(STD_OUTPUT_HANDLE);
-
-        if (INVALID_HANDLE_VALUE == hStdOut) {
+        HANDLE hStdOut = GetStdHandle(STD_OUTPUT_HANDLE);
+        if (hStdOut == INVALID_HANDLE_VALUE) {
             return false;
         }
 
@@ -61,7 +63,8 @@ namespace WinCliColors
             return false;
         }
 
-        if (((mode & ENABLE_VIRTUAL_TERMINAL_PROCESSING) ? 1 : 0) == (enabled ? 1 : 0)) {
+        bool vtEnabled = (mode & ENABLE_VIRTUAL_TERMINAL_PROCESSING) != 0;
+        if (vtEnabled == enabled) {
             return true;
         }
 
@@ -71,11 +74,7 @@ namespace WinCliColors
             mode &= ~ENABLE_VIRTUAL_TERMINAL_PROCESSING;
         }
 
-        if (SetConsoleMode(hStdOut, mode)) {
-            return true;
-        }
-
-        return false;
+        return SetConsoleMode(hStdOut, mode) != 0;
     }
 
     // ----------------------------------------------------------------------------
