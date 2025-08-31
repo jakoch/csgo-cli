@@ -33,8 +33,6 @@ if (WIN32)
     # Build for a Windows 10 host system.
     set(CMAKE_SYSTEM_VERSION 10.0)
 
-    message(STATUS "[INFO] BUILD_SHARED_LIBS -> '${BUILD_SHARED_LIBS}'.")
-
     # When we build statically (MT):
     if(NOT BUILD_SHARED_LIBS)
       set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
