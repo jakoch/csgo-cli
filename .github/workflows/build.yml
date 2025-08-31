@@ -34,6 +34,7 @@ jobs:
     env:
       COMPILER: "VC17"
       BUILD_TYPE: Release
+      VCPKG_INSTALLATION_ROOT: 'C:\vcpkg'
       VCPKG_TARGET_TRIPLET: 'x64-windows-static'
       BUILD_SHARED_LIBS: OFF
 

@@ -21,7 +21,6 @@ option(ENABLE_LTO         "Enable link-time optimizations if supported by the co
 option(ENABLE_ASAN        "Enable address sanitizer (ASAN)"                               OFF)
 option(BUILD_TESTS        "Build tests"                                                    ON)
 
-
 #-------------------------------------------------------------------
 # Get Versioning Data
 #-------------------------------------------------------------------
