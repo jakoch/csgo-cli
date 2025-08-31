@@ -77,3 +77,6 @@ vcpkg
 watchablematchinfo
 webinterface
 WSACM
+winssl
+schannel
+cpplint
