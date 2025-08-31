@@ -1,9 +1,23 @@
 # Changelog
-All notable changes to this project will be documented in this file.
 
-## [Unreleased]
+All changes to the project will be documented in this file.
 
-- Changed things.
+- The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
+  The project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+- The date format is `YYYY-MM-DD`.
+- The versions are linked to their Git tags via the reference section at the end of the document.
+- The upcoming release `vNext` links to the changes between the latest version tag and git HEAD.
+
+## [vNext] - unreleased
+
+- "It was a bright day in April, and the clocks were striking thirteen." - 1984
+
+## [1.5.0] - 2025-08-11
+
+- raised required CMake version to v3.30
+- renamed feature "winssl" to "schannel" on curl dependency in vcpkg.json
+- fixed cpplint issue, mainly missing header includes
+-
 
 ## [1.4.0] - 2020-09-12
 

@@ -20,35 +20,53 @@ include(CTest)
 enable_testing()
 
 #-------------------------------------------------------------------
-# Setup Test Suite                                 (app: test_suite)
+# Build Target: test_suite                              (executable)
 #-------------------------------------------------------------------
 
-set(TEST_SOURCES
+add_executable(test_suite)
+
+target_sources(test_suite
+  PRIVATE
     #main.tests.cpp
     ShareCodeUpload.tests.cpp
 )
 
-add_executable(test_suite ${TEST_SOURCES})
-
-target_compile_features(test_suite PUBLIC cxx_std_20)
-
-if(MSVC)
-    target_compile_options(test_suite PUBLIC /utf-8)
-endif()
-
 target_include_directories(test_suite
   PUBLIC
-    ${PROJECT_SOURCE_DIR}/src
+    "$<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/src>"
 )
+
+target_compile_features(test_suite
+  PUBLIC
+    cxx_std_20
+)
+
+if(MSVC)
+    target_compile_options(test_suite PRIVATE /utf-8)
+endif()
 
 target_link_libraries(test_suite
-    PRIVATE
-        #Catch2::Catch2
-        Catch2::Catch2WithMain
-        csgo_cli_lib
+  PRIVATE
+    Catch2::Catch2WithMain
+    csgo_cli_lib
+    # Catch2::Catch2   # Optional alternative
 )
 
+#-------------------------------------------------------------------
+# Display Target Properties
+#-------------------------------------------------------------------
+
 show_build_target_properties(test_suite)
+
+#-------------------------------------------------------------------
+# Install
+#-------------------------------------------------------------------
+
+# Optional: Uncomment if you want to install the test binary
+# install(
+#   TARGETS test_suite
+#   DESTINATION test_suite-${APP_VERSION}
+# )
 
 #-------------------------------------------------------------------
 # Setup Catch's Test Discovery
