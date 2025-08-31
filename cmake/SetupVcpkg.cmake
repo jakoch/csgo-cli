@@ -34,11 +34,16 @@ endif()
 # - is set, we don't change it. This is the default case!
 # - not set, but VCPKG_ROOT, we set the toolchain using the VCPKG_ROOT,
 #   This avoids passing -DCMAKE_TOOLCHAIN_FILE. This is way shorter!
+#
+# This also handles GHA CI, where VCPKG_INSTALLATION_ROOT is set instead of VCPKG_ROOT.
 
 if(DEFINED CMAKE_TOOLCHAIN_FILE)
     # do nothing, CMAKE_TOOLCHAIN_FILE is already set
 elseif(DEFINED ENV{VCPKG_ROOT} AND NOT DEFINED CMAKE_TOOLCHAIN_FILE)
     set(CMAKE_TOOLCHAIN_FILE "$ENV{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake" CACHE STRING "")
+else()
+elseif(DEFINED ENV{VCPKG_INSTALLATION_ROOT} AND NOT DEFINED CMAKE_TOOLCHAIN_FILE)
+    set(CMAKE_TOOLCHAIN_FILE "$ENV{VCPKG_INSTALLATION_ROOT}/scripts/buildsystems/vcpkg.cmake" CACHE STRING "")
 else()
     message(FATAL_ERROR "One of -DCMAKE_TOOLCHAIN_FILE or the VCPKG_ROOT environment variable must be set.")
 endif()
@@ -103,6 +108,7 @@ message(STATUS "")
 message(STATUS "[VCPKG]  Configuration Overview:")
 message(STATUS "")
 message(STATUS "[INFO]   ENV.VCPKG_ROOT                -> '$ENV{VCPKG_ROOT}'")
+message(STATUS "[INFO]   ENV.VCPKG_INSTALLATION_ROOT   -> '$ENV{VCPKG_INSTALLATION_ROOT}'")
 message(STATUS "[INFO]   BUILD_SHARED_LIBS             -> '${BUILD_SHARED_LIBS}'")
 message(STATUS "[INFO]   CMAKE_TOOLCHAIN_FILE          -> '${CMAKE_TOOLCHAIN_FILE}'")
 
