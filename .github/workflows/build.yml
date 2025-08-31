@@ -1,5 +1,5 @@
 #
-# .github/workflows/build-on-windows.yml
+# .github/workflows/build.yml
 #
 # Copyright 2021 Jens A. Koch.
 # SPDX-License-Identifier: BSL-1.0
@@ -8,7 +8,16 @@
 
 name: "Build on Windows"
 
-on: [push, pull_request]
+on:
+ - push
+ - pull_request
+ # You can manually run this workflow.
+ - workflow_dispatch
+
+# improve CI concurrency by automatically cancelling outdated jobs
+concurrency:
+  group: ${{ github.workflow }}-${{ github.head_ref || github.ref }}
+  cancel-in-progress: true
 
 jobs:
 
