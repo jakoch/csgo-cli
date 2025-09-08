@@ -30,7 +30,7 @@ jobs:
 
     steps:
     - name: ✂ Remove cancelled or skipped workflow runs
-      uses: actions/github-script@v7 # https://github.com/actions/github-script
+      uses: actions/github-script@v8 # https://github.com/actions/github-script
       with:
         github-token: ${{ secrets.GITHUB_TOKEN }}
         script: |
@@ -58,7 +58,7 @@ jobs:
           }
 
     - name: ✂ Remove 30 days old workflows runs
-      uses: actions/github-script@v7 # https://github.com/actions/github-script
+      uses: actions/github-script@v8 # https://github.com/actions/github-script
       with:
         github-token: ${{ secrets.GITHUB_TOKEN }}
         script: |
@@ -106,7 +106,7 @@ jobs:
           }
 
     - name: ✂ Remove runs of the cleanup workflow itself
-      uses: actions/github-script@v7 # https://github.com/actions/github-script
+      uses: actions/github-script@v8 # https://github.com/actions/github-script
       with:
         github-token: ${{ secrets.GITHUB_TOKEN }}
         script: |
@@ -158,7 +158,7 @@ jobs:
           }
 
     - name: ✂ Remove Dependabot workflow runs
-      uses: actions/github-script@v7 # https://github.com/actions/github-script
+      uses: actions/github-script@v8 # https://github.com/actions/github-script
       with:
         github-token: ${{ secrets.GITHUB_TOKEN }}
         script: |
