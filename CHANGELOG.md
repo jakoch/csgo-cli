@@ -97,7 +97,7 @@ All changes to the project will be documented in this file.
 
 <!-- Section for Reference Links -->
 
-[Unreleased]: https://github.com/jakoch/csgo-cli/compare/v1.5.0...HEAD
+[vNext]: https://github.com/jakoch/csgo-cli/compare/v1.5.0...HEAD
 [1.5.0]: https://github.com/jakoch/csgo-cli/compare/v1.4.0...v1.5.0
 [1.4.0]: https://github.com/jakoch/csgo-cli/compare/v1.3.0...v1.4.0
 [1.3.0]: https://github.com/jakoch/csgo-cli/compare/v1.2.0...v1.3.0
