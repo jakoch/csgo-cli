@@ -178,7 +178,7 @@ jobs:
     steps:
 
       - name: 🔽 Download Artifacts
-        uses: actions/download-artifact@v5 # https://github.com/actions/download-artifact
+        uses: actions/download-artifact@v6 # https://github.com/actions/download-artifact
         with:
           path: artifacts
 
