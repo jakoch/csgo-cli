@@ -2,11 +2,17 @@
 #include <catch2/catch_all.hpp>
 #include <iostream>
 
+#if defined(_WIN32)
 #include "../src/platform/windows/WinCliColors.h"
+#else
+#include "../src/platform/linux/WinCliColors.h"
+#endif
 
 int main( int argc, char* argv[] )
 {
+#if defined(_WIN32)
   SetConsoleOutputCP(CP_UTF8);
+#endif
   WinCliColors::enableConsoleColor(true);
   std::cout << "csgo_cli TestSuite\n" << std::endl;
 

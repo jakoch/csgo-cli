@@ -22,8 +22,10 @@ void printHelp()
     fmt::print(" Available commands:\n");
     fmt::print("  -user            Show your Steam and CS:GO profile\n");
     fmt::print("  -matches         Show your past matches in table form\n");
+    fmt::print("  -match           Show details for a specific match (requires matchid)\n");
     fmt::print("  -upload          Upload your past matches to csgostats.gg\n");
     fmt::print("  -s, sharecode    Upload a replay sharecode to csgostats.gg\n");
+    fmt::print("  -ch, crosshair   Decode a crosshair share code and print its convars\n");
     // fmt::print("  -scoreboard      Show your past matches in scoreboard form\n");
     fmt::print("  -globalstats     Show global server stats\n");
     fmt::print("\n");
@@ -33,5 +35,6 @@ void printHelp()
     fmt::print("Options:\n");
     fmt::print("  -v, verbose      Increase verbosity of messages\n");
     fmt::print("  -vv              Raise verbosity level to debug\n");
+    fmt::print("  -vvv             Raise verbosity level to trace\n");
     fmt::print("\n");
 }

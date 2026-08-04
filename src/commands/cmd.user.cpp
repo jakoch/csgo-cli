@@ -4,6 +4,7 @@
 #include "cmd.user.h"
 #include "cstrike15_gcmessages.pb.h"
 
+#include <optional>
 #include <string>
 
 bool requestPlayersProfile(DataObject& data, bool& verbose)
@@ -95,44 +96,45 @@ bool requestPlayersRankInfo(DataObject& data, bool& verbose)
             CSGORankUpdate rankUpdate;
 
             if (verbose)
-                spdlog::info("          Requesting: rankUpdate for Wingman");
-            rankUpdate.RefreshWaitWingmanRank();
+                spdlog::info("          Requesting: rankUpdate for Wingman and DangerZone");
+            rankUpdate.RefreshWaitSideModeRanks();
             if (verbose)
-                spdlog::info("          Got rankUpdate for Wingman");
-
-            std::this_thread::sleep_for(std::chrono::milliseconds(500));
-
-            if (verbose)
-                spdlog::info("          Requesting: rankUpdate for DangerZone");
-            rankUpdate.RefreshWaitDangerZoneRank();
-            if (verbose)
-                spdlog::info("          Got rankUpdate for DangerZone");
+                spdlog::info("          Got rankUpdate for Wingman and DangerZone");
 
             result = true;
 
             if (verbose) {
-                spdlog::debug("rankUpdate.data[0] (Wingman) {}", rankUpdate.data[0].DebugString());
-                spdlog::debug("rankUpdate.data[1] (DangerZone) {}", rankUpdate.data[1].DebugString());
+                spdlog::debug("rankUpdate.data[0] {}", rankUpdate.data[0].DebugString());
+            }
+
+            std::optional<PlayerRankingInfo> wingmanRank;
+            std::optional<PlayerRankingInfo> dangerZoneRank;
+
+            for (auto const& update : rankUpdate.data) {
+                for (int i = 0; i < update.rankings_size(); ++i) {
+                    auto const& ranking = update.rankings(i);
+                    if (ranking.rank_type_id() == 7 && !wingmanRank.has_value()) {
+                        wingmanRank = ranking;
+                    } else if (ranking.rank_type_id() == 10 && !dangerZoneRank.has_value()) {
+                        dangerZoneRank = ranking;
+                    }
+                }
             }
 
             DataObject::RankingInfo ri;
 
-            // wingman
-            PlayerRankingInfo wm_pri = rankUpdate.data[0].rankings().Get(0);
-            ri.id                    = wm_pri.rank_id();
-            ri.type                  = wm_pri.rank_type_id();
-            ri.wins                  = wm_pri.wins();
-            ri.change                = wm_pri.rank_change();
+            ri.id     = wingmanRank.has_value() ? wingmanRank->rank_id() : 0;
+            ri.type   = 7;
+            ri.wins   = wingmanRank.has_value() ? wingmanRank->wins() : 0;
+            ri.change = wingmanRank.has_value() ? wingmanRank->rank_change() : 0.0F;
             data.rankings.push_back(ri);
 
-            ri = {}; // reset
+            ri = {};
 
-            // dangerzone
-            PlayerRankingInfo dz_pri = rankUpdate.data[1].rankings().Get(0);
-            ri.id                    = dz_pri.rank_id();
-            ri.type                  = dz_pri.rank_type_id();
-            ri.wins                  = dz_pri.wins();
-            ri.change                = dz_pri.rank_change();
+            ri.id     = dangerZoneRank.has_value() ? dangerZoneRank->rank_id() : 0;
+            ri.type   = 10;
+            ri.wins   = dangerZoneRank.has_value() ? dangerZoneRank->wins() : 0;
+            ri.change = dangerZoneRank.has_value() ? dangerZoneRank->rank_change() : 0.0F;
             data.rankings.push_back(ri);
 
         } catch (CSGO_CLI_TimeoutException) {
@@ -170,20 +172,33 @@ void printPlayersProfile(DataObject& data)
 
     std::string clan = fmt::format("{} \"{}\"", data.clan_name, data.clan_tag);
 
-    auto mm_ranks     = data.rankings[0];
+    auto const findRanking = [&](uint32 expectedType) {
+        DataObject::RankingInfo ranking = {};
+        ranking.type                    = expectedType;
+
+        for (auto const& candidate : data.rankings) {
+            if (candidate.type == expectedType) {
+                return candidate;
+            }
+        }
+
+        return ranking;
+    };
+
+    auto mm_ranks     = findRanking(6);
     auto mm_rank_name = data.getRankName(mm_ranks.id);
 
     std::string matchmaking_rank = fmt::format("{} ({}/18) ({} wins)", mm_rank_name, mm_ranks.id, mm_ranks.wins);
 
-    auto wm_ranks     = data.rankings[1];
+    auto wm_ranks     = findRanking(7);
     auto wm_rank_name = data.getRankName(wm_ranks.id);
 
     std::string wingman_rank = fmt::format("{} ({}/18) ({} wins)", wm_rank_name, wm_ranks.id, wm_ranks.wins);
 
-    auto dz_ranks     = data.rankings[2];
-    auto dz_rank_name = data.getRankName(dz_ranks.id);
+    auto dz_ranks     = findRanking(10);
+    auto dz_rank_name = data.getDangerzoneRankName(dz_ranks.id);
 
-    std::string dangerzone_rank = fmt::format("{} ({}/18) ({} wins)", dz_rank_name, dz_ranks.id, dz_ranks.wins);
+    std::string dangerzone_rank = fmt::format("{} ({}/15) ({} wins)", dz_rank_name, dz_ranks.id, dz_ranks.wins);
 
     // @todo(jakoch): how to access medals data?
     // auto medals = fmt::format("{} x arms, {} x combat, {} x global, {} x team, {} x weapon",

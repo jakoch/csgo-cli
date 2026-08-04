@@ -69,9 +69,15 @@ std::string getShareCode(uint64_t matchid, uint64_t reservationid, uint32_t tvpo
     std::string const dictionary = "ABCDEFGHJKLMNOPQRSTUVWXYZabcdefhijkmnopqrstuvwxyz23456789";
 
     std::string code;
+#ifdef _WIN32
     uint64_t matchid_reversed       = _byteswap_uint64(matchid);
     uint64_t reservationid_reversed = _byteswap_uint64(reservationid);
     uint16_t tvport_reversed        = _byteswap_ushort(*reinterpret_cast<uint16_t*>(&tvport));
+#else
+    uint64_t matchid_reversed       = __builtin_bswap64(matchid);
+    uint64_t reservationid_reversed = __builtin_bswap64(reservationid);
+    uint16_t tvport_reversed        = __builtin_bswap16(*reinterpret_cast<uint16_t*>(&tvport));
+#endif
     uint16_t r                      = 0;
     uint16_t dl                     = dictionary.length();
 

@@ -16,6 +16,7 @@
 #include <ranges>
 
 bool requestRecentMatches(DataObject& data, bool& verbose);
+bool requestMatchDetails(DataObject& data, bool& verbose, uint64_t matchId);
 void printMatches(DataObject& data);
 
 #endif // SRC_COMMANDS_CMD_MATCHES_H_

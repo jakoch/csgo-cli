@@ -9,7 +9,7 @@
 #include <nlohmann/json.hpp>
 
 #include "../ErrorHandler.h"
-#include "../platform/windows/WinCliColors.h"
+#include "../platform/WinCliColors.h"
 
 #include <algorithm>
 #include <iomanip>

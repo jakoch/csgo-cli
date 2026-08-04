@@ -1,0 +1,141 @@
+{
+  "version": 10,
+  "cmakeMinimumRequired": {
+    "major": 3,
+    "minor": 31,
+    "patch": 0
+  },
+  "include": [
+    "base.json"
+  ],
+  "configurePresets": [
+    {
+      "name": "vcpkg-triplet-x64-linux",
+      "hidden": true,
+      "description": "Set vcpkg target_triplet (shared | dynamic).",
+      "cacheVariables": {
+        "BUILD_SHARED_LIBS": {
+          "type": "BOOL",
+          "value": "ON"
+        },
+        "VCPKG_TARGET_TRIPLET": {
+          "type": "STRING",
+          "value": "x64-linux"
+        }
+      },
+      "inherits": [
+        "vcpkg-default-config"
+      ]
+    },
+    {
+      "name": "vcpkg-triplet-x64-linux-static",
+      "hidden": true,
+      "description": "Set vcpkg target_triplet (static).",
+      "cacheVariables": {
+        "BUILD_SHARED_LIBS": {
+          "type": "BOOL",
+          "value": "OFF"
+        },
+        "VCPKG_TARGET_TRIPLET": {
+          "type": "STRING",
+          "value": "x64-linux-static"
+        }
+      },
+      "inherits": [
+        "vcpkg-default-config"
+      ]
+    },
+    {
+      "name": "gcc-x64-linux-base",
+      "hidden": true,
+      "vendor": {
+        "microsoft.com/VisualStudioSettings/CMake/1.0": {
+          "intelliSenseMode": "linux-gcc-x64"
+        }
+      },
+      "inherits": [
+        "condition-is-linux",
+        "cmake-default-config",
+        "cmake-enable-warnings",
+        "generator-ninja",
+        "build-folders-default",
+        "vcpkg-triplet-x64-linux"
+      ]
+    },
+    {
+      "name": "compiler-gcc14-linux",
+      "hidden": true,
+      "cacheVariables": {
+        "CMAKE_C_COMPILER": "gcc-14",
+        "CMAKE_CXX_COMPILER": "g++-14"
+      }
+    },
+    {
+      "name": "compiler-gcc16-linux",
+      "hidden": true,
+      "cacheVariables": {
+        "CMAKE_C_COMPILER": "gcc-16",
+        "CMAKE_CXX_COMPILER": "g++-16"
+      }
+    },
+    {
+      "name": "gcc14-x64-linux",
+      "hidden": true,
+      "inherits": [
+        "gcc-x64-linux-base",
+        "compiler-gcc14-linux"
+      ]
+    },
+    {
+      "name": "gcc16-x64-linux",
+      "hidden": true,
+      "inherits": [
+        "gcc-x64-linux-base",
+        "compiler-gcc16-linux"
+      ]
+    },
+    {
+      "name": "clang-x64-linux-base",
+      "hidden": true,
+      "vendor": {
+        "microsoft.com/VisualStudioSettings/CMake/1.0": {
+          "intelliSenseMode": "linux-gcc-x64"
+        }
+      },
+      "inherits": [
+        "condition-is-linux",
+        "cmake-default-config",
+        "cmake-enable-warnings",
+        "generator-ninja",
+        "build-folders-default",
+        "vcpkg-triplet-x64-linux",
+        "use-linker-lld"
+      ]
+    },
+    {
+      "name": "compiler-clang22-linux",
+      "hidden": true,
+      "cacheVariables": {
+        "CMAKE_C_COMPILER": "clang-22",
+        "CMAKE_CXX_COMPILER": "clang++-22"
+      }
+    },
+    {
+      "name": "clang22-x64-linux",
+      "hidden": true,
+      "inherits": [
+        "clang-x64-linux-base",
+        "compiler-clang22-linux"
+      ]
+    },
+    {
+      "name": "clang22-x64-linux-cov",
+      "hidden": true,
+      "inherits": [
+        "clang-x64-linux-base",
+        "compiler-clang22-linux",
+        "coverage-using-clang"
+      ]
+    }
+  ]
+}

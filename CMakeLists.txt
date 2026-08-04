@@ -144,7 +144,7 @@ endif()
 message(STATUS "Found protoc: ${Protobuf_PROTOC_EXECUTABLE}")
 
 # Find Protobuf package
-find_package(Protobuf CONFIG REQUIRED)
+find_package(Protobuf REQUIRED)
 
 #
 # SteamDatabase Protobufs Data Files
@@ -266,7 +266,7 @@ endif()
 # Build Target: csgo_cli_lib                               (library)
 #-------------------------------------------------------------------
 
-add_library(csgo_cli_lib)
+add_library(csgo_cli_lib STATIC)
 
 target_sources(csgo_cli_lib
   PRIVATE
@@ -275,6 +275,8 @@ target_sources(csgo_cli_lib
     src/DataObject.cpp
     src/DateTimeUtils.h
     src/DateTimeUtils.cpp
+    src/CrosshairShareCode.h
+    src/CrosshairShareCode.cpp
     src/ErrorHandler.h
     src/ExceptionHandler.h
     src/ExceptionHandler.cpp
@@ -314,9 +316,11 @@ target_sources(csgo_cli_lib
     src/csgostats/ShareCodeUpload.cpp
     src/csgostats/ShareCodeCache.h
     src/csgostats/ShareCodeCache.cpp
-    # windows platform
-    src/platform/windows/WinCliColors.h
-    src/platform/windows/WinCliColors.cpp
+    # platform
+    $<$<BOOL:${WIN32}>:src/platform/windows/WinCliColors.h>
+    $<$<BOOL:${WIN32}>:src/platform/windows/WinCliColors.cpp>
+    $<$<NOT:$<BOOL:${WIN32}>>:src/platform/linux/WinCliColors.h>
+    $<$<NOT:$<BOOL:${WIN32}>>:src/platform/linux/WinCliColors.cpp>
 
     # Generated Protobuf Includes
     ${PROTO_ENGINE_GCMESSAGES_SRC}

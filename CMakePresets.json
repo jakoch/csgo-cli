@@ -1,0 +1,198 @@
+{
+  "version": 10,
+  "cmakeMinimumRequired": {
+    "major": 3,
+    "minor": 31,
+    "patch": 0
+  },
+  "$comment": "The main CMake presets for the project.",
+  "include": [
+    "CMake/presets/base.json",
+    "CMake/presets/windows.json",
+    "CMake/presets/linux.json"
+  ],
+  "configurePresets": [
+    {
+      "name": "clang22-x64-linux-rel",
+      "displayName": "Clang22 Release",
+      "inherits": "clang22-x64-linux",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": {
+          "type": "STRING",
+          "value": "Release"
+        }
+      }
+    },
+    {
+      "name": "clang22-x64-linux-dbg",
+      "displayName": "Clang22 Debug",
+      "inherits": "clang22-x64-linux",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": {
+          "type": "STRING",
+          "value": "Debug"
+        }
+      }
+    },
+    {
+      "name": "clang22-x64-linux-dbg-cov",
+      "displayName": "Clang22 Debug (Coverage)",
+      "inherits": "clang22-x64-linux-cov",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": {
+          "type": "STRING",
+          "value": "Debug"
+        }
+      }
+    },
+    {
+      "name": "gcc14-x64-linux-rel",
+      "displayName": "GCC14 Release",
+      "inherits": "gcc14-x64-linux",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": {
+          "type": "STRING",
+          "value": "Release"
+        }
+      }
+    },
+    {
+      "name": "gcc14-x64-linux-dbg",
+      "displayName": "GCC14 Debug",
+      "inherits": "gcc14-x64-linux",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": {
+          "type": "STRING",
+          "value": "Debug"
+        }
+      }
+    },
+    {
+      "name": "gcc16-x64-linux-rel",
+      "displayName": "GCC16 Release",
+      "inherits": "gcc16-x64-linux",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": {
+          "type": "STRING",
+          "value": "Release"
+        }
+      }
+    },
+    {
+      "name": "gcc16-x64-linux-dbg",
+      "displayName": "GCC16 Debug",
+      "inherits": "gcc16-x64-linux",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": {
+          "type": "STRING",
+          "value": "Debug"
+        }
+      }
+    },
+    {
+      "name": "vc18-x64-windows-rel",
+      "displayName": "VC18 Release",
+      "inherits": "vc18-x64-windows",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": {
+          "type": "STRING",
+          "value": "Release"
+        }
+      }
+    },
+    {
+      "name": "vc18-x64-windows-rdi",
+      "displayName": "VC18 RelWithDebInfo",
+      "inherits": "vc18-x64-windows",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": {
+          "type": "STRING",
+          "value": "RelWithDebInfo"
+        }
+      }
+    },
+    {
+      "name": "vc18-x64-windows-dbg",
+      "displayName": "VC18 Debug",
+      "inherits": "vc18-x64-windows",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": {
+          "type": "STRING",
+          "value": "Debug"
+        }
+      }
+    }
+  ],
+  "buildPresets": [
+    {
+      "name": "clang22-x64-linux-rel",
+      "configurePreset": "clang22-x64-linux-rel",
+      "targets": [
+        "csgo_cli"
+      ]
+    },
+    {
+      "name": "clang22-x64-linux-dbg",
+      "configurePreset": "clang22-x64-linux-dbg",
+      "targets": [
+        "csgo_cli"
+      ]
+    },
+    {
+      "name": "clang22-x64-linux-dbg-cov",
+      "configurePreset": "clang22-x64-linux-dbg-cov",
+      "targets": [
+        "csgo_cli"
+      ]
+    },
+    {
+      "name": "gcc14-x64-linux-rel",
+      "configurePreset": "gcc14-x64-linux-rel",
+      "targets": [
+        "csgo_cli"
+      ]
+    },
+    {
+      "name": "gcc14-x64-linux-dbg",
+      "configurePreset": "gcc14-x64-linux-dbg",
+      "targets": [
+        "csgo_cli"
+      ]
+    },
+    {
+      "name": "gcc16-x64-linux-rel",
+      "configurePreset": "gcc16-x64-linux-rel",
+      "targets": [
+        "csgo_cli"
+      ]
+    },
+    {
+      "name": "gcc16-x64-linux-dbg",
+      "configurePreset": "gcc16-x64-linux-dbg",
+      "targets": [
+        "csgo_cli"
+      ]
+    },
+    {
+      "name": "vc18-x64-windows-rel",
+      "configurePreset": "vc18-x64-windows-rel",
+      "targets": [
+        "csgo_cli"
+      ]
+    },
+    {
+      "name": "vc18-x64-windows-rdi",
+      "configurePreset": "vc18-x64-windows-rdi",
+      "targets": [
+        "csgo_cli"
+      ]
+    },
+    {
+      "name": "vc18-x64-windows-dbg",
+      "configurePreset": "vc18-x64-windows-dbg",
+      "targets": [
+        "csgo_cli"
+      ]
+    }
+  ]
+}

@@ -4,7 +4,10 @@
 #ifndef SRC_SHARECODE_H_
 #define SRC_SHARECODE_H_
 
+#ifdef _WIN32
 #include <intrin.h>
+#endif
+#include <cstdint>
 #include <iostream>
 #include <ostream>
 #include <regex>

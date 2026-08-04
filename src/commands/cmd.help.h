@@ -5,7 +5,7 @@
 #define SRC_COMMANDS_CMD_HELP_H_
 
 #include "../DateTimeUtils.h"
-#include "../platform/windows/WinCliColors.h"
+#include "../platform/WinCliColors.h"
 #include "../VersionAndConstants.h"
 
 #include <iostream>

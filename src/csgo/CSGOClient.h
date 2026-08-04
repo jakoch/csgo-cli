@@ -20,9 +20,11 @@
 #include "GCMsgHandler.h"
 
 #include <condition_variable>
+#include <optional>
 #include <map>
 #include <memory>
 #include <mutex>
+#include <string>
 #include <vector>
 
 /**
@@ -61,6 +63,11 @@ public:
      */
     void WaitForGameClientConnect();
 
+    /**
+     * Copies the most recent matchmaking hello if one was already received.
+     */
+    bool TryGetCachedMatchmakingHello(CMsgGCCStrike15_v2_MatchmakingGC2ClientHello& msg);
+
 private:
     /**
      * Sends client mm hello
@@ -79,17 +86,31 @@ private:
     void OnMessageFailed(GCMessageFailed_t* msg);
 
     /**
+     * Sends the initial hello messages required by the current GC handshake.
+     */
+    void SendConnectionHelloMessages();
+
+    /**
      * Handles the gc welcome msg
      */
     void OnClientWelcome(CMsgClientWelcome const & msg);
+
+    /**
+     * Handles the matchmaking hello used by current clients as a GC-ready signal.
+     */
+    void OnMatchmakingHello(CMsgGCCStrike15_v2_MatchmakingGC2ClientHello const & msg);
 
 private:
     static CSGOClient* m_instance;
 
     GCMsgHandler<CMsgClientWelcome> m_welcomeHandler;
+    GCMsgHandler<CMsgGCCStrike15_v2_MatchmakingGC2ClientHello> m_mmHelloHandler;
     std::condition_variable m_connectedCV;
     std::mutex m_connectedMutex;
     bool m_connectedToGameClient = false;
+    std::optional<std::string> m_connectionFailure;
+    bool m_hasCachedMatchmakingHello = false;
+    CMsgGCCStrike15_v2_MatchmakingGC2ClientHello m_cachedMatchmakingHello;
 
     ISteamGameCoordinator* m_gameCoordinator;
 

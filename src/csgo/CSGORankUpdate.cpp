@@ -26,19 +26,10 @@ void CSGORankUpdate::OnRankUpdate(CMsgGCCStrike15_v2_ClientGCRankUpdate const & 
     m_updateCv.notify_all();
 }
 
-void CSGORankUpdate::GetWingmanRank()
+void CSGORankUpdate::GetSideModeRanks()
 {
     CMsgGCCStrike15_v2_ClientGCRankUpdate request;
     request.add_rankings()->set_rank_type_id(7);
-
-    if (CSGOClient::GetInstance()->SendGCMessage(k_EMsgGCCStrike15_v2_ClientGCRankUpdate, &request) != k_EGCResultOK) {
-        throw ExceptionHandler("Failed to send EMsgGCCStrike15_v2_ClientGCRankUpdate");
-    }
-}
-
-void CSGORankUpdate::GetDangerZoneRank()
-{
-    CMsgGCCStrike15_v2_ClientGCRankUpdate request;
     request.add_rankings()->set_rank_type_id(10);
 
     if (CSGOClient::GetInstance()->SendGCMessage(k_EMsgGCCStrike15_v2_ClientGCRankUpdate, &request) != k_EGCResultOK) {
@@ -46,23 +37,10 @@ void CSGORankUpdate::GetDangerZoneRank()
     }
 }
 
-void CSGORankUpdate::RefreshWaitWingmanRank()
+void CSGORankUpdate::RefreshWaitSideModeRanks()
 {
     m_updateComplete = false;
-    GetWingmanRank();
-    std::unique_lock<std::mutex> lock(m_rankUpdateMutex);
-
-    m_updateCv.wait_for(lock, std::chrono::milliseconds(CSGO_CLI_STEAM_CMSG_TIMEOUT + 10000));
-
-    if (!m_updateComplete) {
-        throw CSGO_CLI_TimeoutException();
-    }
-}
-
-void CSGORankUpdate::RefreshWaitDangerZoneRank()
-{
-    m_updateComplete = false;
-    GetDangerZoneRank();
+    GetSideModeRanks();
     std::unique_lock<std::mutex> lock(m_rankUpdateMutex);
 
     m_updateCv.wait_for(lock, std::chrono::milliseconds(CSGO_CLI_STEAM_CMSG_TIMEOUT + 10000));

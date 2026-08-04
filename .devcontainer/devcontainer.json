@@ -1,0 +1,4 @@
+{
+  "name": "My C++ Project DevBox",
+  "image": "ghcr.io/jakoch/cpp-devbox:trixie-20260726"
+}

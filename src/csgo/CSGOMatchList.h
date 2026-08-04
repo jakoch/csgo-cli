@@ -17,6 +17,7 @@ class CSGOMatchList
 {
 public:
     CSGOMatchList();
+    CSGOMatchList(uint64_t matchId, uint64_t outcomeId, uint32_t tokenId);
     ~CSGOMatchList();
 
     void Refresh();
@@ -40,6 +41,11 @@ private:
     mutable std::mutex m_matchMutex;
     std::vector<CDataGCCStrike15_v2_MatchInfo> m_matches;
     GCMsgHandler<CMsgGCCStrike15_v2_MatchList> m_matchListHandler;
+
+    bool m_onlySpecificMatch = false;
+    uint64_t m_matchId       = 0;
+    uint64_t m_outcomeId     = 0;
+    uint32_t m_tokenId       = 0;
 };
 
 #endif // SRC_CSGO_CSGOMATCHLIST_H_

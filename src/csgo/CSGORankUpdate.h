@@ -15,11 +15,8 @@ public:
     CSGORankUpdate();
     ~CSGORankUpdate();
 
-    void GetWingmanRank();
-    void GetDangerZoneRank();
-
-    void RefreshWaitWingmanRank();
-    void RefreshWaitDangerZoneRank();
+    void GetSideModeRanks();
+    void RefreshWaitSideModeRanks();
 
     std::vector<CMsgGCCStrike15_v2_ClientGCRankUpdate> data;
 

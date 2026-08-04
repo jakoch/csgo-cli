@@ -7,15 +7,12 @@
 
 std::string DataObject::getPlayerRank(int rank_type_id)
 {
-    int rank_id;
-    if (rank_type_id == 6) {
-        rank_id = rankings.at(0).id;
-    }
-    if (rank_type_id == 7) {
-        rank_id = rankings.at(1).id;
-    }
-    if (rank_type_id == 10) {
-        rank_id = rankings.at(2).id;
+    int rank_id = 0;
+    for (auto const& ranking : rankings) {
+        if (ranking.type == static_cast<uint32>(rank_type_id)) {
+            rank_id = static_cast<int>(ranking.id);
+            break;
+        }
     }
 
     int rank = (rank_id < 0) ? rank_id - 1 : rank_id;
@@ -90,9 +87,16 @@ std::string DataObject::getSteamProfileUrl()
 }
 std::string DataObject::getCanDoOverwatch()
 {
-    RankingInfo matchmaking_rank = rankings.at(0);
-    int rank_id                  = matchmaking_rank.id;
-    int rank_wins                = matchmaking_rank.wins;
+    RankingInfo matchmaking_rank = {};
+    for (auto const& ranking : rankings) {
+        if (ranking.type == 6) {
+            matchmaking_rank = ranking;
+            break;
+        }
+    }
+
+    int rank_id   = static_cast<int>(matchmaking_rank.id);
+    int rank_wins = static_cast<int>(matchmaking_rank.wins);
 
     if (rank_id < 7) {
         return "Your rank is too low. " + getRankName(7) + " required.";

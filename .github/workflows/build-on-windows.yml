@@ -1,18 +1,21 @@
 #
-# .github/workflows/build.yml
+# .github/workflows/build-on-windows.yml
 #
 # Copyright 2021 Jens A. Koch.
 # SPDX-License-Identifier: BSL-1.0
 # This file is part of https://github.com/jakoch/csgo-cli
 #
 
+# -----------------------------------------------------------------------------
+# This workflow builds the csgo-cli util on Windows.
+# -----------------------------------------------------------------------------
 name: "Build on Windows"
 
 on:
- - push
- - pull_request
- # You can manually run this workflow.
- - workflow_dispatch
+  - push
+  - pull_request
+  # You can manually run this workflow.
+  - workflow_dispatch
 
 # improve CI concurrency by automatically cancelling outdated jobs
 concurrency:
@@ -23,20 +26,50 @@ jobs:
 
 # ---------------------------------------------------------------------------------------
 
-  build-on-windows-2022:
+  build-on-windows:
 
 # ---------------------------------------------------------------------------------------
 
-    name: "Windows VC17"
+    name: "${{ matrix.config.job_name }}"
+
     # https://github.com/actions/runner-images
     runs-on: windows-2025
 
+    strategy:
+      fail-fast: false
+      matrix:
+        config:
+        # https://github.com/actions/runner-images/blob/main/images/windows/Windows2025-Readme.md#visual-studio-enterprise-2026
+        - {
+            job_name: "Windows VC18 Release",
+            preset: vc18-x64-windows-rel,
+            build_type: Release,
+            artifact-name: csgo-cli-vc18-x64-windows-rel
+          }
+        - {
+            job_name: "Windows VC18 RelWithDebInfo",
+            preset: vc18-x64-windows-rdi,
+            build_type: RelWithDebInfo,
+            artifact-name: csgo-cli-vc18-x64-windows-rdi
+          }
+        - {
+            job_name: "Windows VC18 Debug",
+            preset: vc18-x64-windows-dbg,
+            build_type: Debug,
+            artifact-name: csgo-cli-vc18-x64-windows-dbg
+          }
+
     env:
-      COMPILER: "VC17"
-      BUILD_TYPE: Release
+      # VCPKG Settings
+      VCPKG_DISABLE_METRICS: 1
+      VCPKG_FORCE_SYSTEM_BINARIES: 1
+      VCPKG_FEATURE_FLAGS: manifests,versions,binarycaching,registries
       VCPKG_INSTALLATION_ROOT: 'C:\vcpkg'
       VCPKG_TARGET_TRIPLET: 'x64-windows-static'
       BUILD_SHARED_LIBS: OFF
+      # Paths
+      BUILD_DIR: ${{ github.workspace }}/out/build/${{ matrix.config.preset }}
+      INSTALL_DIR: ${{ github.workspace }}/out/install/${{ matrix.config.preset }}
 
     defaults:
       run:
@@ -58,11 +91,10 @@ jobs:
       - name: 🔽 Install CMake
         run: choco install cmake --installargs 'ADD_CMAKE_TO_PATH=System' --no-progress
 
-      # https://github.com/actions/runner-images/blob/main/images/windows/Windows2022-Readme.md#visual-studio-enterprise-2022
-      # https://github.com/actions/runner-images/blob/main/images/windows/Windows2022-Readme.md#visual-studio-enterprise-2022
-      # Note: yes, the windows-2025 image contains "Studio\2022\Enterprise".
-      - name: 📥 Setup VC17 Environment (→ vcvars64)
-        run: call "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Auxiliary\Build\vcvars64.bat"
+      # https://github.com/actions/runner-images/blob/main/images/windows/Windows2025-Readme.md#visual-studio-enterprise-2026
+      # Note: yes, the windows-2025 image contains "Studio\2026\Enterprise".
+      - name: 📥 Setup VC18 Environment (→ vcvars64)
+        run: call "C:\Program Files\Microsoft Visual Studio\2026\Enterprise\VC\Auxiliary\Build\vcvars64.bat"
 
       - name: 🔽 Update VCPKG
         run: |
@@ -79,9 +111,10 @@ jobs:
         uses: actions/cache@v6 # https://github.com/actions/cache
         with:
           path: ~\AppData\Local\vcpkg\archives
-          key: cache-windows-vcpkg-${{ env.VCPKG_TARGET_TRIPLET }}-${{ github.ref }}-${{ github.run_number }}
+          key: cache-windows-vcpkg-${{ env.VCPKG_TARGET_TRIPLET }}-${{ matrix.config.preset }}-${{ github.ref }}-${{ github.run_number }}
           restore-keys: |
-            cache-windows-vcpkg-${{ env.VCPKG_TARGET_TRIPLET }}-${{ github.ref }}
+            cache-windows-vcpkg-${{ env.VCPKG_TARGET_TRIPLET }}-${{ matrix.config.preset }}-${{ github.ref }}
+            cache-windows-vcpkg-${{ env.VCPKG_TARGET_TRIPLET }}-${{ matrix.config.preset }}
             cache-windows-vcpkg-${{ env.VCPKG_TARGET_TRIPLET }}
 
       - name: Extract SW_SDK
@@ -89,7 +122,7 @@ jobs:
           SW_SDK_SECRET: ${{ secrets.SW_SDK_SECRET }}
         run: |
           dir
-          7z x ${{ github.workspace }}\downloads\sw_sdk_153a.zip -aoa -y -odependencies -p%SW_SDK_SECRET%
+          7z x ${{ github.workspace }}\downloads\sw_sdk_165.zip -aoa -y -odependencies -p%SW_SDK_SECRET%
           cd dependencies
           ren sdk sw_sdk
 
@@ -97,20 +130,13 @@ jobs:
         run: |
           Get-ChildItem dependencies\sw_sdk\*.h -Recurse | ForEach-Object {
             $content = Get-Content $_.FullName -Raw
-            # save as UTF8 without BOM
             Set-Content -Path $_.FullName -Value $content -Encoding utf8
           }
         shell: powershell
 
       - name: ✏ CMake ➔ Configure (including VCPKG → Install Dependencies)
         run: |
-          cmake -G "Visual Studio 17 2022" -A x64                                                           ^
-                -S ${{ github.workspace }} -B build                                                         ^
-                -DCMAKE_BUILD_TYPE=${{ env.BUILD_TYPE }}                                                    ^
-                -DCMAKE_TOOLCHAIN_FILE=${{ env.VCPKG_INSTALLATION_ROOT }}/scripts/buildsystems/vcpkg.cmake  ^
-                -DVCPKG_TARGET_TRIPLET=${{ env.VCPKG_TARGET_TRIPLET }}                                      ^
-                -DBUILD_SHARED_LIBS=${{ env.BUILD_SHARED_LIBS }}                                            ^
-                -DCMAKE_VERBOSE_MAKEFILE=ON
+          cmake --preset ${{ matrix.config.preset }}
 
       - name: ❔ CHECK important folders, to see if everything is present (before building)
         run: |
@@ -118,47 +144,34 @@ jobs:
           dir ${{ github.workspace }}\downloads
           dir ${{ github.workspace }}\dependencies
 
-        #dir ${{ github.workspace }}\vcpkg_installed\${{ env.VCPKG_TARGET_TRIPLET }}
-
       - name: 🙏 CMake → Build
-        run: cmake --build build --config %BUILD_TYPE% -j %NUMBER_OF_PROCESSORS%
-
-      - name: ✔ ❌✔️ Test → Run TestSuite
-        run: |
-          cd build\tests\%BUILD_TYPE%
-          test_suite.exe
+        run: cmake --build ${{ env.BUILD_DIR }} -j %NUMBER_OF_PROCESSORS%
 
       - name: ✔ ❌✔️ Test → Run CTest → Generate test_results.xml
         run: |
-          cd build\tests
-          ctest -V -C %BUILD_TYPE% --output-junit test_results_${{ env.VCPKG_TARGET_TRIPLET }}_${{ env.COMPILER }}.xml
+          cd ${{ env.BUILD_DIR }}\tests
+          ctest -V --output-junit test_results_${{ env.VCPKG_TARGET_TRIPLET }}_${{ matrix.config.preset }}.xml
 
       - name: 📦 CMake ➔ Install
-        run: cmake --install build --config %BUILD_TYPE% --prefix install --verbose
+        run: cmake --install ${{ env.BUILD_DIR }} --prefix ${{ env.INSTALL_DIR }} --verbose
 
       - name: ❔ CHECK important folders, to see if everything is present (after building & installing)
         run: |
-          dir /S /B build
-          dir /S /B install
+          dir /S /B ${{ env.BUILD_DIR }}
+          dir /S /B ${{ env.INSTALL_DIR }}
 
-        #dir /S /B build\vcpkg_installed\${{ env.VCPKG_TARGET_TRIPLET }}
-
-      # We upload multiple files into the same "test_results" artifact file (zip).
-      # Each file is differently named by adding the job name of the matrix as a suffix.
-      # This enables the "Unit Test Result" display to show all individual test runs of the matrix.
-      # The tests are published after all matrix runs finished (from job: "publish-test-results").
       - name: 🔼 Upload Test Results
         uses: actions/upload-artifact@v7 # https://github.com/actions/upload-artifact
         if: always()
         with:
-          name: test-results
-          path: build\tests\test_results_*.xml
+          name: test-results-${{ matrix.config.preset }}
+          path: ${{ env.BUILD_DIR }}\tests\test_results_*.xml
 
       - name: 🔼 Upload Build Artifact -> csgo_cli
         uses: actions/upload-artifact@v7 # https://github.com/actions/upload-artifact
         with:
-          name: csgo_cli-${{ env.VCPKG_TARGET_TRIPLET }}-${{ env.COMPILER }}
-          path: ${{ github.workspace }}/install/bin/
+          name: csgo_cli-${{ env.VCPKG_TARGET_TRIPLET }}-${{ matrix.config.preset }}
+          path: ${{ env.INSTALL_DIR }}\bin\
 
 # ---------------------------------------------------------------------------------------
 
@@ -171,7 +184,7 @@ jobs:
     # PR test results are published from the standalone workflow "publish-PR-test-results.yml".
 
     name: "Publish Tests Results"
-    needs: build-on-windows-2022
+    needs: build-on-windows
     runs-on: ubuntu-latest
     if: always() && ( github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository )
 

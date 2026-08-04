@@ -37,6 +37,11 @@ void CSGOMMHello::Refresh()
 
 void CSGOMMHello::RefreshWait()
 {
+    if (CSGOClient::GetInstance()->TryGetCachedMatchmakingHello(data)) {
+        m_updateComplete = true;
+        return;
+    }
+
     m_updateComplete = false;
     Refresh();
     std::unique_lock<std::mutex> lock(m_mmhelloMutex);

@@ -17,7 +17,16 @@
  */
 
 CSGOMatchList::CSGOMatchList() : m_matchListHandler(this, &CSGOMatchList::OnMatchList)
+{ CSGOClient::GetInstance()->RegisterHandler(k_EMsgGCCStrike15_v2_MatchList, &m_matchListHandler); }
+
+CSGOMatchList::CSGOMatchList(uint64_t matchId, uint64_t outcomeId, uint32_t tokenId) :
+    m_matchListHandler(this, &CSGOMatchList::OnMatchList)
 {
+    m_onlySpecificMatch = true;
+    m_matchId           = matchId;
+    m_outcomeId         = outcomeId;
+    m_tokenId           = tokenId;
+
     CSGOClient::GetInstance()->RegisterHandler(k_EMsgGCCStrike15_v2_MatchList, &m_matchListHandler);
 }
 
@@ -47,14 +56,26 @@ void CSGOMatchList::OnMatchList(CMsgGCCStrike15_v2_MatchList const & msg)
 
 void CSGOMatchList::Refresh()
 {
-    uint32 const accountId = SteamUser()->GetSteamID().GetAccountID();
+    if (m_onlySpecificMatch) {
+        CMsgGCCStrike15_v2_MatchListRequestFullGameInfo request;
+        request.set_matchid(m_matchId);
+        request.set_outcomeid(m_outcomeId);
+        request.set_token(m_tokenId);
 
-    CMsgGCCStrike15_v2_MatchListRequestRecentUserGames request;
-    request.set_accountid(accountId);
+        if (CSGOClient::GetInstance()->SendGCMessage(k_EMsgGCCStrike15_v2_MatchListRequestFullGameInfo, &request) !=
+            k_EGCResultOK) {
+            throw ExceptionHandler("Failed to send EMsgGCCStrike15_v2_MatchListRequestFullGameInfo");
+        }
+    } else {
+        uint32 const accountId = SteamUser()->GetSteamID().GetAccountID();
 
-    if (CSGOClient::GetInstance()->SendGCMessage(k_EMsgGCCStrike15_v2_MatchListRequestRecentUserGames, &request) !=
-        k_EGCResultOK) {
-        throw ExceptionHandler("Failed to send EMsgGCCStrike15_v2_MatchListRequestRecentUserGames");
+        CMsgGCCStrike15_v2_MatchListRequestRecentUserGames request;
+        request.set_accountid(accountId);
+
+        if (CSGOClient::GetInstance()->SendGCMessage(k_EMsgGCCStrike15_v2_MatchListRequestRecentUserGames, &request) !=
+            k_EGCResultOK) {
+            throw ExceptionHandler("Failed to send EMsgGCCStrike15_v2_MatchListRequestRecentUserGames");
+        }
     }
 }
 
