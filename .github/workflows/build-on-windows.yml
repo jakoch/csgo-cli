@@ -66,8 +66,8 @@ jobs:
       VCPKG_FEATURE_FLAGS: manifests,versions,binarycaching,registries
       VCPKG_INSTALLATION_ROOT: 'C:\vcpkg'
       # Paths
-      BUILD_DIR: ${{ github.workspace }}/out/build/${{ matrix.config.preset }}
-      INSTALL_DIR: ${{ github.workspace }}/out/install/${{ matrix.config.preset }}
+      BUILD_DIR: ${{ github.workspace }}\out\build\${{ matrix.config.preset }}
+      INSTALL_DIR: ${{ github.workspace }}\out\install\${{ matrix.config.preset }}
 
     defaults:
       run:
