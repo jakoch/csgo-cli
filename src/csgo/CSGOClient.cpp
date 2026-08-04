@@ -3,7 +3,10 @@
 
 #include "CSGOClient.h"
 
+#include <algorithm>
 #include <spdlog/spdlog.h>
+#include <string>
+#include <utility>
 
 #ifdef SendMessage
 #undef SendMessage

@@ -8,13 +8,14 @@
 #include <algorithm>
 #include <array>
 #include <cstdint>
+#include <cstring>
 #include <fmt/format.h>
 #include <numeric>
 #include <string>
 
 namespace
 {
-std::string const kDictionary = "ABCDEFGHJKLMNOPQRSTUVWXYZabcdefhijkmnopqrstuvwxyz23456789";
+char const kDictionary[] = "ABCDEFGHJKLMNOPQRSTUVWXYZabcdefhijkmnopqrstuvwxyz23456789";
 
 int uint8ToInt8(int value)
 {
@@ -31,7 +32,7 @@ std::array<uint8_t, 18> shareCodeToBytes(std::string shareCode)
     }
 
     for (char c : shareCode) {
-        if (kDictionary.find(c) == std::string::npos) {
+        if (std::strchr(kDictionary, c) == nullptr) {
             throw ExceptionHandler("Invalid crosshair share code.");
         }
     }
@@ -42,7 +43,7 @@ std::array<uint8_t, 18> shareCodeToBytes(std::string shareCode)
 
     for (char c : shareCode) {
         std::array<uint8_t, 18> tmp = {};
-        int addValue                = static_cast<int>(kDictionary.find(c));
+        int addValue                = static_cast<int>(std::strchr(kDictionary, c) - kDictionary);
         int carry                   = 0;
         int value                   = 0;
 
