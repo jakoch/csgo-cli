@@ -132,6 +132,39 @@
           "value": "Debug"
         }
       }
+    },
+    {
+      "name": "vc18-x64-windows-static-rel",
+      "displayName": "VC18 Release (Static)",
+      "inherits": "vc18-x64-windows-static",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": {
+          "type": "STRING",
+          "value": "Release"
+        }
+      }
+    },
+    {
+      "name": "vc18-x64-windows-static-rdi",
+      "displayName": "VC18 RelWithDebInfo (Static)",
+      "inherits": "vc18-x64-windows-static",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": {
+          "type": "STRING",
+          "value": "RelWithDebInfo"
+        }
+      }
+    },
+    {
+      "name": "vc18-x64-windows-static-dbg",
+      "displayName": "VC18 Debug (Static)",
+      "inherits": "vc18-x64-windows-static",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": {
+          "type": "STRING",
+          "value": "Debug"
+        }
+      }
     }
   ],
   "buildPresets": [
@@ -208,6 +241,27 @@
     {
       "name": "vc18-x64-windows-dbg",
       "configurePreset": "vc18-x64-windows-dbg",
+      "targets": [
+        "csgo_cli"
+      ]
+    },
+    {
+      "name": "vc18-x64-windows-static-rel",
+      "configurePreset": "vc18-x64-windows-static-rel",
+      "targets": [
+        "csgo_cli"
+      ]
+    },
+    {
+      "name": "vc18-x64-windows-static-rdi",
+      "configurePreset": "vc18-x64-windows-static-rdi",
+      "targets": [
+        "csgo_cli"
+      ]
+    },
+    {
+      "name": "vc18-x64-windows-static-dbg",
+      "configurePreset": "vc18-x64-windows-static-dbg",
       "targets": [
         "csgo_cli"
       ]

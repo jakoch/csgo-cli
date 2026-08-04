@@ -42,21 +42,21 @@ jobs:
         # https://github.com/actions/runner-images/blob/main/images/windows/Windows2025-Readme.md#visual-studio-enterprise-2026
         - {
             job_name: "Windows VC18 Release",
-            preset: vc18-x64-windows-rel,
+            preset: vc18-x64-windows-static-rel,
             build_type: Release,
-            artifact-name: csgo-cli-vc18-x64-windows-rel
+            artifact-name: csgo-cli-vc18-x64-windows-static-rel
           }
         - {
             job_name: "Windows VC18 RelWithDebInfo",
-            preset: vc18-x64-windows-rdi,
+            preset: vc18-x64-windows-static-rdi,
             build_type: RelWithDebInfo,
-            artifact-name: csgo-cli-vc18-x64-windows-rdi
+            artifact-name: csgo-cli-vc18-x64-windows-static-rdi
           }
         - {
             job_name: "Windows VC18 Debug",
-            preset: vc18-x64-windows-dbg,
+            preset: vc18-x64-windows-static-dbg,
             build_type: Debug,
-            artifact-name: csgo-cli-vc18-x64-windows-dbg
+            artifact-name: csgo-cli-vc18-x64-windows-static-dbg
           }
 
     env:
@@ -65,8 +65,6 @@ jobs:
       VCPKG_FORCE_SYSTEM_BINARIES: 1
       VCPKG_FEATURE_FLAGS: manifests,versions,binarycaching,registries
       VCPKG_INSTALLATION_ROOT: 'C:\vcpkg'
-      VCPKG_TARGET_TRIPLET: 'x64-windows-static'
-      BUILD_SHARED_LIBS: OFF
       # Paths
       BUILD_DIR: ${{ github.workspace }}/out/build/${{ matrix.config.preset }}
       INSTALL_DIR: ${{ github.workspace }}/out/install/${{ matrix.config.preset }}
@@ -104,7 +102,7 @@ jobs:
           git reset --hard
           git pull --quiet
           bootstrap-vcpkg.bat -disableMetrics
-          vcpkg integrate install --triplet=${{ env.VCPKG_TARGET_TRIPLET }} --feature-flags=manifests
+          vcpkg integrate install --triplet=x64-windows-static --feature-flags=manifests
           vcpkg version
 
       - name: 🎯 Cache VCPKG
@@ -113,11 +111,11 @@ jobs:
         uses: actions/cache@v6 # https://github.com/actions/cache
         with:
           path: ~\AppData\Local\vcpkg\archives
-          key: cache-windows-vcpkg-${{ env.VCPKG_TARGET_TRIPLET }}-${{ matrix.config.preset }}-${{ github.ref }}-${{ github.run_number }}
+          key: cache-windows-vcpkg-x64-windows-static-${{ matrix.config.preset }}-${{ github.ref }}-${{ github.run_number }}
           restore-keys: |
-            cache-windows-vcpkg-${{ env.VCPKG_TARGET_TRIPLET }}-${{ matrix.config.preset }}-${{ github.ref }}
-            cache-windows-vcpkg-${{ env.VCPKG_TARGET_TRIPLET }}-${{ matrix.config.preset }}
-            cache-windows-vcpkg-${{ env.VCPKG_TARGET_TRIPLET }}
+            cache-windows-vcpkg-x64-windows-static-${{ matrix.config.preset }}-${{ github.ref }}
+            cache-windows-vcpkg-x64-windows-static-${{ matrix.config.preset }}
+            cache-windows-vcpkg-x64-windows-static
 
       - name: Extract SW_SDK
         env:
@@ -152,7 +150,7 @@ jobs:
       - name: ✔ ❌✔️ Test → Run CTest → Generate test_results.xml
         run: |
           cd ${{ env.BUILD_DIR }}\tests
-          ctest -V --output-junit test_results_${{ env.VCPKG_TARGET_TRIPLET }}_${{ matrix.config.preset }}.xml
+          ctest -V --output-junit test_results_x64-windows-static_${{ matrix.config.preset }}.xml
 
       - name: 📦 CMake ➔ Install
         run: cmake --install ${{ env.BUILD_DIR }} --prefix ${{ env.INSTALL_DIR }} --verbose
@@ -172,7 +170,7 @@ jobs:
       - name: 🔼 Upload Build Artifact -> csgo_cli
         uses: actions/upload-artifact@v7 # https://github.com/actions/upload-artifact
         with:
-          name: csgo_cli-${{ env.VCPKG_TARGET_TRIPLET }}-${{ matrix.config.preset }}
+          name: csgo_cli-x64-windows-static-${{ matrix.config.preset }}
           path: ${{ env.INSTALL_DIR }}\bin\
 
 # ---------------------------------------------------------------------------------------

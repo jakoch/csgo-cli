@@ -148,7 +148,7 @@ jobs:
         run: |
           find dependencies/sw_sdk -name "*.h" -print0 | xargs -0 -I{} sh -c '
             tmp=$(mktemp)
-            iconv -f UTF-8 -t UTF-8 "{}" > "$tmp" && mv "$tmp" "{}"
+            iconv -f CP1252 -t UTF-8 "{}" > "$tmp" && mv "$tmp" "{}"
           '
 
       - name: 🛠️ 2.1 Configure csgo-cli
@@ -333,7 +333,7 @@ jobs:
         run: |
           find dependencies/sw_sdk -name "*.h" -print0 | xargs -0 -I{} sh -c '
             tmp=$(mktemp)
-            iconv -f UTF-8 -t UTF-8 "{}" > "$tmp" && mv "$tmp" "{}"
+            iconv -f CP1252 -t UTF-8 "{}" > "$tmp" && mv "$tmp" "{}"
           '
 
       - name: 🛠️ 2.1 Configure csgo-cli
