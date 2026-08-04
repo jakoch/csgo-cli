@@ -93,8 +93,10 @@ jobs:
 
       # https://github.com/actions/runner-images/blob/main/images/windows/Windows2025-Readme.md#visual-studio-enterprise-2026
       # Note: yes, the windows-2025 image contains "Studio\2026\Enterprise".
-      - name: 📥 Setup VC18 Environment (→ vcvars64)
-        run: call "C:\Program Files\Microsoft Visual Studio\2026\Enterprise\VC\Auxiliary\Build\vcvars64.bat"
+      - name: 📥 Setup VC18 Environment
+        uses: TheMrMilchmann/setup-msvc-dev@v4
+        with:
+          arch: x64
 
       - name: 🔽 Update VCPKG
         run: |
