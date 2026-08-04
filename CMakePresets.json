@@ -68,6 +68,17 @@
       }
     },
     {
+      "name": "gcc15-x64-linux-rel",
+      "displayName": "GCC15 Release",
+      "inherits": "gcc15-x64-linux",
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": {
+          "type": "STRING",
+          "value": "Release"
+        }
+      }
+    },
+    {
       "name": "gcc16-x64-linux-rel",
       "displayName": "GCC16 Release",
       "inherits": "gcc16-x64-linux",
@@ -155,6 +166,13 @@
     {
       "name": "gcc14-x64-linux-dbg",
       "configurePreset": "gcc14-x64-linux-dbg",
+      "targets": [
+        "csgo_cli"
+      ]
+    },
+    {
+      "name": "gcc15-x64-linux-rel",
+      "configurePreset": "gcc15-x64-linux-rel",
       "targets": [
         "csgo_cli"
       ]
