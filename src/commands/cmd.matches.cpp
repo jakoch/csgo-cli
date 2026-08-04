@@ -61,7 +61,7 @@ bool requestRecentMatches(DataObject& data, bool& verbose)
                     // map
                     parsedMatch.map       = match.watchablematchinfo().game_map();
                     parsedMatch.mapgroup  = match.watchablematchinfo().game_mapgroup();
-                    parsedMatch.game_type = match.watchablematchinfo().game_type(); // this is nowadays 0
+                    parsedMatch.map_id    = match.watchablematchinfo().game_type(); // this is nowadays 0
 
                     if (verbose) {
                         spdlog::info("{}", match.DebugString());
@@ -77,9 +77,9 @@ bool requestRecentMatches(DataObject& data, bool& verbose)
                         // last round = scoreboard
                         // match.scoreboard = match.roundstatsall(roundstatsall().size());
 
-                        // WARNING: the game_type is the map name
-                        if (parsedMatch.game_type == 0) {
-                            parsedMatch.game_type = roundStats.reservation().game_type();
+                        // the "game_type" from reservation is actually a map ID
+                        if (parsedMatch.map_id == 0) {
+                            parsedMatch.map_id    = roundStats.reservation().game_type();
                         }
 
                         // ROUNDSTATS per player
@@ -264,7 +264,7 @@ bool requestMatchDetails(DataObject& data, bool& verbose, uint64_t matchId)
                     // map
                     parsedMatch.map       = match.watchablematchinfo().game_map();
                     parsedMatch.mapgroup  = match.watchablematchinfo().game_mapgroup();
-                    parsedMatch.game_type = match.watchablematchinfo().game_type(); // this is nowadays 0
+                    parsedMatch.map_id    = match.watchablematchinfo().game_type(); // this is nowadays 0
 
                     if (verbose) {
                         spdlog::info("{}", match.DebugString());
@@ -275,9 +275,9 @@ bool requestMatchDetails(DataObject& data, bool& verbose, uint64_t matchId)
                     for (int i = 0; i < match.roundstatsall().size(); ++i) {
                         roundStats = match.roundstatsall(i);
 
-                        // WARNING: the game_type is the map name
-                        if (parsedMatch.game_type == 0) {
-                            parsedMatch.game_type = roundStats.reservation().game_type();
+                        // the "game_type" from reservation is actually a map ID
+                        if (parsedMatch.map_id == 0) {
+                            parsedMatch.map_id    = roundStats.reservation().game_type();
                         }
 
                         // ROUNDSTATS per player
@@ -389,7 +389,7 @@ void printMatches(DataObject& data)
             std::to_string(i),
             match.matchtime_str,
             match.match_duration_str,
-            match.getGameType(), // match.getMapname(),
+            match.getMapname(),
             match.getScore(),
             match.getMatchResult());
         ++i;

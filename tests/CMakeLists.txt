@@ -32,6 +32,7 @@ set(UNIT_TEST_SOURCES
   main.tests.cpp
   ShareCodeUpload.tests.cpp
   CrosshairShareCode.test.cpp
+  CSGOMatchData.test.cpp
 )
 
 add_executable(all_tests ${UNIT_TEST_SOURCES})

@@ -16,9 +16,12 @@
 struct CSGOMatchData
 {
 private:
-    // TODO(jakoch): find out, if this is correct?
-    // the idea is that "lastRound.reservation.game_type" is the "map_name"
-    enum GameTypes
+    // The "game_type" field in the reservation message is actually a map ID,
+    // not a game mode (e.g. casual, competitive). The Steam API does not
+    // provide the map name string for recent matches, so we use this numeric
+    // ID from roundstats.reservation.game_type to look up the map name.
+    // Reference: https://github.com/jakoch/csgo-cli/issues/3
+    enum class MapIds
     {
         de_dust2    = 520,
         de_train    = 1032,
@@ -34,36 +37,36 @@ private:
         de_overpass = 268435464
     };
 
-    std::string getGameTypeStr(/*GameTypes game_types*/ int32 game_type) const
+    std::string getMapNameFromId(uint32 map_id) const
     {
-        switch (game_type) {
-        case GameTypes::de_train:
+        switch (map_id) {
+        case static_cast<uint32>(MapIds::de_train):
             return "de_train";
-        case GameTypes::de_dust2:
+        case static_cast<uint32>(MapIds::de_dust2):
             return "de_dust2";
-        case GameTypes::de_inferno:
+        case static_cast<uint32>(MapIds::de_inferno):
             return "de_inferno";
-        case GameTypes::de_nuke:
+        case static_cast<uint32>(MapIds::de_nuke):
             return "de_nuke";
-        case GameTypes::de_vertigo:
+        case static_cast<uint32>(MapIds::de_vertigo):
             return "de_vertigo";
-        case GameTypes::cs_office:
+        case static_cast<uint32>(MapIds::cs_office):
             return "cs_office";
-        case GameTypes::de_mirage:
+        case static_cast<uint32>(MapIds::de_mirage):
             return "de_mirage";
-        case GameTypes::de_cache:
+        case static_cast<uint32>(MapIds::de_cache):
             return "de_cache";
-        case GameTypes::de_zoo:
+        case static_cast<uint32>(MapIds::de_zoo):
             return "de_zoo";
-        case GameTypes::cs_agency:
+        case static_cast<uint32>(MapIds::cs_agency):
             return "cs_agency";
-        case GameTypes::de_overpass:
+        case static_cast<uint32>(MapIds::de_overpass):
             return "de_overpass";
-        case GameTypes::de_workout:
+        case static_cast<uint32>(MapIds::de_workout):
             return "de_workout";
             // omit default case to trigger compiler warning for missing cases
         }
-        return std::to_string(static_cast<std::uint32_t>(game_type));
+        return std::to_string(map_id);
     };
 
 public:
@@ -84,7 +87,7 @@ public:
 
     std::string map;      /* watchablematchinfo.game_map */
     std::string mapgroup; /* watchablematchinfo.game_mapgroup */
-    uint32 game_type;     /* roundstatsall.reservation.game_type | watchablematchinfo.game_type */
+    uint32 map_id;        /* roundstatsall.reservation.game_type | watchablematchinfo.game_type */
 
     uint32 spectators;
 
@@ -101,10 +104,15 @@ public:
         return fmt::format("{:02} : {:02}", score_ally, score_enemy);
     }
 
-    // @todo(jakoch): how to get mapname?
     std::string getMapname() const
     {
-        return (map.empty() ? "? " : map);
+        if (!map.empty()) {
+            return map;
+        }
+        if (map_id != 0) {
+            return getMapNameFromId(map_id);
+        }
+        return "?";
     }
 
     std::string getMatchResult() const
@@ -116,11 +124,6 @@ public:
         } else { // result_str == "TIE"
             return fmt::format(fmt::fg(fmt::color::yellow), "TIE");
         }
-    }
-
-    std::string getGameType() const
-    {
-        return getGameTypeStr(game_type);
     }
 };
 
