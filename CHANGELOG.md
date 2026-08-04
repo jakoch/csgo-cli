@@ -10,14 +10,18 @@ All changes to the project will be documented in this file.
 
 ## [vNext] - unreleased
 
-- "It was a bright day in April, and the clocks were striking thirteen." - 1984
+## [1.6.0] - 2025-08-04
+
+- added linux support
+- added display of demo share codes in `-matches` output table, [#14]
+- added crosshair sharecode support
+- added cmakepresets
 
 ## [1.5.0] - 2025-08-11
 
 - raised required CMake version to v3.30
 - renamed feature "winssl" to "schannel" on curl dependency in vcpkg.json
 - fixed cpplint issue, mainly missing header includes
--
 
 ## [1.4.0] - 2020-09-12
 
@@ -97,7 +101,8 @@ All changes to the project will be documented in this file.
 
 <!-- Section for Reference Links -->
 
-[vNext]: https://github.com/jakoch/csgo-cli/compare/v1.5.0...HEAD
+[vNext]: https://github.com/jakoch/csgo-cli/compare/v1.6.0...HEAD
+[1.6.0]: https://github.com/jakoch/csgo-cli/compare/v1.5.0...v1.6.0
 [1.5.0]: https://github.com/jakoch/csgo-cli/compare/v1.4.0...v1.5.0
 [1.4.0]: https://github.com/jakoch/csgo-cli/compare/v1.3.0...v1.4.0
 [1.3.0]: https://github.com/jakoch/csgo-cli/compare/v1.2.0...v1.3.0
@@ -111,5 +116,6 @@ All changes to the project will be documented in this file.
 
 [#1]: https://github.com/jakoch/csgo-cli/issues/1
 [#2]: https://github.com/jakoch/csgo-cli/issues/2
+[#14]: https://github.com/jakoch/csgo-cli/issues/14
 [PR#4]: https://github.com/jakoch/csgo-cli/pull/4
 [PR#5]: https://github.com/jakoch/csgo-cli/pull/5

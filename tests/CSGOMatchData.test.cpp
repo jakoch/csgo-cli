@@ -68,3 +68,13 @@ TEST_CASE("[CSGOMatchData] getMapname prefers game_map over map_id", "[getMapnam
 
     REQUIRE(match.getMapname() == "de_inferno");
 }
+
+TEST_CASE("[CSGOMatchData] sharecode field can be set and read", "[sharecode]")
+{
+    CSGOMatchData match;
+    match.sharecode = "CSGO-AAAA-AAAA-AAAA-AAAA-AAAA";
+
+    REQUIRE(match.sharecode == "CSGO-AAAA-AAAA-AAAA-AAAA-AAAA");
+    REQUIRE(match.sharecode.starts_with("CSGO-"));
+    REQUIRE(match.sharecode.length() > 10);
+}

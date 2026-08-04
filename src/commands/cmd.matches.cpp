@@ -377,11 +377,12 @@ void printMatches(DataObject& data)
                             std::string const & s3,
                             std::string const & s4,
                             std::string const & s5,
-                            std::string const & s6) {
-        return fmt::print("{0:^3} {1:<20} {2:^8} {3:^13} {4:^8} {5:^6} \n", s1, s2, s3, s4, s5, s6);
+                            std::string const & s6,
+                            std::string const & s7) {
+        return fmt::print("{0:^3} {1:<20} {2:^8} {3:^13} {4:^8} {5:^6}   {6}\n", s1, s2, s3, s4, s5, s6, s7);
     }};
 
-    printRow("#", "Match Played", "Duration", "Map", "Score", "Result\n");
+    printRow("#", "Match Played", "Duration", "Map", "Score", "Result", "Share Code\n");
 
     int i = 1;
     for (auto const & match : data.matches) {
@@ -391,16 +392,8 @@ void printMatches(DataObject& data)
             match.match_duration_str,
             match.getMapname(),
             match.getScore(),
-            match.getMatchResult());
+            match.getMatchResult(),
+            match.sharecode);
         ++i;
     }
-
-    // std::to_string(match.matchid),
-    //"Replaylink:" match.replaylink,
-    //"Match IP:"              << match.server_ip,
-    //"Match Port:"            << match.tv_port,
-    //"Match Reservation ID:"  << match.reservation_id,
-    //"Replay ShareCode:"        << match.sharecode,
-    //"Mapgroup:"              << match.mapgroup,
-    //"Gametype:"              << match.gametype
 }

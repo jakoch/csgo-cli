@@ -33,6 +33,7 @@ set(UNIT_TEST_SOURCES
   ShareCodeUpload.tests.cpp
   CrosshairShareCode.test.cpp
   CSGOMatchData.test.cpp
+  ShareCode.test.cpp
 )
 
 add_executable(all_tests ${UNIT_TEST_SOURCES})
@@ -40,6 +41,7 @@ add_executable(all_tests ${UNIT_TEST_SOURCES})
 target_include_directories(all_tests
   PUBLIC
     "$<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/src>"
+    "$<BUILD_INTERFACE:${PROJECT_BINARY_DIR}>"
     "${VCPKG_INSTALLED_DIR}/${VCPKG_TARGET_TRIPLET}/include"
 )
 
