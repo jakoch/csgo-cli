@@ -3,6 +3,7 @@
 
 #include "ShareCodeCache.h"
 
+#include <algorithm>
 #include <cstdio>
 #include <string>
 #include <vector>
@@ -21,7 +22,7 @@ ShareCodeCache::ShareCodeCache(bool verboseMode)
 
     if (verboseMode) {
         // debug print sharecode cache
-        printf(" Cached Sharecodes: %zd \n", sharecodeCache.size());
+        printf(" Cached Sharecodes: %zu \n", sharecodeCache.size());
         for (auto const & sharecode : sharecodeCache) {
             printf(" \"%s\" \n", sharecode.c_str());
         }
@@ -35,17 +36,14 @@ ShareCodeCache::ShareCodeCache(bool verboseMode)
     }
 }
 
-bool ShareCodeCache::find(std::string sharecode)
+bool ShareCodeCache::find(std::string const& sharecode)
 {
-    for (auto const & sharecodeFromCache : sharecodeCache) {
-        if (sharecode.compare(sharecodeFromCache.c_str()) == 0) {
-            return true;
-        }
-    }
-    return false;
+    return std::any_of(sharecodeCache.begin(), sharecodeCache.end(), [&sharecode](auto const& sharecodeFromCache) {
+        return sharecode.compare(sharecodeFromCache.c_str()) == 0;
+    });
 }
 
-bool ShareCodeCache::insert(std::string sharecode)
+bool ShareCodeCache::insert(std::string const& sharecode)
 {
     matchDbFile.open(csvFile, std::ios::out | std::ios::app);
     if (matchDbFile.good()) {

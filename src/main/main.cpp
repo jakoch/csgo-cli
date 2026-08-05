@@ -36,7 +36,7 @@
 // Includes needed for _setmode() (+io.h)
 #include <fcntl.h>
 
-void initSteamAPI(bool& verbose)
+void initSteamAPI(bool const& verbose)
 {
     if (verbose)
         spdlog::info("[ Start ] STEAM_INIT");
@@ -49,7 +49,7 @@ void initSteamAPI(bool& verbose)
     int savedStderr;
     if (!verbose) {
         savedStderr = _dup(_fileno(stderr));
-        freopen("NUL", "w", stderr);
+        static_cast<void>(freopen("NUL", "w", stderr));
     }
 #endif
 
@@ -118,7 +118,7 @@ void initSteamAPI(bool& verbose)
     }
 }
 
-std::thread createCallbackThread(bool& running, bool& verbose)
+std::thread createCallbackThread(bool& running, bool const& verbose)
 {
     if (verbose) {
         spdlog::info("[ Start ] CallbackThread & Steam_RunCallbacks");
@@ -143,7 +143,7 @@ std::thread createCallbackThread(bool& running, bool& verbose)
     return CallbackThread;
 }
 
-void initGameClientConnection(DataObject& data, bool& verbose)
+void initGameClientConnection(DataObject& data, bool const& verbose)
 {
     if (verbose) {
         spdlog::info("[ Start ] Trying to establish a GameClient Connection");

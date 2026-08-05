@@ -24,9 +24,9 @@ public:
     /**
      * Construct from class handler
      */
-    GCMsgHandler(C* instance, void (C::*handler)(M const &))
+    GCMsgHandler(C* instance, void (C::*const handler)(M const &)) :
+        m_handler(std::bind(std::mem_fn(handler), instance, std::placeholders::_1))
     {
-        m_handler = std::bind(std::mem_fn(handler), instance, std::placeholders::_1);
     }
 
     template <typename F>

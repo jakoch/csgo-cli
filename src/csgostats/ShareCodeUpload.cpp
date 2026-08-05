@@ -34,7 +34,7 @@ size_t CurlWrite_CallbackFunc_StdString(void* contents, size_t size, size_t nmem
 
     try {
         s->resize(oldLength + newLength);
-    } catch (std::bad_alloc& e) {
+    } catch (std::bad_alloc const& e) {
         // cast to void (formerly self-assign) to avoid unused/unreferenced variable e
         static_cast<void>(e);
         // handle memory problem
@@ -217,7 +217,7 @@ int ShareCodeUpload::processJsonResponse(std::string& jsonResponse)
         newMsg.append(queuedString);
 
         // get the "time remaining part (start of value (char "~" + 1) to end)
-        std::string const timeString = msgHtml.substr(msgHtml.find("~") + 1, -1);
+        std::string const timeString = msgHtml.substr(msgHtml.find("~") + 1);
         newMsg.append(timeString);
 
         std::string const url = data["url"].get<std::string>();

@@ -12,7 +12,7 @@
 #undef SendMessage
 #endif
 
-static uint32_t const ProtobufFlag = (1 << 31);
+static uint32_t const ProtobufFlag = (1U << 31);
 static uint32_t const Steam730ClientVersion = 2000880;
 static auto const GameClientConnectRetryInterval = std::chrono::milliseconds(500);
 CSGOClient* CSGOClient::m_instance = nullptr;
@@ -186,7 +186,7 @@ void CSGOClient::RegisterHandler(uint32 msgId, IGCMsgHandler* handler)
     m_msgHandler.insert({msgId, handler});
 }
 
-void CSGOClient::RemoveHandler(uint32 msgId, IGCMsgHandler* handler)
+void CSGOClient::RemoveHandler(uint32 msgId, IGCMsgHandler const* handler)
 {
     std::lock_guard<std::mutex> lock(m_handlerMutex);
 
@@ -227,11 +227,7 @@ void CSGOClient::WaitForGameClientConnect()
     while (!m_connectedToGameClient && !m_connectionFailure.has_value()) {
         auto const waitUntil = std::min(deadline, std::chrono::steady_clock::now() + GameClientConnectRetryInterval);
 
-        if (m_connectedCV.wait_until(lock, waitUntil, [this]() {
-                return m_connectedToGameClient || m_connectionFailure.has_value();
-            })) {
-            break;
-        }
+        m_connectedCV.wait_until(lock, waitUntil, [this]() { return m_connectionFailure.has_value(); });
 
         if (std::chrono::steady_clock::now() >= deadline) {
             break;

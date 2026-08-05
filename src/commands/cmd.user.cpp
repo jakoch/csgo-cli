@@ -4,10 +4,11 @@
 #include "cmd.user.h"
 #include "cstrike15_gcmessages.pb.h"
 
+#include <algorithm>
 #include <optional>
 #include <string>
 
-bool requestPlayersProfile(DataObject& data, bool& verbose)
+bool requestPlayersProfile(DataObject& data, bool const& verbose)
 {
     if (verbose)
         spdlog::info("[ Start ] [ Thread ] getUserInfo");
@@ -82,7 +83,7 @@ bool requestPlayersProfile(DataObject& data, bool& verbose)
     return result;
 }
 
-bool requestPlayersRankInfo(DataObject& data, bool& verbose)
+bool requestPlayersRankInfo(DataObject& data, bool const& verbose)
 {
     if (verbose)
         spdlog::info("[ Start ] [ Thread ] requestPlayersRankInfo");
@@ -173,14 +174,17 @@ void printPlayersProfile(DataObject& data)
     std::string clan = fmt::format("{} \"{}\"", data.clan_name, data.clan_tag);
 
     auto const findRanking = [&](uint32 expectedType) {
+        auto const candidate =
+            std::find_if(data.rankings.begin(), data.rankings.end(), [expectedType](auto const& ranking) {
+                return ranking.type == expectedType;
+            });
+
+        if (candidate != data.rankings.end()) {
+            return *candidate;
+        }
+
         DataObject::RankingInfo ranking = {};
         ranking.type                    = expectedType;
-
-        for (auto const& candidate : data.rankings) {
-            if (candidate.type == expectedType) {
-                return candidate;
-            }
-        }
 
         return ranking;
     };

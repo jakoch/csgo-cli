@@ -7,7 +7,7 @@
 
 #include <string>
 
-bool requestRecentMatches(DataObject& data, bool& verbose)
+bool requestRecentMatches(DataObject& data, bool const& verbose)
 {
     if (verbose) {
         spdlog::info("[ Start ] [ Thread ] MatchList");
@@ -83,7 +83,7 @@ bool requestRecentMatches(DataObject& data, bool& verbose)
                         }
 
                         // ROUNDSTATS per player
-                        for (auto& account_id : roundStats.reservation().account_ids()) {
+                        for (auto const& account_id : roundStats.reservation().account_ids()) {
 
                             CSGOMatchPlayerScore player;
                             player.index      = matchList.getPlayerIndex(account_id, roundStats);
@@ -160,7 +160,7 @@ bool requestRecentMatches(DataObject& data, bool& verbose)
     return result;
 }
 
-bool requestMatchDetails(DataObject& data, bool& verbose, uint64_t matchId)
+bool requestMatchDetails(DataObject& data, bool const& verbose, uint64_t matchId)
 {
     if (verbose) {
         spdlog::info("[ Start ] [ Thread ] MatchList (specific match {})", matchId);
@@ -281,7 +281,7 @@ bool requestMatchDetails(DataObject& data, bool& verbose, uint64_t matchId)
                         }
 
                         // ROUNDSTATS per player
-                        for (auto& account_id : roundStats.reservation().account_ids()) {
+                        for (auto const& account_id : roundStats.reservation().account_ids()) {
 
                             CSGOMatchPlayerScore player;
                             player.index      = matchList.getPlayerIndex(account_id, roundStats);

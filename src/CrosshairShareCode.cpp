@@ -31,10 +31,11 @@ std::array<uint8_t, 18> shareCodeToBytes(std::string shareCode)
         throw ExceptionHandler("Invalid crosshair share code.");
     }
 
-    for (char c : shareCode) {
-        if (std::strchr(kDictionary, c) == nullptr) {
-            throw ExceptionHandler("Invalid crosshair share code.");
-        }
+    auto const invalidChar = std::find_if(shareCode.begin(), shareCode.end(), [](char c) {
+        return std::strchr(kDictionary, c) == nullptr;
+    });
+    if (invalidChar != shareCode.end()) {
+        throw ExceptionHandler("Invalid crosshair share code.");
     }
 
     std::reverse(shareCode.begin(), shareCode.end());
@@ -45,7 +46,7 @@ std::array<uint8_t, 18> shareCodeToBytes(std::string shareCode)
         std::array<uint8_t, 18> tmp = {};
         int addValue                = static_cast<int>(std::strchr(kDictionary, c) - kDictionary);
         int carry                   = 0;
-        int value                   = 0;
+        int value;
 
         for (int t = 17; t >= 0; --t) {
             carry = 0;

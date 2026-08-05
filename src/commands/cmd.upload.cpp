@@ -32,7 +32,7 @@ static inline void uploadShareCode(std::string& sharecode, ShareCodeCache* match
     }
 }
 
-void uploadReplayShareCodes(DataObject& data, bool& verbose)
+void uploadReplayShareCodes(DataObject& data, bool const& verbose)
 {
     if (!data.has_matches_played) {
         WinCliColors::printRed(" No replay sharecodes to upload.\n");
@@ -50,7 +50,7 @@ void uploadReplayShareCodes(DataObject& data, bool& verbose)
     }
 }
 
-void uploadSingleShareCode(std::string& sharecode, bool& verbose)
+void uploadSingleShareCode(std::string& sharecode, bool const& verbose)
 {
     WinCliColors::printTerminalYellow("\n Uploading Single Replay ShareCode to https://csgostats.gg/: \n\n");
 

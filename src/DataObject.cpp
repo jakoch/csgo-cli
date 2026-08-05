@@ -3,16 +3,18 @@
 
 #include "DataObject.h"
 
+#include <algorithm>
 #include <string>
 
 std::string DataObject::getPlayerRank(int rank_type_id)
 {
     int rank_id = 0;
-    for (auto const& ranking : rankings) {
-        if (ranking.type == static_cast<uint32>(rank_type_id)) {
-            rank_id = static_cast<int>(ranking.id);
-            break;
-        }
+
+    auto const ranking = std::find_if(rankings.begin(), rankings.end(), [rank_type_id](auto const& r) {
+        return r.type == static_cast<uint32>(rank_type_id);
+    });
+    if (ranking != rankings.end()) {
+        rank_id = static_cast<int>(ranking->id);
     }
 
     int rank = (rank_id < 0) ? rank_id - 1 : rank_id;
@@ -88,11 +90,12 @@ std::string DataObject::getSteamProfileUrl()
 std::string DataObject::getCanDoOverwatch()
 {
     RankingInfo matchmaking_rank = {};
-    for (auto const& ranking : rankings) {
-        if (ranking.type == 6) {
-            matchmaking_rank = ranking;
-            break;
-        }
+
+    auto const ranking = std::find_if(rankings.begin(), rankings.end(), [](auto const& r) {
+        return r.type == 6;
+    });
+    if (ranking != rankings.end()) {
+        matchmaking_rank = *ranking;
     }
 
     int rank_id   = static_cast<int>(matchmaking_rank.id);

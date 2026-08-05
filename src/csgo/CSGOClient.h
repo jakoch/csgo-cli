@@ -56,7 +56,7 @@ public:
     /**
      * Removes a gc protobuf msg handler
      */
-    void RemoveHandler(uint32 msgId, IGCMsgHandler* handler);
+    void RemoveHandler(uint32 msgId, IGCMsgHandler const* handler);
 
     /**
      * Blocks until we are connected to the GameClient

@@ -14,8 +14,8 @@
 
 #include <string>
 
-bool requestPlayersProfile(DataObject& data, bool& verbose);
-bool requestPlayersRankInfo(DataObject& data, bool& verbose);
+bool requestPlayersProfile(DataObject& data, bool const& verbose);
+bool requestPlayersRankInfo(DataObject& data, bool const& verbose);
 void printPlayersProfile(DataObject& data);
 
 #endif // SRC_COMMANDS_CMD_USER_H_
