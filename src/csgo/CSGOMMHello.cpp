@@ -8,14 +8,10 @@
 #include <iostream>
 
 CSGOMMHello::CSGOMMHello() : m_mmhelloHandler(this, &CSGOMMHello::OnMMHello)
-{
-    CSGOClient::GetInstance()->RegisterHandler(k_EMsgGCCStrike15_v2_MatchmakingGC2ClientHello, &m_mmhelloHandler);
-}
+{ CSGOClient::GetInstance()->RegisterHandler(k_EMsgGCCStrike15_v2_MatchmakingGC2ClientHello, &m_mmhelloHandler); }
 
 CSGOMMHello::~CSGOMMHello()
-{
-    CSGOClient::GetInstance()->RemoveHandler(k_EMsgGCCStrike15_v2_MatchmakingGC2ClientHello, &m_mmhelloHandler);
-}
+{ CSGOClient::GetInstance()->RemoveHandler(k_EMsgGCCStrike15_v2_MatchmakingGC2ClientHello, &m_mmhelloHandler); }
 
 void CSGOMMHello::OnMMHello(CMsgGCCStrike15_v2_MatchmakingGC2ClientHello const & msg)
 {

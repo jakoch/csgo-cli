@@ -10,7 +10,7 @@ std::string DataObject::getPlayerRank(int rank_type_id)
 {
     int rank_id = 0;
 
-    auto const ranking = std::find_if(rankings.begin(), rankings.end(), [rank_type_id](auto const& r) {
+    auto const ranking = std::find_if(rankings.begin(), rankings.end(), [rank_type_id](auto const & r) {
         return r.type == static_cast<uint32>(rank_type_id);
     });
     if (ranking != rankings.end()) {
@@ -35,29 +35,19 @@ int const DataObject::calcPlayerXpBase() const
 }
 
 std::string DataObject::getPlayerXp()
-{
-    return std::to_string(calcPlayerXpBase());
-}
+{ return std::to_string(calcPlayerXpBase()); }
 
 float const DataObject::getPlayerXpPercentage()
-{
-    return (static_cast<float>(calcPlayerXpBase()) / 5000) * 100;
-}
+{ return (static_cast<float>(calcPlayerXpBase()) / 5000) * 100; }
 
 std::string DataObject::getVacStatus()
-{
-    return (vac_banned == 1) ? "banned" : "ok";
-}
+{ return (vac_banned == 1) ? "banned" : "ok"; }
 
 std::string DataObject::getLevelName(int i)
-{
-    return levels[i];
-}
+{ return levels[i]; }
 
 std::string DataObject::getRankName(int i)
-{
-    return ranks[i];
-}
+{ return ranks[i]; }
 
 std::string DataObject::getRankType(int i)
 {
@@ -74,24 +64,18 @@ std::string DataObject::getRankType(int i)
 }
 
 std::string DataObject::getDangerzoneRankName(int i)
-{
-    return dangerzone_ranks[i];
-}
+{ return dangerzone_ranks[i]; }
 
 std::string DataObject::getSteamId()
-{
-    return std::to_string(steam_id);
-}
+{ return std::to_string(steam_id); }
 
 std::string DataObject::getSteamProfileUrl()
-{
-    return steam_profile_url_base + getSteamId();
-}
+{ return steam_profile_url_base + getSteamId(); }
 std::string DataObject::getCanDoOverwatch()
 {
     RankingInfo matchmaking_rank = {};
 
-    auto const ranking = std::find_if(rankings.begin(), rankings.end(), [](auto const& r) {
+    auto const ranking = std::find_if(rankings.begin(), rankings.end(), [](auto const & r) {
         return r.type == 6;
     });
     if (ranking != rankings.end()) {
@@ -110,19 +94,13 @@ std::string DataObject::getCanDoOverwatch()
     return "Qualified to request replays.";
 }
 std::string DataObject::getAverageSearchTime()
-{
-    return format_duration_get_minutes(global_stats.search_time_avg);
-}
+{ return format_duration_get_minutes(global_stats.search_time_avg); }
 
 std::string DataObject::getPenaltyReasonShort(int i)
-{
-    return penalty_reasons_short[i];
-}
+{ return penalty_reasons_short[i]; }
 
 std::string DataObject::getPenaltyReasonLong(int i)
-{
-    return penalty_reasons_long[i];
-}
+{ return penalty_reasons_long[i]; }
 
 /*std::string DataObject::getDemoFilename(const CDataGCCStrike15_v2_MatchInfo&
 match, const CMsgGCCStrike15_v2_MatchmakingServerRoundStats& roundstats) {

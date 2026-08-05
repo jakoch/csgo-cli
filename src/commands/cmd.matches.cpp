@@ -7,7 +7,7 @@
 
 #include <string>
 
-bool requestRecentMatches(DataObject& data, bool const& verbose)
+bool requestRecentMatches(DataObject& data, bool const & verbose)
 {
     if (verbose) {
         spdlog::info("[ Start ] [ Thread ] MatchList");
@@ -59,9 +59,9 @@ bool requestRecentMatches(DataObject& data, bool const& verbose)
                     parsedMatch.server_ip = match.watchablematchinfo().server_ip();
                     parsedMatch.tv_port   = match.watchablematchinfo().tv_port();
                     // map
-                    parsedMatch.map       = match.watchablematchinfo().game_map();
-                    parsedMatch.mapgroup  = match.watchablematchinfo().game_mapgroup();
-                    parsedMatch.map_id    = match.watchablematchinfo().game_type(); // this is nowadays 0
+                    parsedMatch.map      = match.watchablematchinfo().game_map();
+                    parsedMatch.mapgroup = match.watchablematchinfo().game_mapgroup();
+                    parsedMatch.map_id   = match.watchablematchinfo().game_type(); // this is nowadays 0
 
                     if (verbose) {
                         spdlog::info("{}", match.DebugString());
@@ -79,11 +79,11 @@ bool requestRecentMatches(DataObject& data, bool const& verbose)
 
                         // the "game_type" from reservation is actually a map ID
                         if (parsedMatch.map_id == 0) {
-                            parsedMatch.map_id    = roundStats.reservation().game_type();
+                            parsedMatch.map_id = roundStats.reservation().game_type();
                         }
 
                         // ROUNDSTATS per player
-                        for (auto const& account_id : roundStats.reservation().account_ids()) {
+                        for (auto const & account_id : roundStats.reservation().account_ids()) {
 
                             CSGOMatchPlayerScore player;
                             player.index      = matchList.getPlayerIndex(account_id, roundStats);
@@ -160,7 +160,7 @@ bool requestRecentMatches(DataObject& data, bool const& verbose)
     return result;
 }
 
-bool requestMatchDetails(DataObject& data, bool const& verbose, uint64_t matchId)
+bool requestMatchDetails(DataObject& data, bool const & verbose, uint64_t matchId)
 {
     if (verbose) {
         spdlog::info("[ Start ] [ Thread ] MatchList (specific match {})", matchId);
@@ -262,9 +262,9 @@ bool requestMatchDetails(DataObject& data, bool const& verbose, uint64_t matchId
                     parsedMatch.server_ip = match.watchablematchinfo().server_ip();
                     parsedMatch.tv_port   = match.watchablematchinfo().tv_port();
                     // map
-                    parsedMatch.map       = match.watchablematchinfo().game_map();
-                    parsedMatch.mapgroup  = match.watchablematchinfo().game_mapgroup();
-                    parsedMatch.map_id    = match.watchablematchinfo().game_type(); // this is nowadays 0
+                    parsedMatch.map      = match.watchablematchinfo().game_map();
+                    parsedMatch.mapgroup = match.watchablematchinfo().game_mapgroup();
+                    parsedMatch.map_id   = match.watchablematchinfo().game_type(); // this is nowadays 0
 
                     if (verbose) {
                         spdlog::info("{}", match.DebugString());
@@ -277,11 +277,11 @@ bool requestMatchDetails(DataObject& data, bool const& verbose, uint64_t matchId
 
                         // the "game_type" from reservation is actually a map ID
                         if (parsedMatch.map_id == 0) {
-                            parsedMatch.map_id    = roundStats.reservation().game_type();
+                            parsedMatch.map_id = roundStats.reservation().game_type();
                         }
 
                         // ROUNDSTATS per player
-                        for (auto const& account_id : roundStats.reservation().account_ids()) {
+                        for (auto const & account_id : roundStats.reservation().account_ids()) {
 
                             CSGOMatchPlayerScore player;
                             player.index      = matchList.getPlayerIndex(account_id, roundStats);

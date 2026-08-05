@@ -17,8 +17,8 @@ public:
     explicit ShareCodeCache(bool verboseMode);
     ~ShareCodeCache();
 
-    bool find(std::string const& sharecode);
-    bool insert(std::string const& sharecode);
+    bool find(std::string const & sharecode);
+    bool insert(std::string const & sharecode);
 
 private:
     std::string const csvFile = "sharecode.db";

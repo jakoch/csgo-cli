@@ -12,10 +12,10 @@
 #undef SendMessage
 #endif
 
-static uint32_t const ProtobufFlag = (1U << 31);
-static uint32_t const Steam730ClientVersion = 2000880;
+static uint32_t const ProtobufFlag               = (1U << 31);
+static uint32_t const Steam730ClientVersion      = 2000880;
 static auto const GameClientConnectRetryInterval = std::chrono::milliseconds(500);
-CSGOClient* CSGOClient::m_instance = nullptr;
+CSGOClient* CSGOClient::m_instance               = nullptr;
 
 CSGOClient::CSGOClient() :
     m_welcomeHandler(this, &CSGOClient::OnClientWelcome),
@@ -51,10 +51,7 @@ void CSGOClient::SendConnectionHelloMessages()
 
     auto const sendResult = SendGCMessage(k_EMsgGCClientHello, &hello);
     if (spdlog::should_log(spdlog::level::trace)) {
-        spdlog::trace(
-            "Sent GCClientHello: version={}, result={}",
-            Steam730ClientVersion,
-            static_cast<int>(sendResult));
+        spdlog::trace("Sent GCClientHello: version={}, result={}", Steam730ClientVersion, static_cast<int>(sendResult));
     }
 
     if (sendResult != k_EGCResultOK) {
@@ -98,11 +95,7 @@ EGCResults CSGOClient::SendGCMessage(uint32_t uMsgType, google::protobuf::Messag
     msg->SerializeToArray(m_msgBuffer.data() + 2 * sizeof(uint32_t), m_msgBuffer.size() - 2 * sizeof(uint32_t));
 
     if (spdlog::should_log(spdlog::level::trace)) {
-        spdlog::trace(
-            "GC send: msg_type={}, payload_size={}, wire_size={}",
-            originalMsgType,
-            body_size,
-            size);
+        spdlog::trace("GC send: msg_type={}, payload_size={}, wire_size={}", originalMsgType, body_size, size);
     }
 
     return m_gameCoordinator->SendMessage(uMsgType, m_msgBuffer.data(), size);
@@ -142,15 +135,14 @@ void CSGOClient::OnMessageAvailable(GCMessageAvailable_t* msg)
 
             if (strippedMsgType == k_EMsgGCCStrike15_v2_ClientLogonFatalError) {
                 CMsgGCCStrike15_v2_ClientLogonFatalError fatalError;
-                if (fatalError.ParseFromArray(m_recvBuffer.data() + 2 * sizeof(uint32_t), msgSize - 2 * sizeof(uint32_t))) {
+                if (fatalError.ParseFromArray(
+                        m_recvBuffer.data() + 2 * sizeof(uint32_t), msgSize - 2 * sizeof(uint32_t))) {
                     std::string failureMessage = fmt::format(
                         "GC client logon rejected: errorcode={}, country='{}', message='{}'",
                         fatalError.errorcode(),
                         fatalError.country(),
                         fatalError.message());
-                    spdlog::error(
-                        "{}",
-                        failureMessage);
+                    spdlog::error("{}", failureMessage);
 
                     {
                         std::lock_guard<std::mutex> connectionLock(m_connectedMutex);
@@ -186,7 +178,7 @@ void CSGOClient::RegisterHandler(uint32 msgId, IGCMsgHandler* handler)
     m_msgHandler.insert({msgId, handler});
 }
 
-void CSGOClient::RemoveHandler(uint32 msgId, IGCMsgHandler const* handler)
+void CSGOClient::RemoveHandler(uint32 msgId, IGCMsgHandler const * handler)
 {
     std::lock_guard<std::mutex> lock(m_handlerMutex);
 
@@ -227,7 +219,9 @@ void CSGOClient::WaitForGameClientConnect()
     while (!m_connectedToGameClient && !m_connectionFailure.has_value()) {
         auto const waitUntil = std::min(deadline, std::chrono::steady_clock::now() + GameClientConnectRetryInterval);
 
-        m_connectedCV.wait_until(lock, waitUntil, [this]() { return m_connectionFailure.has_value(); });
+        m_connectedCV.wait_until(lock, waitUntil, [this]() {
+            return m_connectionFailure.has_value();
+        });
 
         if (std::chrono::steady_clock::now() >= deadline) {
             break;
@@ -279,7 +273,8 @@ void CSGOClient::OnMatchmakingHello(CMsgGCCStrike15_v2_MatchmakingGC2ClientHello
 {
     if (spdlog::should_log(spdlog::level::trace)) {
         spdlog::trace(
-            "Received matchmaking hello: account_id={}, player_level={}, has_global_stats={}, penalty_seconds={}, vac_banned={}",
+            "Received matchmaking hello: account_id={}, player_level={}, has_global_stats={}, penalty_seconds={}, "
+            "vac_banned={}",
             msg.account_id(),
             msg.player_level(),
             msg.has_global_stats(),
@@ -290,6 +285,6 @@ void CSGOClient::OnMatchmakingHello(CMsgGCCStrike15_v2_MatchmakingGC2ClientHello
     std::lock_guard<std::mutex> lock(m_connectedMutex);
     m_cachedMatchmakingHello    = msg;
     m_hasCachedMatchmakingHello = true;
-    m_connectedToGameClient = true;
+    m_connectedToGameClient     = true;
     m_connectedCV.notify_all();
 }

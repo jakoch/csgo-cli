@@ -36,14 +36,14 @@ ShareCodeCache::ShareCodeCache(bool verboseMode)
     }
 }
 
-bool ShareCodeCache::find(std::string const& sharecode)
+bool ShareCodeCache::find(std::string const & sharecode)
 {
-    return std::any_of(sharecodeCache.begin(), sharecodeCache.end(), [&sharecode](auto const& sharecodeFromCache) {
+    return std::any_of(sharecodeCache.begin(), sharecodeCache.end(), [&sharecode](auto const & sharecodeFromCache) {
         return sharecode.compare(sharecodeFromCache.c_str()) == 0;
     });
 }
 
-bool ShareCodeCache::insert(std::string const& sharecode)
+bool ShareCodeCache::insert(std::string const & sharecode)
 {
     matchDbFile.open(csvFile, std::ios::out | std::ios::app);
     if (matchDbFile.good()) {
@@ -65,6 +65,4 @@ std::vector<std::string> ShareCodeCache::read(std::istream& is)
 }
 
 ShareCodeCache::~ShareCodeCache()
-{
-    matchDbFile.close();
-}
+{ matchDbFile.close(); }

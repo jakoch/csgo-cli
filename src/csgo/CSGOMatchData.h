@@ -100,9 +100,7 @@ public:
     int score_enemy;
 
     std::string getScore() const
-    {
-        return fmt::format("{:02} : {:02}", score_ally, score_enemy);
-    }
+    { return fmt::format("{:02} : {:02}", score_ally, score_enemy); }
 
     std::string getMapname() const
     {

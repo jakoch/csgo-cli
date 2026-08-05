@@ -13,7 +13,7 @@
 
 static inline void uploadShareCode(std::string& sharecode, ShareCodeCache* matchCache, ShareCodeUpload* codeUpload);
 
-void uploadReplayShareCodes(DataObject& data, bool const& verbose);
-void uploadSingleShareCode(std::string& sharecode, bool const& verbose);
+void uploadReplayShareCodes(DataObject& data, bool const & verbose);
+void uploadSingleShareCode(std::string& sharecode, bool const & verbose);
 
 #endif // SRC_COMMANDS_CMD_UPLOAD_H_

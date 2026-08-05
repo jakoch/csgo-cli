@@ -8,6 +8,4 @@
 ExceptionHandler::ExceptionHandler(std::string const & what) : m_what(what) { }
 
 char const * ExceptionHandler::what() const throw()
-{
-    return m_what.c_str();
-}
+{ return m_what.c_str(); }

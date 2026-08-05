@@ -78,8 +78,8 @@ std::string getShareCode(uint64_t matchid, uint64_t reservationid, uint32_t tvpo
     uint64_t reservationid_reversed = __builtin_bswap64(reservationid);
     uint16_t tvport_reversed        = __builtin_bswap16(*reinterpret_cast<uint16_t*>(&tvport));
 #endif
-    uint16_t r                      = 0;
-    uint16_t dl                     = dictionary.length();
+    uint16_t r  = 0;
+    uint16_t dl = dictionary.length();
 
     for (int i = 0; i < 25; ++i) {
         quotientAndRemainder(matchid_reversed, reservationid_reversed, tvport_reversed, dl, r);

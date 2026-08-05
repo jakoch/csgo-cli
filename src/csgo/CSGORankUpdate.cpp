@@ -8,14 +8,10 @@
 #include <iostream>
 
 CSGORankUpdate::CSGORankUpdate() : m_rankUpdateHandler(this, &CSGORankUpdate::OnRankUpdate)
-{
-    CSGOClient::GetInstance()->RegisterHandler(k_EMsgGCCStrike15_v2_ClientGCRankUpdate, &m_rankUpdateHandler);
-}
+{ CSGOClient::GetInstance()->RegisterHandler(k_EMsgGCCStrike15_v2_ClientGCRankUpdate, &m_rankUpdateHandler); }
 
 CSGORankUpdate::~CSGORankUpdate()
-{
-    CSGOClient::GetInstance()->RemoveHandler(k_EMsgGCCStrike15_v2_ClientGCRankUpdate, &m_rankUpdateHandler);
-}
+{ CSGOClient::GetInstance()->RemoveHandler(k_EMsgGCCStrike15_v2_ClientGCRankUpdate, &m_rankUpdateHandler); }
 
 void CSGORankUpdate::OnRankUpdate(CMsgGCCStrike15_v2_ClientGCRankUpdate const & msg)
 {

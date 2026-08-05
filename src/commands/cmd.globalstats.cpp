@@ -5,7 +5,7 @@
 
 #include <string>
 
-bool requestGlobalStats(DataObject& data, bool const& verbose)
+bool requestGlobalStats(DataObject& data, bool const & verbose)
 {
 
     if (verbose) {

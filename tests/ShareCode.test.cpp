@@ -17,7 +17,9 @@ TEST_CASE("[ShareCode] getShareCode returns valid format", "[getShareCode]")
     // where each X group is 5 characters from the base57 charset.
     // Base57 charset: ABCDEFGHJKLMNOPQRSTUVWXYZabcdefhijkmnopqrstuvwxyz23456789
     // (excludes I, l, 0, and 1)
-    std::regex pattern("^CSGO-[A-HJ-Za-km-z2-9]{5}-[A-HJ-Za-km-z2-9]{5}-[A-HJ-Za-km-z2-9]{5}-[A-HJ-Za-km-z2-9]{5}-[A-HJ-Za-km-z2-9]{5}$");
+    std::regex pattern(
+        "^CSGO-[A-HJ-Za-km-z2-9]{5}-[A-HJ-Za-km-z2-9]{5}-[A-HJ-Za-km-z2-9]{5}-[A-HJ-Za-km-z2-9]{5}-[A-HJ-Za-km-z2-9]{5}"
+        "$");
     REQUIRE(std::regex_match(code, pattern));
 }
 

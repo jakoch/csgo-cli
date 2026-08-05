@@ -31,6 +31,4 @@ TEST_CASE("[CrosshairShareCode] decodes known sample", "[decodeCrosshairShareCod
 }
 
 TEST_CASE("[CrosshairShareCode] rejects invalid code", "[decodeCrosshairShareCode]")
-{
-    REQUIRE_THROWS_AS(decodeCrosshairShareCode("CSGO-11111-22222-33333-44444-55555"), ExceptionHandler);
-}
+{ REQUIRE_THROWS_AS(decodeCrosshairShareCode("CSGO-11111-22222-33333-44444-55555"), ExceptionHandler); }

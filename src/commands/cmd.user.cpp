@@ -8,7 +8,7 @@
 #include <optional>
 #include <string>
 
-bool requestPlayersProfile(DataObject& data, bool const& verbose)
+bool requestPlayersProfile(DataObject& data, bool const & verbose)
 {
     if (verbose)
         spdlog::info("[ Start ] [ Thread ] getUserInfo");
@@ -83,7 +83,7 @@ bool requestPlayersProfile(DataObject& data, bool const& verbose)
     return result;
 }
 
-bool requestPlayersRankInfo(DataObject& data, bool const& verbose)
+bool requestPlayersRankInfo(DataObject& data, bool const & verbose)
 {
     if (verbose)
         spdlog::info("[ Start ] [ Thread ] requestPlayersRankInfo");
@@ -111,9 +111,9 @@ bool requestPlayersRankInfo(DataObject& data, bool const& verbose)
             std::optional<PlayerRankingInfo> wingmanRank;
             std::optional<PlayerRankingInfo> dangerZoneRank;
 
-            for (auto const& update : rankUpdate.data) {
+            for (auto const & update : rankUpdate.data) {
                 for (int i = 0; i < update.rankings_size(); ++i) {
-                    auto const& ranking = update.rankings(i);
+                    auto const & ranking = update.rankings(i);
                     if (ranking.rank_type_id() == 7 && !wingmanRank.has_value()) {
                         wingmanRank = ranking;
                     } else if (ranking.rank_type_id() == 10 && !dangerZoneRank.has_value()) {
@@ -175,7 +175,7 @@ void printPlayersProfile(DataObject& data)
 
     auto const findRanking = [&](uint32 expectedType) {
         auto const candidate =
-            std::find_if(data.rankings.begin(), data.rankings.end(), [expectedType](auto const& ranking) {
+            std::find_if(data.rankings.begin(), data.rankings.end(), [expectedType](auto const & ranking) {
                 return ranking.type == expectedType;
             });
 

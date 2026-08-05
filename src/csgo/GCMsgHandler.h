@@ -24,7 +24,8 @@ public:
     /**
      * Construct from class handler
      */
-    GCMsgHandler(C* instance, void (C::*const handler)(M const &)) :
+    // cppcheck-suppress constParameterPointer // member-function pointer cannot be const-qualified
+    GCMsgHandler(C* instance, void (C::*handler)(M const &)) :
         m_handler(std::bind(std::mem_fn(handler), instance, std::placeholders::_1))
     {
     }

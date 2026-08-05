@@ -11,7 +11,7 @@
 #include "../VersionAndConstants.h"
 #include <string>
 
-bool requestGlobalStats(DataObject& data, bool const& verbose);
+bool requestGlobalStats(DataObject& data, bool const & verbose);
 void printGlobalStats(DataObject& data);
 
 #endif // SRC_COMMANDS_CMD_GLOBALSTATS_H_

@@ -5,41 +5,46 @@
 
 #include <iterator>
 
-TEST_CASE("[ShareCodeUpload] Response to POST request can be parsed:", "[testProcessJsonResponse]") {
+TEST_CASE("[ShareCodeUpload] Response to POST request can be parsed:", "[testProcessJsonResponse]")
+{
 
-  ShareCodeUpload *shareCodeUpload = new ShareCodeUpload(false);
+    ShareCodeUpload* shareCodeUpload = new ShareCodeUpload(false);
 
-  SECTION("if response is empty, return 1") {
-    std::string response = "";
-    int r = shareCodeUpload->processJsonResponse(response);
-    REQUIRE(r == 1);
-  }
+    SECTION("if response is empty, return 1")
+    {
+        std::string response = "";
+        int r                = shareCodeUpload->processJsonResponse(response);
+        REQUIRE(r == 1);
+    }
 
-  SECTION("if response content is not JSON, but HTML, return 1") {
-    std::string response = "<!DOCTYPE html><head></html>";
-    int r = shareCodeUpload->processJsonResponse(response);
-    REQUIRE(r == 1);
-  }
+    SECTION("if response content is not JSON, but HTML, return 1")
+    {
+        std::string response = "<!DOCTYPE html><head></html>";
+        int r                = shareCodeUpload->processJsonResponse(response);
+        REQUIRE(r == 1);
+    }
 
-  SECTION("if response content is not JSON, but HTML and a Cloudflare Captcha, return 1") {
-    std::string response = "<!DOCTYPE html> ... Cloudflare</title>";
-    int r = shareCodeUpload->processJsonResponse(response);
-    REQUIRE(r == 1);
-  }
+    SECTION("if response content is not JSON, but HTML and a Cloudflare Captcha, return 1")
+    {
+        std::string response = "<!DOCTYPE html> ... Cloudflare</title>";
+        int r                = shareCodeUpload->processJsonResponse(response);
+        REQUIRE(r == 1);
+    }
 
-  /*SECTION("if response content is JSON, but syntax - invalid JSON, return 2") {
-    auto response = R"(
-        {
-          "status:
-        }
-      )"_json;
-    int r = shareCodeUpload->processJsonResponse(response.dump());
-    REQUIRE(r == 2);
-  }*/
+    /*SECTION("if response content is JSON, but syntax - invalid JSON, return 2") {
+      auto response = R"(
+          {
+            "status:
+          }
+        )"_json;
+      int r = shareCodeUpload->processJsonResponse(response.dump());
+      REQUIRE(r == 2);
+    }*/
 
-  SECTION("if response content is JSON, with status error, return 3") {
+    SECTION("if response content is JSON, with status error, return 3")
+    {
 
-    auto response = R"(
+        auto response = R"(
       {
         "status": "error",
         "data" : {
@@ -51,13 +56,14 @@ TEST_CASE("[ShareCodeUpload] Response to POST request can be parsed:", "[testPro
       }
     )"_json;
 
-    std::string response_string = response.dump();
-    int r = shareCodeUpload->processJsonResponse(response_string);
-    REQUIRE(r == 3);
-  }
+        std::string response_string = response.dump();
+        int r                       = shareCodeUpload->processJsonResponse(response_string);
+        REQUIRE(r == 3);
+    }
 
-  SECTION("if response content is JSON, with status queued, return 4") {
-    auto response = R"(
+    SECTION("if response content is JSON, with status queued, return 4")
+    {
+        auto response = R"(
       {
         "status": "queued",
         "data" : {
@@ -76,14 +82,14 @@ TEST_CASE("[ShareCodeUpload] Response to POST request can be parsed:", "[testPro
       }
     )"_json;
 
-    std::string response_string = response.dump();
-    int r = shareCodeUpload->processJsonResponse(response_string);
-    REQUIRE(r == 4);
-  }
+        std::string response_string = response.dump();
+        int r                       = shareCodeUpload->processJsonResponse(response_string);
+        REQUIRE(r == 4);
+    }
 
-  SECTION("if response content is JSON, with status retrying, return 4")
-  {
-      auto response = R"(
+    SECTION("if response content is JSON, with status retrying, return 4")
+    {
+        auto response = R"(
           {
             "status" : "retrying",
             "data" : {
@@ -102,13 +108,14 @@ TEST_CASE("[ShareCodeUpload] Response to POST request can be parsed:", "[testPro
           }
       )"_json;
 
-      std::string response_string = response.dump();
-      int r = shareCodeUpload->processJsonResponse(response_string);
-      REQUIRE(r == 4);
-  }
+        std::string response_string = response.dump();
+        int r                       = shareCodeUpload->processJsonResponse(response_string);
+        REQUIRE(r == 4);
+    }
 
-  SECTION("if response content is JSON, with status complete, return 5") {
-      auto response = R"(
+    SECTION("if response content is JSON, with status complete, return 5")
+    {
+        auto response = R"(
         {
           "status": "complete",
           "data" : {
@@ -123,9 +130,8 @@ TEST_CASE("[ShareCodeUpload] Response to POST request can be parsed:", "[testPro
         }
       )"_json;
 
-    std::string response_string = response.dump();
-    int r = shareCodeUpload->processJsonResponse(response_string);
-    REQUIRE(r == 5);
-  }
-
+        std::string response_string = response.dump();
+        int r                       = shareCodeUpload->processJsonResponse(response_string);
+        REQUIRE(r == 5);
+    }
 };
