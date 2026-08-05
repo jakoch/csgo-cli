@@ -243,13 +243,6 @@ jobs:
       VCPKG_FEATURE_FLAGS: manifests,versions,binarycaching,registries
       # vcpkg is pre-installed at /opt/vcpkg in the devcontainer images.
       VCPKG_ROOT: /opt/vcpkg
-      VCPKG_INSTALLED_DIR: ${{ github.workspace }}/vcpkg_installed
-      # Paths
-      SOURCE_DIR:  ${{ github.workspace }}
-      BUILD_DIR:   ${{ github.workspace }}/out/build/${{ matrix.config.preset }}
-      INSTALL_DIR: ${{ github.workspace }}/out/install/${{ matrix.config.preset }}
-      # Path to non-vcpkg dependencies
-      DEPS_DIR:    ${{ github.workspace }}/dependencies
 
     defaults:
       run:
@@ -258,6 +251,18 @@ jobs:
     steps:
       - name: 🤘 Checkout Code
         uses: actions/checkout@v7 # https://github.com/actions/checkout
+
+      # NOTE: In a container job, ${{ github.workspace }} resolves to the host path
+      # (/home/runner/work/...), which does NOT exist inside the container.
+      # The workspace is mounted at $GITHUB_WORKSPACE (e.g. /__w/...). Derive all
+      # paths from $GITHUB_WORKSPACE so they are valid inside the container.
+      - name: 📂 Setup Workspace Paths
+        run: |
+          echo "SOURCE_DIR=${GITHUB_WORKSPACE}" >> "$GITHUB_ENV"
+          echo "BUILD_DIR=${GITHUB_WORKSPACE}/out/build/${{ matrix.config.preset }}" >> "$GITHUB_ENV"
+          echo "INSTALL_DIR=${GITHUB_WORKSPACE}/out/install/${{ matrix.config.preset }}" >> "$GITHUB_ENV"
+          echo "DEPS_DIR=${GITHUB_WORKSPACE}/dependencies" >> "$GITHUB_ENV"
+          echo "VCPKG_INSTALLED_DIR=${GITHUB_WORKSPACE}/vcpkg_installed" >> "$GITHUB_ENV"
 
       - name: ℹ Show Tool Versions
         run: |
@@ -310,13 +315,13 @@ jobs:
         env:
           SW_SDK_SECRET: ${{ secrets.SW_SDK_SECRET }}
         run: |
-          7z x ${{ github.workspace }}/downloads/sw_sdk_165.zip -aoa -y -odependencies -p"${SW_SDK_SECRET}"
-          cd dependencies
+          7z x ${GITHUB_WORKSPACE}/downloads/sw_sdk_165.zip -aoa -y -o${DEPS_DIR} -p"${SW_SDK_SECRET}"
+          cd ${DEPS_DIR}
           mv sdk sw_sdk
 
       - name: Fix encoding of SW_SDK headers
         run: |
-          find dependencies/sw_sdk -name "*.h" -print0 | xargs -0 -I{} sh -c '
+          find ${DEPS_DIR}/sw_sdk -name "*.h" -print0 | xargs -0 -I{} sh -c '
             tmp=$(mktemp)
             iconv -f CP1252 -t UTF-8 "{}" > "$tmp" && mv "$tmp" "{}"
           '
@@ -345,7 +350,7 @@ jobs:
         if: ${{ matrix.config.preset == 'clang22-x64-linux-dbg-cov' }}
         run: |
           mkdir -p "${BUILD_DIR}/coverage"
-          echo "LLVM_PROFILE_FILE=${GITHUB_WORKSPACE}/${BUILD_DIR}/coverage/%p.profraw" >> "$GITHUB_ENV"
+          echo "LLVM_PROFILE_FILE=${BUILD_DIR}/coverage/%p.profraw" >> "$GITHUB_ENV"
 
       - name: 🧪 CTest ➔ Run Tests
         run: |
