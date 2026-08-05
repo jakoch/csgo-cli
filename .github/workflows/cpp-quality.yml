@@ -30,7 +30,8 @@ jobs:
 
 # ---------------------------------------------------------------------------------------
 
-    runs-on: ubuntu-latest
+    # https://github.com/actions/runner-images/blob/main/images/ubuntu/Ubuntu2604-Readme.md
+    runs-on: ubuntu-26.04
 
     steps:
 
@@ -42,13 +43,13 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y dos2unix
 
-      - name: 🔽 Install clang-format-20
-        run: |
-          wget https://apt.llvm.org/llvm.sh
-          chmod +x ./llvm.sh
-          sudo ./llvm.sh 20
-          sudo apt-get install -y clang-format-20
-          rm llvm.sh
+      # - name: 🔽 Install clang-format-20
+      #   run: |
+      #     wget https://apt.llvm.org/llvm.sh
+      #     chmod +x ./llvm.sh
+      #     sudo ./llvm.sh 20
+      #     sudo apt-get install -y clang-format-20
+      #     rm llvm.sh
 
       - name: 🛠️ Apply formatting
         run: |
