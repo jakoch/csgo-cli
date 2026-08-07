@@ -182,8 +182,9 @@ void printPlayersProfile(DataObject& data)
     std::string const clan = fmt::format("{} \"{}\"", data.clan_name, data.clan_tag);
 
     auto const findRanking = [&](uint32 expectedType) {
-    auto const candidate =
-        std::ranges::find_if(data.rankings, [expectedType](auto const & ranking) { return ranking.type == expectedType; });
+        auto const candidate = std::ranges::find_if(data.rankings, [expectedType](auto const & ranking) {
+            return ranking.type == expectedType;
+        });
 
         if (candidate != data.rankings.end()) {
             return *candidate;

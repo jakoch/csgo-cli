@@ -9,7 +9,7 @@
 uint32 calcSteamID32(uint64 steamID64)
 {
     uint64 const steamID64Base = 76561197960265728;
-    uint32 iSteamID32          = (steamID64 - steamID64Base);
+    uint32 const iSteamID32    = (steamID64 - steamID64Base);
     return iSteamID32;
 }
 
@@ -27,9 +27,9 @@ std::string toSteamID32(uint64 steamID64)
 std::string toSteamIDClassic(uint64 steamID64)
 {
     // modulus operator = modulo(a,2)
-    int a = (steamID64 % 2 == 0) ? 0 : 1;
+    int const a = (steamID64 % 2 == 0) ? 0 : 1;
 
-    int b = std::floor(calcSteamID32(steamID64) / 2);
+    int const b = std::floor(calcSteamID32(steamID64) / 2);
 
     std::stringstream ss;
     ss << "STEAM_0:" << a << ":" << b;

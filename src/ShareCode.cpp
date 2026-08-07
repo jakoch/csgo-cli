@@ -3,36 +3,38 @@
 
 #include "ShareCode.h"
 
+#include <fmt/format.h>
+
 #include <string>
 
 void quotientAndRemainder(uint64_t& a0, uint64_t& a1, uint16_t& a2, uint16_t m, uint16_t& r)
 {
-    r                             = 0;
-    uint64_t q0                   = 0;
-    uint64_t q1                   = 0;
-    uint16_t q2                   = 0;
-    unsigned int const ull_bitnum = sizeof(uint64_t) * 8;
-    unsigned int const us_bitnum  = sizeof(uint16_t) * 8;
+    r                    = 0;
+    uint64_t q0          = 0;
+    uint64_t q1          = 0;
+    uint16_t q2          = 0;
+    int const ull_bitnum = static_cast<int>(sizeof(uint64_t) * 8);
+    int const us_bitnum  = static_cast<int>(sizeof(uint16_t) * 8);
 
-    for (int i = 2 * ull_bitnum + us_bitnum - 1; i >= 0; --i) {
+    for (int i = (2 * ull_bitnum) + us_bitnum - 1; i >= 0; --i) {
         r <<= 1;
-        bool a_ith_bit;
+        bool a_ith_bit = false;
         if (i >= ull_bitnum + us_bitnum) {
-            a_ith_bit = a0 & (1ull << (i - ull_bitnum - us_bitnum));
+            a_ith_bit = (a0 & (1ULL << (i - ull_bitnum - us_bitnum))) != 0;
         } else if (i >= us_bitnum) {
-            a_ith_bit = a1 & (1ull << (i - us_bitnum));
+            a_ith_bit = (a1 & (1ULL << (i - us_bitnum))) != 0;
         } else {
-            a_ith_bit = a2 & (1u << i);
+            a_ith_bit = (a2 & (1U << i)) != 0;
         }
-        r += a_ith_bit;
+        r += static_cast<uint16_t>(a_ith_bit);
         if (r >= m) {
             r -= m;
             if (i >= ull_bitnum + us_bitnum) {
-                q0 |= (1ull << (i - ull_bitnum - us_bitnum));
+                q0 |= (1ULL << (i - ull_bitnum - us_bitnum));
             } else if (i >= us_bitnum) {
-                q1 |= (1ull << (i - us_bitnum));
+                q1 |= (1ULL << (i - us_bitnum));
             } else {
-                q2 |= (1u << i);
+                q2 |= (1U << i);
             }
         }
     }
@@ -72,35 +74,29 @@ std::string getShareCode(uint64_t matchid, uint64_t reservationid, uint32_t tvpo
 #ifdef _WIN32
     uint64_t matchid_reversed       = _byteswap_uint64(matchid);
     uint64_t reservationid_reversed = _byteswap_uint64(reservationid);
-    uint16_t tvport_reversed        = _byteswap_ushort(*reinterpret_cast<uint16_t*>(&tvport));
+    uint16_t tvport_reversed        = _byteswap_ushort(static_cast<uint16_t>(tvport));
 #else
     uint64_t matchid_reversed       = __builtin_bswap64(matchid);
     uint64_t reservationid_reversed = __builtin_bswap64(reservationid);
-    uint16_t tvport_reversed        = __builtin_bswap16(*reinterpret_cast<uint16_t*>(&tvport));
+    uint16_t tvport_reversed        = __builtin_bswap16(static_cast<uint16_t>(tvport));
 #endif
-    uint16_t r  = 0;
-    uint16_t dl = dictionary.length();
+    uint16_t r        = 0;
+    uint16_t const dl = static_cast<uint16_t>(dictionary.length());
 
     for (int i = 0; i < 25; ++i) {
         quotientAndRemainder(matchid_reversed, reservationid_reversed, tvport_reversed, dl, r);
-        code += dictionary[r];
+        code += dictionary.at(r);
         // std::cout << "i " << i << " r " << r << " code " << code << std::endl;
     }
 
     // example: "CSGO-GADqf-jjyJ8-cSP2r-smZRo-TO2xK"
-    char shareCode[35];
-
-    snprintf(
-        shareCode,
-        sizeof(shareCode),
-        "CSGO-%s-%s-%s-%s-%s",
-        code.substr(0, 5).c_str(),
-        code.substr(5, 5).c_str(),
-        code.substr(10, 5).c_str(),
-        code.substr(15, 5).c_str(),
-        code.substr(20).c_str());
-
-    return shareCode;
+    return fmt::format(
+        "CSGO-{}-{}-{}-{}-{}",
+        code.substr(0, 5),
+        code.substr(5, 5),
+        code.substr(10, 5),
+        code.substr(15, 5),
+        code.substr(20));
 }
 
 /*

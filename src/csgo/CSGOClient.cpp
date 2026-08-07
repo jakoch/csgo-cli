@@ -3,12 +3,13 @@
 
 #include "CSGOClient.h"
 
-#include <array>
 #include <algorithm>
+#include <array>
 #include <cstddef>
 #include <cstring>
-#include <spdlog/spdlog.h>
+#include <memory>
 #include <span>
+#include <spdlog/spdlog.h>
 #include <string>
 #include <utility>
 
@@ -23,7 +24,7 @@ static uint32_t const Steam730ClientVersion = 2000880;
 static constexpr std::size_t GcMessageHeaderBytes = 2 * sizeof(uint32_t);
 
 static auto constexpr GameClientConnectRetryInterval = std::chrono::milliseconds(500);
-std::unique_ptr<CSGOClient> CSGOClient::m_instance  = nullptr;
+std::unique_ptr<CSGOClient> CSGOClient::m_instance   = nullptr;
 
 CSGOClient::CSGOClient() :
     m_welcomeHandler(this, &CSGOClient::OnClientWelcome),
@@ -212,9 +213,7 @@ CSGOClient* CSGOClient::GetInstance()
 }
 
 void CSGOClient::Destroy()
-{
-    m_instance.reset();
-}
+{ m_instance.reset(); }
 
 void CSGOClient::WaitForGameClientConnect()
 {

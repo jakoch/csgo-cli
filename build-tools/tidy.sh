@@ -152,7 +152,7 @@ if [[ $# -eq 1 ]]; then
   files=("$1")
 else
   # Tracked sources under src/ and tests/.
-  mapfile -t tracked < <(git ls-files 'src/**/*.cpp' 'src/**/*.h' 'src/**/*.hpp' 'tests/**/*.cpp' 'tests/**/*.h' 'tests/**/*.hpp')
+  mapfile -t tracked < <(git ls-files 'src/*.cpp' 'src/*.h' 'src/*.hpp' 'tests/*.cpp' 'tests/*.h' 'tests/*.hpp')
 
   # Only analyze files that are part of the configured build (i.e. present in
   # compile_commands.json). This skips platform-specific sources that cannot be

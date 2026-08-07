@@ -7,32 +7,33 @@
 
 namespace
 {
-void uploadShareCode(std::string& sharecode, ShareCodeCache* matchCache, ShareCodeUpload* codeUpload)
-{
-    if (matchCache->find(sharecode)) {
-        auto msg1 = fmt::format(fmt::fg(fmt::color::indian_red), "Skipped.");
-        auto msg2 = fmt::format(fmt::fg(fmt::color::green), "The ShareCode \"{}\" was already uploaded.", sharecode);
-        fmt::print(" {} {}\n", msg1, msg2);
-        return;
-    }
-
-    std::string jsonResponse;
-
-    fmt::print(" Uploading ShareCode: {}\n", WinCliColors::formatTerminalYellow(sharecode));
-
-    if (codeUpload->uploadShareCode(sharecode, jsonResponse) == 0) {
-        int const upload_status = codeUpload->processJsonResponse(jsonResponse);
-
-        if (upload_status == 4 || upload_status == 5) { // queued (in-progress) or complete
-            matchCache->insert(sharecode);
-        } else if (upload_status <= 3) {
-            printError("Error", "Could not parse the response (to the replay sharecode POST request).");
+    void uploadShareCode(std::string& sharecode, ShareCodeCache* matchCache, ShareCodeUpload* codeUpload)
+    {
+        if (matchCache->find(sharecode)) {
+            auto msg1 = fmt::format(fmt::fg(fmt::color::indian_red), "Skipped.");
+            auto msg2 =
+                fmt::format(fmt::fg(fmt::color::green), "The ShareCode \"{}\" was already uploaded.", sharecode);
+            fmt::print(" {} {}\n", msg1, msg2);
+            return;
         }
 
-    } else {
-        printError("Error", "Could not POST replay sharecode.");
+        std::string jsonResponse;
+
+        fmt::print(" Uploading ShareCode: {}\n", WinCliColors::formatTerminalYellow(sharecode));
+
+        if (codeUpload->uploadShareCode(sharecode, jsonResponse) == 0) {
+            int const upload_status = codeUpload->processJsonResponse(jsonResponse);
+
+            if (upload_status == 4 || upload_status == 5) { // queued (in-progress) or complete
+                matchCache->insert(sharecode);
+            } else if (upload_status <= 3) {
+                printError("Error", "Could not parse the response (to the replay sharecode POST request).");
+            }
+
+        } else {
+            printError("Error", "Could not POST replay sharecode.");
+        }
     }
-}
 } // namespace
 
 void uploadReplayShareCodes(DataObject& data, bool const & verbose)

@@ -70,34 +70,34 @@ private:
     };
 
 public:
-    uint64 matchid;
+    uint64 matchid = 0;
 
-    time_t matchtime;
+    time_t matchtime = 0;
     std::string matchtime_str;
 
-    time_t match_duration;
+    time_t match_duration = 0;
     std::string match_duration_str;
 
-    uint32 server_ip;
-    uint32 tv_port;
-    uint64 reservation_id;
+    uint32 server_ip      = 0;
+    uint32 tv_port        = 0;
+    uint64 reservation_id = 0;
 
     std::string sharecode;
     std::string replaylink; /* roundstats.map */
 
     std::string map;      /* watchablematchinfo.game_map */
     std::string mapgroup; /* watchablematchinfo.game_mapgroup */
-    uint32 map_id;        /* roundstatsall.reservation.game_type | watchablematchinfo.game_type */
+    uint32 map_id = 0;    /* roundstatsall.reservation.game_type | watchablematchinfo.game_type */
 
-    uint32 spectators;
+    uint32 spectators = 0;
 
     std::vector<CSGOMatchPlayerScore> scoreboard;
 
-    int result;
+    int result = 0;
     std::string result_str;
 
-    int score_ally;
-    int score_enemy;
+    int score_ally  = 0;
+    int score_enemy = 0;
 
     std::string getScore() const
     { return fmt::format("{:02} : {:02}", score_ally, score_enemy); }

@@ -36,7 +36,7 @@ size_t CurlWrite_CallbackFunc_StdString(void* contents, size_t size, size_t nmem
     }
 
     try {
-        s->append(static_cast<char const*>(contents), newLength);
+        s->append(static_cast<char const *>(contents), newLength);
     } catch (std::bad_alloc const & e) {
         // cast to void (formerly self-assign) to avoid unused/unreferenced variable e
         static_cast<void>(e);

@@ -30,8 +30,8 @@
 #include <iomanip>
 #include <iostream>
 #include <ostream>
-#include <sstream>
 #include <span>
+#include <sstream>
 #include <string>
 #include <thread>
 #include <vector>
@@ -92,7 +92,7 @@ void initSteamAPI(bool const & verbose)
             static_cast<int>(SteamFriends()->GetPersonaState()),
             SteamUser()->GetPlayerSteamLevel());
 
-        auto const appOwner          = SteamApps()->GetAppOwner();
+        auto const appOwner                      = SteamApps()->GetAppOwner();
         std::array<char, 1024> launchCommandLine = {};
         auto const launchCommandLineLength =
             SteamApps()->GetLaunchCommandLine(launchCommandLine.data(), static_cast<int>(launchCommandLine.size()));
@@ -172,8 +172,8 @@ void initGameClientConnection(DataObject& data, bool const & verbose)
         data.playername = SteamFriends()->GetPersonaName();
 
         CSteamID const clan_id = SteamFriends()->GetClanByIndex(0);
-        data.clan_name   = SteamFriends()->GetClanName(clan_id);
-        data.clan_tag    = SteamFriends()->GetClanTag(clan_id);
+        data.clan_name         = SteamFriends()->GetClanName(clan_id);
+        data.clan_tag          = SteamFriends()->GetClanTag(clan_id);
     } catch (ExceptionHandler& e) {
         printError("Fatal error", e.what());
         result = false;

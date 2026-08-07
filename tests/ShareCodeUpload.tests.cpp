@@ -1,33 +1,37 @@
+// SPDX-FileCopyrightText: Copyright © 2018-present Jens A. Koch
+// SPDX-License-Identifier: GPL-3.0-or-later
+
 #include <catch2/catch_all.hpp>
 #include <nlohmann/json.hpp>
 
 #include "../src/csgostats/ShareCodeUpload.h"
 
 #include <iterator>
+#include <string>
 
 TEST_CASE("[ShareCodeUpload] Response to POST request can be parsed:", "[testProcessJsonResponse]")
 {
 
-    ShareCodeUpload* shareCodeUpload = new ShareCodeUpload(false);
+    ShareCodeUpload shareCodeUpload(false);
 
     SECTION("if response is empty, return 1")
     {
-        std::string response = "";
-        int r                = shareCodeUpload->processJsonResponse(response);
+        std::string response;
+        int const r = shareCodeUpload.processJsonResponse(response);
         REQUIRE(r == 1);
     }
 
     SECTION("if response content is not JSON, but HTML, return 1")
     {
         std::string response = "<!DOCTYPE html><head></html>";
-        int r                = shareCodeUpload->processJsonResponse(response);
+        int const r          = shareCodeUpload.processJsonResponse(response);
         REQUIRE(r == 1);
     }
 
     SECTION("if response content is not JSON, but HTML and a Cloudflare Captcha, return 1")
     {
         std::string response = "<!DOCTYPE html> ... Cloudflare</title>";
-        int r                = shareCodeUpload->processJsonResponse(response);
+        int const r          = shareCodeUpload.processJsonResponse(response);
         REQUIRE(r == 1);
     }
 
@@ -57,7 +61,7 @@ TEST_CASE("[ShareCodeUpload] Response to POST request can be parsed:", "[testPro
     )"_json;
 
         std::string response_string = response.dump();
-        int r                       = shareCodeUpload->processJsonResponse(response_string);
+        int const r                 = shareCodeUpload.processJsonResponse(response_string);
         REQUIRE(r == 3);
     }
 
@@ -83,7 +87,7 @@ TEST_CASE("[ShareCodeUpload] Response to POST request can be parsed:", "[testPro
     )"_json;
 
         std::string response_string = response.dump();
-        int r                       = shareCodeUpload->processJsonResponse(response_string);
+        int const r                 = shareCodeUpload.processJsonResponse(response_string);
         REQUIRE(r == 4);
     }
 
@@ -109,7 +113,7 @@ TEST_CASE("[ShareCodeUpload] Response to POST request can be parsed:", "[testPro
       )"_json;
 
         std::string response_string = response.dump();
-        int r                       = shareCodeUpload->processJsonResponse(response_string);
+        int const r                 = shareCodeUpload.processJsonResponse(response_string);
         REQUIRE(r == 4);
     }
 
@@ -131,7 +135,7 @@ TEST_CASE("[ShareCodeUpload] Response to POST request can be parsed:", "[testPro
       )"_json;
 
         std::string response_string = response.dump();
-        int r                       = shareCodeUpload->processJsonResponse(response_string);
+        int const r                 = shareCodeUpload.processJsonResponse(response_string);
         REQUIRE(r == 5);
     }
 };

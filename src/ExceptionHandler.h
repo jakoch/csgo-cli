@@ -10,8 +10,8 @@
 class ExceptionHandler : public std::exception
 {
 public:
-    explicit ExceptionHandler(std::string const & what);
-    virtual char const * what() const throw();
+    explicit ExceptionHandler(std::string what);
+    char const * what() const noexcept override;
 
 private:
     std::string m_what;

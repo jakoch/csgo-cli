@@ -1,6 +1,12 @@
+// SPDX-FileCopyrightText: Copyright © 2018-present Jens A. Koch
+// SPDX-License-Identifier: GPL-3.0-or-later
+
 #include <catch2/catch_all.hpp>
 
 #include "../src/csgo/CSGOMatchData.h"
+
+#include <array>
+#include <string>
 
 TEST_CASE("[CSGOMatchData] getMapname returns map name from game_map when available", "[getMapname]")
 {
@@ -28,20 +34,20 @@ TEST_CASE("[CSGOMatchData] getMapname resolves all known map IDs", "[getMapname]
         std::string expected;
     };
 
-    TestCase cases[] = {
-        {520, "de_dust2"},
-        {1032, "de_train"},
-        {4104, "de_inferno"},
-        {8200, "de_nuke"},
-        {16392, "de_vertigo"},
-        {65544, "cs_office"},
-        {32776, "de_mirage"},
-        {1048584, "de_cache"},
-        {67108872, "de_workout"},
-        {33554440, "de_zoo"},
-        {134217736, "cs_agency"},
-        {268435464, "de_overpass"},
-    };
+    std::array<TestCase, 12> const cases{{
+        {.map_id = 520, .expected = "de_dust2"},
+        {.map_id = 1032, .expected = "de_train"},
+        {.map_id = 4104, .expected = "de_inferno"},
+        {.map_id = 8200, .expected = "de_nuke"},
+        {.map_id = 16392, .expected = "de_vertigo"},
+        {.map_id = 65544, .expected = "cs_office"},
+        {.map_id = 32776, .expected = "de_mirage"},
+        {.map_id = 1048584, .expected = "de_cache"},
+        {.map_id = 67108872, .expected = "de_workout"},
+        {.map_id = 33554440, .expected = "de_zoo"},
+        {.map_id = 134217736, .expected = "cs_agency"},
+        {.map_id = 268435464, .expected = "de_overpass"},
+    }};
 
     for (auto const & tc : cases) {
         CSGOMatchData match;

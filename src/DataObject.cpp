@@ -10,26 +10,26 @@ std::string DataObject::getPlayerRank(int rank_type_id)
 {
     int rank_id = 0;
 
-    auto const ranking = std::find_if(rankings.begin(), rankings.end(), [rank_type_id](auto const & r) {
+    auto const ranking = std::ranges::find_if(rankings, [rank_type_id](auto const & r) {
         return r.type == static_cast<uint32>(rank_type_id);
     });
     if (ranking != rankings.end()) {
         rank_id = static_cast<int>(ranking->id);
     }
 
-    int rank = (rank_id < 0) ? rank_id - 1 : rank_id;
+    int const rank = (rank_id < 0) ? rank_id - 1 : rank_id;
 
     return getRankName(rank);
 }
 
 std::string DataObject::getPlayerLevel()
 {
-    int level = (player_level < 0) ? player_level - 1 : player_level;
+    int const level = (player_level < 0) ? player_level - 1 : player_level;
 
     return getLevelName(level);
 }
 
-int const DataObject::calcPlayerXpBase() const
+int DataObject::calcPlayerXpBase() const
 {
     return player_cur_xp - 327680000; // xp minus base value, gives normalized player xp
 }
@@ -37,17 +37,17 @@ int const DataObject::calcPlayerXpBase() const
 std::string DataObject::getPlayerXp()
 { return std::to_string(calcPlayerXpBase()); }
 
-float const DataObject::getPlayerXpPercentage()
+float DataObject::getPlayerXpPercentage()
 { return (static_cast<float>(calcPlayerXpBase()) / 5000) * 100; }
 
-std::string DataObject::getVacStatus()
+std::string DataObject::getVacStatus() const
 { return (vac_banned == 1) ? "banned" : "ok"; }
 
 std::string DataObject::getLevelName(int i)
-{ return levels[i]; }
+{ return levels.at(i); }
 
 std::string DataObject::getRankName(int i)
-{ return ranks[i]; }
+{ return ranks.at(i); }
 
 std::string DataObject::getRankType(int i)
 {
@@ -64,9 +64,9 @@ std::string DataObject::getRankType(int i)
 }
 
 std::string DataObject::getDangerzoneRankName(int i)
-{ return dangerzone_ranks[i]; }
+{ return dangerzone_ranks.at(i); }
 
-std::string DataObject::getSteamId()
+std::string DataObject::getSteamId() const
 { return std::to_string(steam_id); }
 
 std::string DataObject::getSteamProfileUrl()
@@ -75,15 +75,15 @@ std::string DataObject::getCanDoOverwatch()
 {
     RankingInfo matchmaking_rank = {};
 
-    auto const ranking = std::find_if(rankings.begin(), rankings.end(), [](auto const & r) {
+    auto const ranking = std::ranges::find_if(rankings, [](auto const & r) {
         return r.type == 6;
     });
     if (ranking != rankings.end()) {
         matchmaking_rank = *ranking;
     }
 
-    int rank_id   = static_cast<int>(matchmaking_rank.id);
-    int rank_wins = static_cast<int>(matchmaking_rank.wins);
+    int const rank_id   = static_cast<int>(matchmaking_rank.id);
+    int const rank_wins = static_cast<int>(matchmaking_rank.wins);
 
     if (rank_id < 7) {
         return "Your rank is too low. " + getRankName(7) + " required.";
@@ -93,14 +93,14 @@ std::string DataObject::getCanDoOverwatch()
     }
     return "Qualified to request replays.";
 }
-std::string DataObject::getAverageSearchTime()
+std::string DataObject::getAverageSearchTime() const
 { return format_duration_get_minutes(global_stats.search_time_avg); }
 
 std::string DataObject::getPenaltyReasonShort(int i)
-{ return penalty_reasons_short[i]; }
+{ return penalty_reasons_short.at(i); }
 
 std::string DataObject::getPenaltyReasonLong(int i)
-{ return penalty_reasons_long[i]; }
+{ return penalty_reasons_long.at(i); }
 
 /*std::string DataObject::getDemoFilename(const CDataGCCStrike15_v2_MatchInfo&
 match, const CMsgGCCStrike15_v2_MatchmakingServerRoundStats& roundstats) {

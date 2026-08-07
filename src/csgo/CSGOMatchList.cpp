@@ -7,7 +7,7 @@
 
 #include <algorithm>
 #include <iostream>
-#include <ranges>
+#include <iterator>
 #include <string>
 #include <thread>
 #include <vector>
@@ -26,9 +26,7 @@ CSGOMatchList::CSGOMatchList(uint64_t matchId, uint64_t outcomeId, uint32_t toke
     m_matchId(matchId),
     m_outcomeId(outcomeId),
     m_tokenId(tokenId)
-{
-    CSGOClient::GetInstance()->RegisterHandler(k_EMsgGCCStrike15_v2_MatchList, &m_matchListHandler);
-}
+{ CSGOClient::GetInstance()->RegisterHandler(k_EMsgGCCStrike15_v2_MatchList, &m_matchListHandler); }
 
 CSGOMatchList::~CSGOMatchList()
 {
@@ -45,9 +43,7 @@ void CSGOMatchList::OnMatchList(CMsgGCCStrike15_v2_MatchList const & msg)
 {
     std::unique_lock<std::mutex> lock(m_matchMutex);
 
-    for (auto const & m : std::views::reverse(msg.matches())) {
-        m_matches.push_back(m);
-    }
+    std::copy(msg.matches().rbegin(), msg.matches().rend(), std::back_inserter(m_matches));
 
     m_updateComplete = true;
     lock.unlock();
@@ -87,6 +83,7 @@ void CSGOMatchList::RefreshWait()
 
     m_updateCv.wait_for(lock, std::chrono::milliseconds(CSGO_CLI_STEAM_CMSG_TIMEOUT));
 
+    // cppcheck-suppress knownConditionTrueFalse // m_updateComplete is set to true asynchronously by OnMatchList
     if (!m_updateComplete) {
         throw CSGO_CLI_TimeoutException();
     }

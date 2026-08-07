@@ -118,7 +118,8 @@ jobs:
             --quiet \
             --inline-suppr \
             --error-exitcode=1 \
-            src tests/core_tests
+            --suppress=normalCheckLevelMaxBranches \
+            src tests
         #continue-on-error: true
 
 # ---------------------------------------------------------------------------------------

@@ -26,9 +26,8 @@ void printScoreboard(DataObject& data)
                             std::string const & s8,
                             std::string const & s9,
                             std::string const & s10,
-                             std::string const & s11) {
-        fmt::print(
-            " {0} {1} {2} {3} {4} {5} {6} {7} {8} {9} {10} \n", s1, s2, s3, s4, s5, s6, s7, s8, s9, s10, s11);
+                            std::string const & s11) {
+        fmt::print(" {0} {1} {2} {3} {4} {5} {6} {7} {8} {9} {10} \n", s1, s2, s3, s4, s5, s6, s7, s8, s9, s10, s11);
     }};
 
     fmt::print("\n Hello {}!\n", data.playername);

@@ -8,14 +8,16 @@
 #include <algorithm>
 #include <array>
 #include <cstdint>
-#include <cstring>
 #include <fmt/format.h>
+#include <iterator>
 #include <numeric>
 #include <string>
+#include <string_view>
+#include <utility>
 
 namespace
 {
-    char const kDictionary[] = "ABCDEFGHJKLMNOPQRSTUVWXYZabcdefhijkmnopqrstuvwxyz23456789";
+    std::string_view const kDictionary = "ABCDEFGHJKLMNOPQRSTUVWXYZabcdefhijkmnopqrstuvwxyz23456789";
 
     int uint8ToInt8(int value)
     { return (value << 24) >> 24; }
@@ -23,36 +25,36 @@ namespace
     std::array<uint8_t, 18> shareCodeToBytes(std::string shareCode)
     {
         shareCode.erase(0, 5); // remove CSGO-
-        shareCode.erase(std::remove(shareCode.begin(), shareCode.end(), '-'), shareCode.end());
+        shareCode.erase(std::ranges::remove(shareCode, '-').begin(), shareCode.end());
 
         if (shareCode.size() != 25) {
             throw ExceptionHandler("Invalid crosshair share code.");
         }
 
-        auto const invalidChar = std::find_if(shareCode.begin(), shareCode.end(), [](char c) {
-            return std::strchr(kDictionary, c) == nullptr;
+        auto const invalidChar = std::ranges::find_if(shareCode, [](char c) {
+            return kDictionary.find(c) == std::string_view::npos;
         });
         if (invalidChar != shareCode.end()) {
             throw ExceptionHandler("Invalid crosshair share code.");
         }
 
-        std::reverse(shareCode.begin(), shareCode.end());
+        std::ranges::reverse(shareCode);
 
         std::array<uint8_t, 18> result = {};
 
-        for (char c : shareCode) {
+        for (char const c : shareCode) {
             std::array<uint8_t, 18> tmp = {};
-            int addValue                = static_cast<int>(std::strchr(kDictionary, c) - kDictionary);
+            int const addValue          = static_cast<int>(kDictionary.find(c));
             int carry                   = 0;
-            int value;
+            int value                   = 0;
 
             for (int t = 17; t >= 0; --t) {
                 carry = 0;
                 for (int s = t; s >= 0; --s) {
-                    value = (t == s) ? tmp[s] + result[t] * 57 : 0;
+                    value = (t == s) ? tmp.at(s) + (result.at(t) * 57) : 0;
                     value += carry;
-                    carry  = value >> 8;
-                    tmp[s] = static_cast<uint8_t>(value & 0xFF);
+                    carry     = value >> 8;
+                    tmp.at(s) = static_cast<uint8_t>(value & 0xFF);
                 }
             }
 
@@ -60,10 +62,10 @@ namespace
             carry  = 0;
 
             for (int t = 17; t >= 0; --t) {
-                value = (t == 17) ? result[t] + addValue : result[t];
+                value = (t == 17) ? result.at(t) + addValue : result.at(t);
                 value += carry;
-                carry     = value >> 8;
-                result[t] = static_cast<uint8_t>(value & 0xFF);
+                carry        = value >> 8;
+                result.at(t) = static_cast<uint8_t>(value & 0xFF);
             }
         }
 
@@ -78,33 +80,33 @@ CrosshairShareCodeInfo decodeCrosshairShareCode(std::string const & shareCode)
 {
     auto bytes = shareCodeToBytes(shareCode);
 
-    int checksum = std::accumulate(bytes.begin() + 1, bytes.end(), 0) & 0xFF;
-    if (bytes[0] != checksum) {
+    int const checksum = std::accumulate(std::next(bytes.begin()), bytes.end(), 0) & 0xFF;
+    if (std::cmp_not_equal(bytes.at(0), checksum)) {
         throw ExceptionHandler("Invalid crosshair share code checksum.");
     }
 
     CrosshairShareCodeInfo crosshair;
-    crosshair.gap                      = static_cast<double>(uint8ToInt8(bytes[2])) / 10.0;
-    crosshair.outline                  = static_cast<double>(bytes[3]) / 2.0;
-    crosshair.red                      = bytes[4];
-    crosshair.green                    = bytes[5];
-    crosshair.blue                     = bytes[6];
-    crosshair.alpha                    = bytes[7];
-    crosshair.splitDistance            = bytes[8] & 7;
-    crosshair.followRecoil             = ((bytes[8] >> 7) & 1) == 1;
-    crosshair.fixedCrosshairGap        = static_cast<double>(uint8ToInt8(bytes[9])) / 10.0;
-    crosshair.color                    = bytes[10] & 7;
-    crosshair.outlineEnabled           = ((bytes[10] >> 3) & 1) == 1;
-    crosshair.innerSplitAlpha          = static_cast<double>(bytes[10] >> 4) / 10.0;
-    crosshair.outerSplitAlpha          = static_cast<double>(bytes[11] & 0x0F) / 10.0;
-    crosshair.splitSizeRatio           = static_cast<double>(bytes[11] >> 4) / 10.0;
-    crosshair.thickness                = static_cast<double>(bytes[12]) / 10.0;
-    crosshair.centerDotEnabled         = ((bytes[13] >> 4) & 1) == 1;
-    crosshair.deployedWeaponGapEnabled = ((bytes[13] >> 5) & 1) == 1;
-    crosshair.alphaEnabled             = ((bytes[13] >> 6) & 1) == 1;
-    crosshair.tStyleEnabled            = ((bytes[13] >> 7) & 1) == 1;
-    crosshair.style                    = (bytes[13] & 0x0F) >> 1;
-    crosshair.length                   = static_cast<double>(bytes[14]) / 10.0;
+    crosshair.gap                      = static_cast<double>(uint8ToInt8(bytes.at(2))) / 10.0;
+    crosshair.outline                  = static_cast<double>(bytes.at(3)) / 2.0;
+    crosshair.red                      = bytes.at(4);
+    crosshair.green                    = bytes.at(5);
+    crosshair.blue                     = bytes.at(6);
+    crosshair.alpha                    = bytes.at(7);
+    crosshair.splitDistance            = bytes.at(8) & 7;
+    crosshair.followRecoil             = ((bytes.at(8) >> 7) & 1) == 1;
+    crosshair.fixedCrosshairGap        = static_cast<double>(uint8ToInt8(bytes.at(9))) / 10.0;
+    crosshair.color                    = bytes.at(10) & 7;
+    crosshair.outlineEnabled           = ((bytes.at(10) >> 3) & 1) == 1;
+    crosshair.innerSplitAlpha          = static_cast<double>(bytes.at(10) >> 4) / 10.0;
+    crosshair.outerSplitAlpha          = static_cast<double>(bytes.at(11) & 0x0F) / 10.0;
+    crosshair.splitSizeRatio           = static_cast<double>(bytes.at(11) >> 4) / 10.0;
+    crosshair.thickness                = static_cast<double>(bytes.at(12)) / 10.0;
+    crosshair.centerDotEnabled         = ((bytes.at(13) >> 4) & 1) == 1;
+    crosshair.deployedWeaponGapEnabled = ((bytes.at(13) >> 5) & 1) == 1;
+    crosshair.alphaEnabled             = ((bytes.at(13) >> 6) & 1) == 1;
+    crosshair.tStyleEnabled            = ((bytes.at(13) >> 7) & 1) == 1;
+    crosshair.style                    = (bytes.at(13) & 0x0F) >> 1;
+    crosshair.length                   = static_cast<double>(bytes.at(14)) / 10.0;
 
     return crosshair;
 }

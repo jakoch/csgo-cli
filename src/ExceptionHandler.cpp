@@ -4,8 +4,9 @@
 #include "ExceptionHandler.h"
 
 #include <string>
+#include <utility>
 
-ExceptionHandler::ExceptionHandler(std::string const & what) : m_what(what) { }
+ExceptionHandler::ExceptionHandler(std::string what) : m_what(std::move(what)) { }
 
-char const * ExceptionHandler::what() const throw()
+char const * ExceptionHandler::what() const noexcept
 { return m_what.c_str(); }

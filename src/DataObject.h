@@ -118,22 +118,22 @@ private:
     // TODO(jakoch): add wingman.
     std::string const tpl_url_wingman_replays = "https://steamcommunity.com/id/{}/gcpd/730/?tab=matchhistorywingman";
 
-    int const calcPlayerXpBase() const;
+    int calcPlayerXpBase() const;
 
 public:
-    std::string getSteamId();
+    std::string getSteamId() const;
     std::string getSteamProfileUrl();
     std::string getPlayerLevel();
     std::string getPlayerRank(int rank_type_id);
     std::string getPlayerXp();
-    float const getPlayerXpPercentage();
-    std::string getVacStatus();
+    float getPlayerXpPercentage();
+    std::string getVacStatus() const;
     std::string getLevelName(int i);
     std::string getRankName(int i);
     std::string getRankType(int i);
     std::string getDangerzoneRankName(int i);
     std::string getCanDoOverwatch();
-    std::string getAverageSearchTime();
+    std::string getAverageSearchTime() const;
     std::string getPenaltyReasonShort(int i);
     std::string getPenaltyReasonLong(int i);
 

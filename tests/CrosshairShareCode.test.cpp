@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: Copyright © 2018-present Jens A. Koch
+// SPDX-License-Identifier: GPL-3.0-or-later
+
 #include <catch2/catch_all.hpp>
 
 #include "../src/CrosshairShareCode.h"

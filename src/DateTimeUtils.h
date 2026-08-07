@@ -12,6 +12,6 @@
 
 std::string getYear();
 std::string getDateTime(time_t const & time, char const * time_format = "%Y-%m-%d %H:%M:%S");
-std::string format_duration_get_minutes(int milliseconds);
+std::string format_duration_get_minutes(int msecs);
 
 #endif // SRC_DATETIMEUTILS_H_
