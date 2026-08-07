@@ -160,11 +160,11 @@ jobs:
             }
           }
 
-        - name: ✂ Remove Dependabot workflow runs
-        uses: actions/github-script@v9 # https://github.com/actions/github-script
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          script: |
+    - name: ✂ Remove Dependabot workflow runs
+      uses: actions/github-script@v9 # https://github.com/actions/github-script
+      with:
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+        script: |
             const MAX_PAGES = 20;
             const PER_PAGE = 100;
             let runs_to_delete = [];
