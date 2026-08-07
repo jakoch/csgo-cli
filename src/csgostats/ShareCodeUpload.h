@@ -24,7 +24,7 @@ public:
     explicit ShareCodeUpload(bool verboseMode);
     ~ShareCodeUpload();
 
-    int uploadShareCode(std::string shareCode, std::string& responseContent);
+    int uploadShareCode(std::string const & shareCode, std::string& responseContent);
     int processJsonResponse(std::string& jsonResponse);
 
     // int testProcessJsonResponse();
@@ -33,7 +33,7 @@ private:
     CURL* curl   = nullptr;
     bool verbose = false;
 
-    struct curl_slist* host = NULL;
+    struct curl_slist* host = nullptr;
 
     CURL* initCurlConnection();
 };

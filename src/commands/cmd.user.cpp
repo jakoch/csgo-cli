@@ -10,8 +10,9 @@
 
 bool requestPlayersProfile(DataObject& data, bool const & verbose)
 {
-    if (verbose)
+    if (verbose) {
         spdlog::info("[ Start ] [ Thread ] getUserInfo");
+    }
 
     bool result = false;
 
@@ -20,11 +21,13 @@ bool requestPlayersProfile(DataObject& data, bool const & verbose)
             std::this_thread::sleep_for(std::chrono::milliseconds(CSGO_CLI_STEAM_HELLO_DELAY));
 
             CSGOMMHello mmhello;
-            if (verbose)
+            if (verbose) {
                 spdlog::info("          Requesting: Hello");
+            }
             mmhello.RefreshWait();
-            if (verbose)
+            if (verbose) {
                 spdlog::info("          Got Hello");
+            }
 
             result = true;
 
@@ -73,8 +76,9 @@ bool requestPlayersProfile(DataObject& data, bool const & verbose)
             printError("Fatal error", e.what());
             result = false;
         }
-        if (verbose)
+        if (verbose) {
             spdlog::info("[ End   ] [ Thread ] getUserInfo");
+        }
         return 0;
     });
 
@@ -85,8 +89,9 @@ bool requestPlayersProfile(DataObject& data, bool const & verbose)
 
 bool requestPlayersRankInfo(DataObject& data, bool const & verbose)
 {
-    if (verbose)
+    if (verbose) {
         spdlog::info("[ Start ] [ Thread ] requestPlayersRankInfo");
+    }
 
     bool result = false;
 
@@ -96,16 +101,18 @@ bool requestPlayersRankInfo(DataObject& data, bool const & verbose)
 
             CSGORankUpdate rankUpdate;
 
-            if (verbose)
+            if (verbose) {
                 spdlog::info("          Requesting: rankUpdate for Wingman and DangerZone");
+            }
             rankUpdate.RefreshWaitSideModeRanks();
-            if (verbose)
+            if (verbose) {
                 spdlog::info("          Got rankUpdate for Wingman and DangerZone");
+            }
 
             result = true;
 
             if (verbose) {
-                spdlog::debug("rankUpdate.data[0] {}", rankUpdate.data[0].DebugString());
+                spdlog::debug("rankUpdate.data[0] {}", rankUpdate.data.at(0).DebugString());
             }
 
             std::optional<PlayerRankingInfo> wingmanRank;
@@ -145,8 +152,9 @@ bool requestPlayersRankInfo(DataObject& data, bool const & verbose)
             printError("Fatal error", e.what());
             result = false;
         }
-        if (verbose)
+        if (verbose) {
             spdlog::info("[ End   ] [ Thread ] rankUpdate");
+        }
         return 0;
     });
 
@@ -159,25 +167,23 @@ void printPlayersProfile(DataObject& data)
 {
     // ---------- Format Output Strings
 
-    std::string level = fmt::format(
+    std::string const level = fmt::format(
         "{0} ({1}/40) (XP: {2}/5000 | {3:.2f}%)",
         data.getPlayerLevel(),
         data.player_level,
         data.getPlayerXp(),
         data.getPlayerXpPercentage());
 
-    std::string likes =
+    std::string const likes =
         fmt::format("{} x friendly, {} x teaching, {} x leader", data.cmd_friendly, data.cmd_teaching, data.cmd_leader);
 
-    std::string penalty = fmt::format("{} ({} Minutes)", data.penalty_reason, (data.penalty_seconds / 60));
+    std::string const penalty = fmt::format("{} ({} Minutes)", data.penalty_reason, (data.penalty_seconds / 60));
 
-    std::string clan = fmt::format("{} \"{}\"", data.clan_name, data.clan_tag);
+    std::string const clan = fmt::format("{} \"{}\"", data.clan_name, data.clan_tag);
 
     auto const findRanking = [&](uint32 expectedType) {
-        auto const candidate =
-            std::find_if(data.rankings.begin(), data.rankings.end(), [expectedType](auto const & ranking) {
-                return ranking.type == expectedType;
-            });
+    auto const candidate =
+        std::ranges::find_if(data.rankings, [expectedType](auto const & ranking) { return ranking.type == expectedType; });
 
         if (candidate != data.rankings.end()) {
             return *candidate;
@@ -192,17 +198,17 @@ void printPlayersProfile(DataObject& data)
     auto mm_ranks     = findRanking(6);
     auto mm_rank_name = data.getRankName(mm_ranks.id);
 
-    std::string matchmaking_rank = fmt::format("{} ({}/18) ({} wins)", mm_rank_name, mm_ranks.id, mm_ranks.wins);
+    std::string const matchmaking_rank = fmt::format("{} ({}/18) ({} wins)", mm_rank_name, mm_ranks.id, mm_ranks.wins);
 
     auto wm_ranks     = findRanking(7);
     auto wm_rank_name = data.getRankName(wm_ranks.id);
 
-    std::string wingman_rank = fmt::format("{} ({}/18) ({} wins)", wm_rank_name, wm_ranks.id, wm_ranks.wins);
+    std::string const wingman_rank = fmt::format("{} ({}/18) ({} wins)", wm_rank_name, wm_ranks.id, wm_ranks.wins);
 
     auto dz_ranks     = findRanking(10);
     auto dz_rank_name = data.getDangerzoneRankName(dz_ranks.id);
 
-    std::string dangerzone_rank = fmt::format("{} ({}/15) ({} wins)", dz_rank_name, dz_ranks.id, dz_ranks.wins);
+    std::string const dangerzone_rank = fmt::format("{} ({}/15) ({} wins)", dz_rank_name, dz_ranks.id, dz_ranks.wins);
 
     // @todo(jakoch): how to access medals data?
     // auto medals = fmt::format("{} x arms, {} x combat, {} x global, {} x team, {} x weapon",
@@ -211,7 +217,7 @@ void printPlayersProfile(DataObject& data)
     // ---------- Output Table
 
     auto const printAligned{[=](std::string const & a, std::string const & b = "") {
-        return fmt::print(" {0:<18} {1}\n", a, b);
+        fmt::print(" {0:<18} {1}\n", a, b);
     }};
 
     fmt::print("\n Hello {}!\n", data.playername);

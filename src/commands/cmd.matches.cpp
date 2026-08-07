@@ -37,7 +37,7 @@ bool requestRecentMatches(DataObject& data, bool const & verbose)
             }
 
             // empty match history
-            if (matchList.Matches().size() == 0) {
+            if (matchList.Matches().empty()) {
                 data.has_matches_played = false;
             } else {
                 data.has_matches_played = true;
@@ -45,7 +45,7 @@ bool requestRecentMatches(DataObject& data, bool const & verbose)
 
                 int matches_num = 1;
 
-                for (auto& match : matchList.Matches()) {
+                for (auto const & match : matchList.Matches()) {
 
                     if (verbose) {
                         spdlog::info("[ Start ] processing Match #{}", matches_num);
@@ -189,7 +189,7 @@ bool requestMatchDetails(DataObject& data, bool const & verbose, uint64_t matchI
             uint32_t tokenId   = 0;
             bool found         = false;
 
-            for (auto& match : recentMatchList.Matches()) {
+            for (auto const & match : recentMatchList.Matches()) {
                 if (match.matchid() == matchId) {
                     // extract outcomeId (reservation_id) and tokenId (tv_port) from the match data
                     for (int i = 0; i < match.roundstatsall().size(); ++i) {
@@ -203,7 +203,7 @@ bool requestMatchDetails(DataObject& data, bool const & verbose, uint64_t matchI
                             break;
                         }
                     }
-                    if (!found && match.roundstatsall().size() > 0) {
+                    if (!found && !match.roundstatsall().empty()) {
                         outcomeId = match.roundstatsall(0).reservationid();
                         tokenId   = static_cast<uint32_t>(match.watchablematchinfo().tv_port());
                         found     = true;
@@ -240,7 +240,7 @@ bool requestMatchDetails(DataObject& data, bool const & verbose, uint64_t matchI
             }
 
             // empty match history
-            if (matchList.Matches().size() == 0) {
+            if (matchList.Matches().empty()) {
                 data.has_matches_played = false;
             } else {
                 data.has_matches_played = true;
@@ -248,7 +248,7 @@ bool requestMatchDetails(DataObject& data, bool const & verbose, uint64_t matchI
 
                 int matches_num = 1;
 
-                for (auto& match : matchList.Matches()) {
+                for (auto const & match : matchList.Matches()) {
 
                     if (verbose) {
                         spdlog::info("[ Start ] processing Match #{}", matches_num);
@@ -379,7 +379,7 @@ void printMatches(DataObject& data)
                             std::string const & s5,
                             std::string const & s6,
                             std::string const & s7) {
-        return fmt::print("{0:^3} {1:<20} {2:^8} {3:^13} {4:^8} {5:^6}   {6}\n", s1, s2, s3, s4, s5, s6, s7);
+        fmt::print("{0:^3} {1:<20} {2:^8} {3:^13} {4:^8} {5:^6}   {6}\n", s1, s2, s3, s4, s5, s6, s7);
     }};
 
     printRow("#", "Match Played", "Duration", "Map", "Score", "Result", "Share Code\n");

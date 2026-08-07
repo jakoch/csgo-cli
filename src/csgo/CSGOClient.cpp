@@ -3,8 +3,12 @@
 
 #include "CSGOClient.h"
 
+#include <array>
 #include <algorithm>
+#include <cstddef>
+#include <cstring>
 #include <spdlog/spdlog.h>
+#include <span>
 #include <string>
 #include <utility>
 
@@ -12,10 +16,14 @@
 #undef SendMessage
 #endif
 
-static uint32_t const ProtobufFlag               = (1U << 31);
-static uint32_t const Steam730ClientVersion      = 2000880;
-static auto const GameClientConnectRetryInterval = std::chrono::milliseconds(500);
-CSGOClient* CSGOClient::m_instance               = nullptr;
+static uint32_t const ProtobufFlag          = (1U << 31);
+static uint32_t const Steam730ClientVersion = 2000880;
+
+// GC wire header is 8 bytes: [msg_type, 4 bytes][reserved, 4 bytes]
+static constexpr std::size_t GcMessageHeaderBytes = 2 * sizeof(uint32_t);
+
+static auto constexpr GameClientConnectRetryInterval = std::chrono::milliseconds(500);
+std::unique_ptr<CSGOClient> CSGOClient::m_instance  = nullptr;
 
 CSGOClient::CSGOClient() :
     m_welcomeHandler(this, &CSGOClient::OnClientWelcome),
@@ -31,10 +39,10 @@ CSGOClient::CSGOClient() :
             STEAMGAMECOORDINATOR_INTERFACE_VERSION);
     }
 
-    m_gameCoordinator = reinterpret_cast<ISteamGameCoordinator*>(SteamClient()->GetISteamGenericInterface(
+    m_gameCoordinator = static_cast<ISteamGameCoordinator*>(SteamClient()->GetISteamGenericInterface(
         SteamAPI_GetHSteamUser(), SteamAPI_GetHSteamPipe(), STEAMGAMECOORDINATOR_INTERFACE_VERSION));
 
-    if (!m_gameCoordinator) {
+    if (m_gameCoordinator == nullptr) {
         throw ExceptionHandler("failed to acquire ISteamGameCoordinator interface");
     }
 
@@ -71,7 +79,7 @@ void CSGOClient::SendConnectionHelloMessages()
 
 EGCResults CSGOClient::SendGCMessage(uint32_t uMsgType, google::protobuf::Message* msg)
 {
-    std::lock_guard<std::mutex> lock(m_sendMutex);
+    std::scoped_lock const lock(m_sendMutex);
 
     auto const originalMsgType = uMsgType;
 
@@ -81,7 +89,7 @@ EGCResults CSGOClient::SendGCMessage(uint32_t uMsgType, google::protobuf::Messag
     int body_size = msg->ByteSize();
 #endif
 
-    auto size = body_size + 2 * sizeof(uint32_t);
+    auto size = body_size + GcMessageHeaderBytes;
 
     if (m_msgBuffer.size() < size) {
         m_msgBuffer.resize(size);
@@ -89,10 +97,11 @@ EGCResults CSGOClient::SendGCMessage(uint32_t uMsgType, google::protobuf::Messag
 
     uMsgType |= ProtobufFlag;
 
-    reinterpret_cast<uint32_t*>(m_msgBuffer.data())[0] = uMsgType;
-    reinterpret_cast<uint32_t*>(m_msgBuffer.data())[1] = 0;
+    std::array<uint32_t, 2> header{uMsgType, 0};
+    std::memcpy(m_msgBuffer.data(), header.data(), sizeof(header));
 
-    msg->SerializeToArray(m_msgBuffer.data() + 2 * sizeof(uint32_t), m_msgBuffer.size() - 2 * sizeof(uint32_t));
+    std::span<char> const wire{m_msgBuffer};
+    msg->SerializeToArray(wire.subspan(GcMessageHeaderBytes).data(), static_cast<int>(size - GcMessageHeaderBytes));
 
     if (spdlog::should_log(spdlog::level::trace)) {
         spdlog::trace("GC send: msg_type={}, payload_size={}, wire_size={}", originalMsgType, body_size, size);
@@ -103,8 +112,7 @@ EGCResults CSGOClient::SendGCMessage(uint32_t uMsgType, google::protobuf::Messag
 
 void CSGOClient::OnMessageAvailable(GCMessageAvailable_t* msg)
 {
-    std::lock_guard<std::mutex> lock(m_recvMutex);
-    std::lock_guard<std::mutex> lock2(m_handlerMutex);
+    std::scoped_lock const lock(m_recvMutex, m_handlerMutex);
 
     if (spdlog::should_log(spdlog::level::trace)) {
         spdlog::trace("GC message available: announced_size={}", msg->m_nMessageSize);
@@ -114,8 +122,10 @@ void CSGOClient::OnMessageAvailable(GCMessageAvailable_t* msg)
         m_recvBuffer.resize(msg->m_nMessageSize);
     }
 
-    uint32_t msgType;
-    uint32_t msgSize;
+    std::span<char> const recv{m_recvBuffer};
+
+    uint32_t msgType = 0;
+    uint32_t msgSize = 0;
 
     auto res = m_gameCoordinator->RetrieveMessage(&msgType, m_recvBuffer.data(), m_recvBuffer.size(), &msgSize);
 
@@ -129,14 +139,14 @@ void CSGOClient::OnMessageAvailable(GCMessageAvailable_t* msg)
     }
 
     if (res == k_EGCResultOK) {
-        if (msgType & ProtobufFlag) {
+        if ((msgType & ProtobufFlag) != 0) {
             auto const strippedMsgType = msgType & (~ProtobufFlag);
             auto handler               = m_msgHandler.equal_range(strippedMsgType);
 
             if (strippedMsgType == k_EMsgGCCStrike15_v2_ClientLogonFatalError) {
                 CMsgGCCStrike15_v2_ClientLogonFatalError fatalError;
                 if (fatalError.ParseFromArray(
-                        m_recvBuffer.data() + 2 * sizeof(uint32_t), msgSize - 2 * sizeof(uint32_t))) {
+                        recv.subspan(GcMessageHeaderBytes).data(), static_cast<int>(msgSize - GcMessageHeaderBytes))) {
                     std::string failureMessage = fmt::format(
                         "GC client logon rejected: errorcode={}, country='{}', message='{}'",
                         fatalError.errorcode(),
@@ -145,7 +155,7 @@ void CSGOClient::OnMessageAvailable(GCMessageAvailable_t* msg)
                     spdlog::error("{}", failureMessage);
 
                     {
-                        std::lock_guard<std::mutex> connectionLock(m_connectedMutex);
+                        std::scoped_lock const connectionLock(m_connectedMutex);
                         m_connectionFailure = std::move(failureMessage);
                     }
                     m_connectedCV.notify_all();
@@ -158,13 +168,13 @@ void CSGOClient::OnMessageAvailable(GCMessageAvailable_t* msg)
             }
 
             for (auto it = handler.first; it != handler.second; ++it) {
-                it->second->Handle(m_recvBuffer.data() + 2 * sizeof(uint32_t), msgSize - 2 * sizeof(uint32_t));
+                it->second->Handle(recv.subspan(GcMessageHeaderBytes).data(), msgSize - GcMessageHeaderBytes);
             }
         }
     }
 }
 
-void CSGOClient::OnMessageFailed(GCMessageFailed_t* msg)
+void CSGOClient::OnMessageFailed([[maybe_unused]] GCMessageFailed_t* msg)
 {
     if (spdlog::should_log(spdlog::level::trace)) {
         spdlog::trace("GC message delivery failed callback received");
@@ -174,13 +184,13 @@ void CSGOClient::OnMessageFailed(GCMessageFailed_t* msg)
 
 void CSGOClient::RegisterHandler(uint32 msgId, IGCMsgHandler* handler)
 {
-    std::lock_guard<std::mutex> lock(m_handlerMutex);
+    std::scoped_lock const lock(m_handlerMutex);
     m_msgHandler.insert({msgId, handler});
 }
 
 void CSGOClient::RemoveHandler(uint32 msgId, IGCMsgHandler const * handler)
 {
-    std::lock_guard<std::mutex> lock(m_handlerMutex);
+    std::scoped_lock const lock(m_handlerMutex);
 
     auto h = m_msgHandler.equal_range(msgId);
 
@@ -194,17 +204,16 @@ void CSGOClient::RemoveHandler(uint32 msgId, IGCMsgHandler const * handler)
 
 CSGOClient* CSGOClient::GetInstance()
 {
-    if (!m_instance) {
-        m_instance = new CSGOClient();
+    if (m_instance == nullptr) {
+        m_instance = std::unique_ptr<CSGOClient>(new CSGOClient());
     }
 
-    return m_instance;
+    return m_instance.get();
 }
 
 void CSGOClient::Destroy()
 {
-    delete m_instance;
-    m_instance = nullptr;
+    m_instance.reset();
 }
 
 void CSGOClient::WaitForGameClientConnect()
@@ -243,7 +252,7 @@ void CSGOClient::WaitForGameClientConnect()
 
 bool CSGOClient::TryGetCachedMatchmakingHello(CMsgGCCStrike15_v2_MatchmakingGC2ClientHello& msg)
 {
-    std::lock_guard<std::mutex> lock(m_connectedMutex);
+    std::scoped_lock const lock(m_connectedMutex);
     if (!m_hasCachedMatchmakingHello) {
         return false;
     }
@@ -264,7 +273,7 @@ void CSGOClient::OnClientWelcome(CMsgClientWelcome const & msg)
             msg.location().has_country() ? msg.location().country() : "");
     }
 
-    std::lock_guard<std::mutex> lock(m_connectedMutex);
+    std::scoped_lock const lock(m_connectedMutex);
     m_connectedToGameClient = true;
     m_connectedCV.notify_all();
 }
@@ -282,7 +291,7 @@ void CSGOClient::OnMatchmakingHello(CMsgGCCStrike15_v2_MatchmakingGC2ClientHello
             msg.vac_banned());
     }
 
-    std::lock_guard<std::mutex> lock(m_connectedMutex);
+    std::scoped_lock const lock(m_connectedMutex);
     m_cachedMatchmakingHello    = msg;
     m_hasCachedMatchmakingHello = true;
     m_connectedToGameClient     = true;

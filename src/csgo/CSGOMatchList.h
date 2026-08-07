@@ -20,7 +20,7 @@ public:
     CSGOMatchList(uint64_t matchId, uint64_t outcomeId, uint32_t tokenId);
     ~CSGOMatchList();
 
-    void Refresh();
+    void Refresh() const;
     void RefreshWait();
 
     std::vector<CDataGCCStrike15_v2_MatchInfo> const & Matches() const;

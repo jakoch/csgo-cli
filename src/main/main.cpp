@@ -25,21 +25,25 @@
 #include <windows.h>
 #endif
 
+#include <array>
 #include <cstdio>
 #include <iomanip>
 #include <iostream>
 #include <ostream>
 #include <sstream>
+#include <span>
 #include <string>
 #include <thread>
+#include <vector>
 
 // Includes needed for _setmode() (+io.h)
 #include <fcntl.h>
 
 void initSteamAPI(bool const & verbose)
 {
-    if (verbose)
+    if (verbose) {
         spdlog::info("[ Start ] STEAM_INIT");
+    }
 
     if (SteamAPI_RestartAppIfNecessary(k_uAppIdInvalid)) {
         exit(1);
@@ -84,14 +88,14 @@ void initSteamAPI(bool const & verbose)
             SteamAPI_GetHSteamUser());
         spdlog::trace(
             "Steam persona state: name='{}', state={}, level={}",
-            reinterpret_cast<char const *>(SteamFriends()->GetPersonaName()),
+            SteamFriends()->GetPersonaName(),
             static_cast<int>(SteamFriends()->GetPersonaState()),
             SteamUser()->GetPlayerSteamLevel());
 
         auto const appOwner          = SteamApps()->GetAppOwner();
-        char launchCommandLine[1024] = {};
+        std::array<char, 1024> launchCommandLine = {};
         auto const launchCommandLineLength =
-            SteamApps()->GetLaunchCommandLine(launchCommandLine, static_cast<int>(sizeof(launchCommandLine)));
+            SteamApps()->GetLaunchCommandLine(launchCommandLine.data(), static_cast<int>(launchCommandLine.size()));
 
         spdlog::trace(
             "Steam app state: subscribed={}, subscribed_730={}, installed_730={}, vac_banned={}, app_build_id={}, "
@@ -108,7 +112,7 @@ void initSteamAPI(bool const & verbose)
             "Steam app launch context: owner_matches_user={}, launch_cmd_len={}, launch_cmd='{}'",
             appOwner == SteamUser()->GetSteamID(),
             launchCommandLineLength,
-            launchCommandLine);
+            launchCommandLine.data());
     }
 
     // TODO(my_username): setPersonaState(Invisible) 7
@@ -165,9 +169,9 @@ void initGameClientConnection(DataObject& data, bool const & verbose)
         data.steam_id           = SteamUser()->GetSteamID().ConvertToUint64();
         data.steam_player_level = SteamUser()->GetPlayerSteamLevel();
         // this is a "const char*" UTF data narrowing to std::string
-        data.playername = reinterpret_cast<char const *>(SteamFriends()->GetPersonaName());
+        data.playername = SteamFriends()->GetPersonaName();
 
-        CSteamID clan_id = SteamFriends()->GetClanByIndex(0);
+        CSteamID const clan_id = SteamFriends()->GetClanByIndex(0);
         data.clan_name   = SteamFriends()->GetClanName(clan_id);
         data.clan_tag    = SteamFriends()->GetClanTag(clan_id);
     } catch (ExceptionHandler& e) {
@@ -196,7 +200,7 @@ void exitIfGameIsRunning()
 #endif
 }
 
-int main(int argc, char** argv)
+int runMain(int argc, char** argv)
 {
 #ifdef _WIN32
     SetConsoleOutputCP(CP_UTF8);
@@ -222,54 +226,81 @@ int main(int argc, char** argv)
         return 0;
     }
 
+    std::span<char*> const argPtrs{argv, static_cast<std::size_t>(argc)};
+    std::vector<std::string> const args(argPtrs.begin(), argPtrs.end());
+
     for (int i = 1; i < argc; i = i + 1) {
-        std::string option = argv[i];
+        std::string const & option = args.at(i);
         if (option == "-h" || option == "--h" || option == "-help" || option == "/?") {
             printHelp();
             return 0;
-        } else if (option == "-V" || option == "--V" || option == "-version") {
+        }
+        if (option == "-V" || option == "--V" || option == "-version") {
             fmt::print(
                 "{} version {}\n",
                 WinCliColors::formatLightGreen(CSGO_CLI_BINARYNAME),
                 WinCliColors::formatYellow(CSGO_CLI_VERSION));
             return 0;
-        } else if (option == "-v" || option == "--v" || option == "-verbose") {
+        }
+        if (option == "-v" || option == "--v" || option == "-verbose") {
             paramVerbose = true;
-        } else if (option == "-vv" || option == "--vv") {
+            continue;
+        }
+        if (option == "-vv" || option == "--vv") {
             paramVerbose = true;
             spdlog::set_level(spdlog::level::debug);
-        } else if (option == "-vvv" || option == "--vvv") {
+            continue;
+        }
+        if (option == "-vvv" || option == "--vvv") {
             paramVerbose = true;
             spdlog::set_level(spdlog::level::trace);
-        } else if (option == "-globalstats") {
+            continue;
+        }
+        if (option == "-globalstats") {
             paramPrintGlobalStats = true;
-        } else if (option == "-matches") {
+            continue;
+        }
+        if (option == "-matches") {
             paramPrintMatches = true;
-        } else if (option == "-scoreboard") {
+            continue;
+        }
+        if (option == "-scoreboard") {
             paramPrintScoreboard = true;
-        } else if (option == "-user") {
+            continue;
+        }
+        if (option == "-user") {
             paramPrintUser = true;
-        } else if (option == "-upload") {
+            continue;
+        }
+        if (option == "-upload") {
             paramPrintMatches     = true;
             paramUploadShareCodes = true;
-        } else if (option == "-sharecode" || option == "-s") {
+            continue;
+        }
+        if (option == "-sharecode" || option == "-s") {
             paramUploadShareCode = true;
-            shareCode            = argv[i + 1];
+            shareCode            = args.at(i + 1);
             i++;
-        } else if (option == "-crosshair" || option == "-ch") {
+            continue;
+        }
+        if (option == "-crosshair" || option == "-ch") {
             paramDecodeCrosshair = true;
-            crosshairShareCode   = argv[i + 1];
+            crosshairShareCode   = args.at(i + 1);
             i++;
-        } else if (option == "-match") {
+            continue;
+        }
+        if (option == "-match") {
             if (i + 1 >= argc) {
                 printError("ERROR", "-match requires a matchid argument.");
                 fmt::print("Please check: '{} -help'\n", CSGO_CLI_BINARYNAME);
                 return 1;
             }
             paramPrintMatch = true;
-            paramMatchId    = std::stoull(argv[i + 1]);
+            paramMatchId    = std::stoull(args.at(i + 1));
             i += 1;
-        } else if (option != "") {
+            continue;
+        }
+        if (!option.empty()) {
             printError("ERROR (invalid argument)", option.c_str());
             fmt::print("Please check: '{} -help'\n", CSGO_CLI_BINARYNAME);
             return 1;
@@ -378,4 +409,20 @@ int main(int argc, char** argv)
     SteamAPI_Shutdown();
 
     return EXIT_SUCCESS;
+}
+
+int main(int argc, char** argv)
+{
+    try {
+        return runMain(argc, argv);
+    } catch (ExceptionHandler const & e) {
+        printError("Fatal error", e.what());
+        return 1;
+    } catch (std::exception const & e) {
+        printError("Fatal error", e.what());
+        return 1;
+    } catch (...) {
+        printError("Fatal error", "Unknown exception.");
+        return 1;
+    }
 }

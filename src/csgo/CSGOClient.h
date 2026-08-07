@@ -101,7 +101,7 @@ private:
     void OnMatchmakingHello(CMsgGCCStrike15_v2_MatchmakingGC2ClientHello const & msg);
 
 private:
-    static CSGOClient* m_instance;
+    static std::unique_ptr<CSGOClient> m_instance;
 
     GCMsgHandler<CMsgClientWelcome> m_welcomeHandler;
     GCMsgHandler<CMsgGCCStrike15_v2_MatchmakingGC2ClientHello> m_mmHelloHandler;

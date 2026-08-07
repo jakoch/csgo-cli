@@ -4,20 +4,20 @@
 #include "ShareCodeUpload.h"
 #include "../VersionAndConstants.h"
 
-#include <iostream>
-#include <thread>
 #include <algorithm>
+#include <array>
 #include <cstdio>
+#include <cstring>
+#include <iostream>
 #include <string>
+#include <thread>
 
-ShareCodeUpload::ShareCodeUpload(bool verboseMode)
+ShareCodeUpload::ShareCodeUpload(bool verboseMode) :
+    verbose(verboseMode),
+    curl(curl_easy_init()),
+    host(curl_slist_append(
+        curl_slist_append(nullptr, "csgostats.gg:80:104.16.222.55"), "csgostats.gg:443:104.16.222.55"))
 {
-    verbose = verboseMode;
-
-    curl = curl_easy_init();
-
-    host = curl_slist_append(NULL, "csgostats.gg:80:104.16.222.55");
-    host = curl_slist_append(host, "csgostats.gg:443:104.16.222.55");
 }
 
 ShareCodeUpload::~ShareCodeUpload()
@@ -29,11 +29,14 @@ ShareCodeUpload::~ShareCodeUpload()
 
 size_t CurlWrite_CallbackFunc_StdString(void* contents, size_t size, size_t nmemb, std::string* s)
 {
-    size_t newLength = size * nmemb;
-    size_t oldLength = s->size();
+    size_t const newLength = size * nmemb;
+
+    if (newLength == 0) {
+        return 0;
+    }
 
     try {
-        s->resize(oldLength + newLength);
+        s->append(static_cast<char const*>(contents), newLength);
     } catch (std::bad_alloc const & e) {
         // cast to void (formerly self-assign) to avoid unused/unreferenced variable e
         static_cast<void>(e);
@@ -41,25 +44,23 @@ size_t CurlWrite_CallbackFunc_StdString(void* contents, size_t size, size_t nmem
         return 0;
     }
 
-    std::copy(reinterpret_cast<char*>(contents), reinterpret_cast<char*>(contents) + newLength, s->begin() + oldLength);
-
     return size * nmemb;
 }
 
 /*
   POST the CSGO Demo Sharecode to csgostats.gg
 */
-int ShareCodeUpload::uploadShareCode(std::string shareCode, std::string& responseContent)
+int ShareCodeUpload::uploadShareCode(std::string const & shareCode, std::string& responseContent)
 {
-    CURLcode res;
+    CURLcode res = CURLE_OK;
 
-    char errorBuffer[CURL_ERROR_SIZE];
+    std::array<char, CURL_ERROR_SIZE> errorBuffer{};
 
     // set the error buffer as empty before performing a request
-    errorBuffer[0] = 0;
+    errorBuffer.fill('\0');
 
     // provide a buffer for storing errors
-    curl_easy_setopt(curl, CURLOPT_ERRORBUFFER, errorBuffer);
+    curl_easy_setopt(curl, CURLOPT_ERRORBUFFER, errorBuffer.data());
 
     curl_easy_setopt(curl, CURLOPT_RESOLVE, host);
 
@@ -78,14 +79,13 @@ int ShareCodeUpload::uploadShareCode(std::string shareCode, std::string& respons
     curl_easy_setopt(curl, CURLOPT_POSTFIELDS, data);
 
     // prepare user-agent identifier
-    char ua_ident[100];
-    printf(ua_ident, "User-Agent: Mozilla/5.0 (compatible; %s)", CSGO_CLI_USERAGENT_ID);
+    std::string const ua_ident = fmt::format("User-Agent: Mozilla/5.0 (compatible; {})", CSGO_CLI_USERAGENT_ID);
 
     // 4. set headers
-    struct curl_slist* headers = NULL;
+    struct curl_slist* headers = nullptr;
     headers                    = curl_slist_append(headers, "Accept: application/json, text/javascript, */*; q=0.01");
     headers                    = curl_slist_append(headers, "Accept-Language: en-US;q=0.8,en;q=0.7");
-    headers                    = curl_slist_append(headers, ua_ident);
+    headers                    = curl_slist_append(headers, ua_ident.c_str());
     headers                    = curl_slist_append(headers, "X-Requested-With: XMLHttpRequest");
     headers = curl_slist_append(headers, "Content-Type: application/x-www-form-urlencoded; charset=UTF-8");
     curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers);
@@ -113,14 +113,14 @@ int ShareCodeUpload::uploadShareCode(std::string shareCode, std::string& respons
     // show error infos
     if (res != CURLE_OK) {
         // if the request did not complete correctly, show the error information
-        size_t len = strlen(errorBuffer);
-        fprintf(stderr, "\nlibcurl: (%d) ", res);
-        if (len) {
-            fprintf(stderr, "%s%s", errorBuffer, ((errorBuffer[len - 1] != '\n') ? "\n" : ""));
+        size_t const len = strlen(errorBuffer.data());
+        fmt::print(stderr, "\nlibcurl: ({}) ", static_cast<int>(res));
+        if (len != 0) {
+            fmt::print(stderr, "{}{}", errorBuffer.data(), (errorBuffer.at(len - 1) != '\n') ? "\n" : "");
         } else {
             // if no detailed error information was written to errorBuffer,
             // show the more generic information from curl_easy_strerror instead
-            fprintf(stderr, "%s\n", curl_easy_strerror(res));
+            fmt::print(stderr, "{}\n", curl_easy_strerror(res));
         }
 
         // cleanup
@@ -162,7 +162,7 @@ int ShareCodeUpload::processJsonResponse(std::string& jsonResponse)
     }
 
     // make sure response is JSON and not HTML
-    if (jsonResponse.rfind("<!doctype html>", 0) == 0 || jsonResponse.rfind("<!DOCTYPE html>", 0) == 0) {
+    if (jsonResponse.starts_with("<!doctype html>") || jsonResponse.starts_with("<!DOCTYPE html>")) {
         // if HTML, check if we hit the Cloudflare Captcha page
         if (jsonResponse.find("Cloudflare") != std::string::npos) {
             printError("Error", "The response content is not JSON, but HTML (Cloudflare Captcha!).\n");
@@ -184,20 +184,20 @@ int ShareCodeUpload::processJsonResponse(std::string& jsonResponse)
     }
 
     // ensure that the keys "status" and "data" are present
-    if (!json.contains("status") && !json.contains("data")) {
+    if (!json.contains("status") || !json.contains("data")) {
         fmt::print("Response: {}", jsonResponse);
-        printError("Error", "Json Response does not contain the keys \"status\" and \"data\".");
+        printError("Error", R"(Json Response does not contain the keys "status" and "data".)");
         return 2;
     }
-    auto const status = json["status"].get<std::string>();
-    auto const data   = json["data"];
+    auto const status = json.at("status").get<std::string>();
+    auto const data   = json.at("data");
 
     /*
        csgostats.gg has 4 json responses to a sharecode POST request: error, queued, retrying, complete.
     */
 
     if (status == "error") {
-        std::string const msg = data["msg"].get<std::string>();
+        std::string const msg = data.at("msg").get<std::string>();
 
         auto const result = fmt::format(" Result: {} -> {}. \n", status, msg);
         WinCliColors::printRed(result);
@@ -206,21 +206,21 @@ int ShareCodeUpload::processJsonResponse(std::string& jsonResponse)
     }
 
     if (status == "queued" || status == "retrying") {
-        std::string const msg = data["msg"].get<std::string>();
+        std::string const msg = data.at("msg").get<std::string>();
 
         // msg contains HTML crap, let's cut that out
-        std::string msgHtml = msg;
+        std::string const & msgHtml = msg;
         std::string newMsg(" ");
 
         // get the "in queue #X" part (start of value (char 0) to char "<"span)
-        std::string const queuedString = msgHtml.substr(0, msgHtml.find("<"));
+        std::string const queuedString = msgHtml.substr(0, msgHtml.find('<'));
         newMsg.append(queuedString);
 
         // get the "time remaining part (start of value (char "~" + 1) to end)
-        std::string const timeString = msgHtml.substr(msgHtml.find("~") + 1);
+        std::string const timeString = msgHtml.substr(msgHtml.find('~') + 1);
         newMsg.append(timeString);
 
-        std::string const url = data["url"].get<std::string>();
+        std::string const url = data.at("url").get<std::string>();
 
         auto const result = fmt::format(" Result: {} -> {} | {} \n", status, url, newMsg);
         WinCliColors::printDarkOrange(result);
@@ -229,7 +229,7 @@ int ShareCodeUpload::processJsonResponse(std::string& jsonResponse)
     }
 
     if (status == "complete") {
-        std::string const url = data["url"].get<std::string>();
+        std::string const url = data.at("url").get<std::string>();
 
         auto const result = fmt::format(" Result: {} -> {} \n", status, url);
         WinCliColors::printGreen(result);

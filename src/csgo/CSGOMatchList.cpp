@@ -7,9 +7,10 @@
 
 #include <algorithm>
 #include <iostream>
+#include <ranges>
+#include <string>
 #include <thread>
 #include <vector>
-#include <string>
 
 /*
  * MatchList
@@ -20,13 +21,12 @@ CSGOMatchList::CSGOMatchList() : m_matchListHandler(this, &CSGOMatchList::OnMatc
 { CSGOClient::GetInstance()->RegisterHandler(k_EMsgGCCStrike15_v2_MatchList, &m_matchListHandler); }
 
 CSGOMatchList::CSGOMatchList(uint64_t matchId, uint64_t outcomeId, uint32_t tokenId) :
-    m_matchListHandler(this, &CSGOMatchList::OnMatchList)
+    m_matchListHandler(this, &CSGOMatchList::OnMatchList),
+    m_onlySpecificMatch(true),
+    m_matchId(matchId),
+    m_outcomeId(outcomeId),
+    m_tokenId(tokenId)
 {
-    m_onlySpecificMatch = true;
-    m_matchId           = matchId;
-    m_outcomeId         = outcomeId;
-    m_tokenId           = tokenId;
-
     CSGOClient::GetInstance()->RegisterHandler(k_EMsgGCCStrike15_v2_MatchList, &m_matchListHandler);
 }
 
@@ -45,8 +45,8 @@ void CSGOMatchList::OnMatchList(CMsgGCCStrike15_v2_MatchList const & msg)
 {
     std::unique_lock<std::mutex> lock(m_matchMutex);
 
-    for (auto it = msg.matches().rbegin(); it != msg.matches().rend(); ++it) {
-        m_matches.push_back(*it);
+    for (auto const & m : std::views::reverse(msg.matches())) {
+        m_matches.push_back(m);
     }
 
     m_updateComplete = true;
@@ -54,7 +54,7 @@ void CSGOMatchList::OnMatchList(CMsgGCCStrike15_v2_MatchList const & msg)
     m_updateCv.notify_all();
 }
 
-void CSGOMatchList::Refresh()
+void CSGOMatchList::Refresh() const
 {
     if (m_onlySpecificMatch) {
         CMsgGCCStrike15_v2_MatchListRequestFullGameInfo request;
@@ -94,7 +94,7 @@ void CSGOMatchList::RefreshWait()
 
 std::vector<CDataGCCStrike15_v2_MatchInfo> const & CSGOMatchList::Matches() const
 {
-    std::lock_guard<std::mutex> lock(m_matchMutex);
+    std::scoped_lock const lock(m_matchMutex);
     return m_matches;
 }
 
@@ -126,10 +126,12 @@ int CSGOMatchList::getPlayerIndex(
 std::string CSGOMatchList::getMatchResult(CMsgGCCStrike15_v2_MatchmakingServerRoundStats const & roundStats) const
 {
     int const num = getMatchResultNum(roundStats);
-    if (num == 0)
+    if (num == 0) {
         return "TIE";
-    if (num == 1)
+    }
+    if (num == 1) {
         return "WIN";
+    }
     return "LOSS";
 }
 

@@ -4,7 +4,7 @@
 #include "ShareCodeCache.h"
 
 #include <algorithm>
-#include <cstdio>
+#include <fmt/format.h>
 #include <string>
 #include <vector>
 
@@ -22,11 +22,11 @@ ShareCodeCache::ShareCodeCache(bool verboseMode)
 
     if (verboseMode) {
         // debug print sharecode cache
-        printf(" Cached Sharecodes: %zu \n", sharecodeCache.size());
+        fmt::print(" Cached Sharecodes: {} \n", sharecodeCache.size());
         for (auto const & sharecode : sharecodeCache) {
-            printf(" \"%s\" \n", sharecode.c_str());
+            fmt::print(" \"{}\" \n", sharecode);
         }
-        printf("\n");
+        fmt::print("\n");
     }
 
     // clear cache
@@ -38,8 +38,8 @@ ShareCodeCache::ShareCodeCache(bool verboseMode)
 
 bool ShareCodeCache::find(std::string const & sharecode)
 {
-    return std::any_of(sharecodeCache.begin(), sharecodeCache.end(), [&sharecode](auto const & sharecodeFromCache) {
-        return sharecode.compare(sharecodeFromCache.c_str()) == 0;
+    return std::ranges::any_of(sharecodeCache, [&sharecode](auto const & sharecodeFromCache) {
+        return sharecode == sharecodeFromCache;
     });
 }
 
@@ -47,18 +47,18 @@ bool ShareCodeCache::insert(std::string const & sharecode)
 {
     matchDbFile.open(csvFile, std::ios::out | std::ios::app);
     if (matchDbFile.good()) {
-        matchDbFile << sharecode << std::endl;
+        matchDbFile << sharecode << '\n';
         matchDbFile.close();
         return true;
     }
     return false;
 }
 
-std::vector<std::string> ShareCodeCache::read(std::istream& is)
+std::vector<std::string> ShareCodeCache::read(std::istream& input)
 {
     std::vector<std::string> tokens;
     std::string token;
-    while (std::getline(is, token) && !token.empty()) {
+    while (std::getline(input, token) && !token.empty()) {
         tokens.push_back(token);
     }
     return tokens;

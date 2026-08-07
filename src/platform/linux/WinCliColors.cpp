@@ -10,7 +10,7 @@ namespace WinCliColors
     bool consoleHasColorSupport()
     { return true; }
 
-    bool enableConsoleColor(bool enabled)
+    bool enableConsoleColor([[maybe_unused]] bool enabled)
     { return true; }
 
     void printRed(std::string message)

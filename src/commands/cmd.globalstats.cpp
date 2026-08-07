@@ -20,11 +20,13 @@ bool requestGlobalStats(DataObject& data, bool const & verbose)
             std::this_thread::sleep_for(std::chrono::milliseconds(CSGO_CLI_STEAM_HELLO_DELAY));
 
             CSGOMMHello mmhello;
-            if (verbose)
+            if (verbose) {
                 spdlog::info("          Requesting: Hello");
+            }
             mmhello.RefreshWait();
-            if (verbose)
+            if (verbose) {
                 spdlog::info("          Got Hello");
+            }
 
             result = true;
 
@@ -49,8 +51,9 @@ bool requestGlobalStats(DataObject& data, bool const & verbose)
             printError("Fatal error", e.what());
             result = false;
         }
-        if (verbose)
+        if (verbose) {
             spdlog::info("[ End   ] [ Thread ] getUserInfo");
+        }
         return 0;
     });
 
@@ -66,7 +69,7 @@ void printGlobalStats(DataObject& data)
     // ---------- Output Table
 
     auto const printAligned{[=](std::string const & a, std::string const & b = "") {
-        return fmt::print(" {0:<23} {1}\n", a, b);
+        fmt::print(" {0:<23} {1}\n", a, b);
     }};
 
     fmt::print("\n Hello {}!\n", data.playername);

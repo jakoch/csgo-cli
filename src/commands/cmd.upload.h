@@ -11,8 +11,6 @@
 
 #include <string>
 
-static inline void uploadShareCode(std::string& sharecode, ShareCodeCache* matchCache, ShareCodeUpload* codeUpload);
-
 void uploadReplayShareCodes(DataObject& data, bool const & verbose);
 void uploadSingleShareCode(std::string& sharecode, bool const & verbose);
 
