@@ -21,9 +21,6 @@ set_property(GLOBAL PROPERTY CTEST_TARGETS_ADDED 1)
 
 set(CTEST_OUTPUT_ON_FAILURE TRUE)
 
-include(CTest)
-enable_testing()
-
 #-------------------------------------------------------------------
 # Build Target: all_tests                              (executable)
 #-------------------------------------------------------------------
